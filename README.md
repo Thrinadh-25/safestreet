@@ -29,4 +29,4 @@ Safe Street is a full-stack web and mobile application designed to identify and 
 
 ```bash
 git clone https://github.com/Thrinadh-25/safestreet.git
-cd safe-street
+cd safestreet
