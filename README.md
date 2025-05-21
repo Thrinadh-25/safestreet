@@ -17,9 +17,9 @@ Safe Street is a full-stack web and mobile application designed to identify and 
 
 ## 🧪 Tech Stack
 
-| Frontend | Backend | AI Model | Database | Other |
-|----------|---------|----------|----------|-------|
-| React.js, React Native | Node.js, Express.js | Vision Transformer (ViT) | MongoDB | Nodemailer, Cloudinary (optional), GitHub Actions (optional) |
+| Frontend               | Backend             | AI Model                 | Database | Other                                                        |
+| ---------------------- | ------------------- | ------------------------ | -------- | ------------------------------------------------------------ |
+| React.js, React Native | Node.js, Express.js | Vision Transformer (ViT) | MongoDB  | Nodemailer, Cloudinary (optional), GitHub Actions (optional) |
 
 ---
 
@@ -30,3 +30,4 @@ Safe Street is a full-stack web and mobile application designed to identify and 
 ```bash
 git clone https://github.com/Thrinadh-25/safestreet.git
 cd safestreet
+```
