@@ -5,13 +5,15 @@ import {
   TouchableOpacity, 
   Switch,
   Alert,
-  Linking
+  Linking,
+  useColorScheme
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Ionicons } from '@expo/vector-icons';
 import { Text, View } from '@/components/Themed';
+import Colors from '@/constants/Colors';
 
 interface AppSettings {
-  darkMode: boolean;
   notifications: boolean;
   autoLocation: boolean;
   highQualityImages: boolean;
@@ -19,8 +21,10 @@ interface AppSettings {
 }
 
 export default function SettingsTabScreen() {
+  const colorScheme = useColorScheme();
+  const isDark = colorScheme === 'dark';
+  
   const [settings, setSettings] = useState<AppSettings>({
-    darkMode: false,
     notifications: true,
     autoLocation: true,
     highQualityImages: true,
@@ -95,7 +99,6 @@ export default function SettingsTabScreen() {
             try {
               await AsyncStorage.clear();
               setSettings({
-                darkMode: false,
                 notifications: true,
                 autoLocation: true,
                 highQualityImages: true,
@@ -142,40 +145,43 @@ export default function SettingsTabScreen() {
     subtitle: string,
     value: boolean,
     onToggle: () => void,
-    icon: string
+    iconName: string
   ) => (
-    <View style={styles.settingItem}>
+    <View style={[styles.settingItem, { backgroundColor: isDark ? Colors.dark.cardBackground : Colors.light.cardBackground }]}>
       <View style={styles.settingInfo}>
-        <Text style={styles.settingIcon}>{icon}</Text>
+        <Ionicons name={iconName as any} size={20} color={Colors.primary} style={styles.settingIcon} />
         <View style={styles.settingText}>
           <Text style={styles.settingTitle}>{title}</Text>
-          <Text style={styles.settingSubtitle}>{subtitle}</Text>
+          <Text style={[styles.settingSubtitle, { color: isDark ? Colors.dark.placeholderText : Colors.light.placeholderText }]}>{subtitle}</Text>
         </View>
       </View>
       <Switch
         value={value}
         onValueChange={onToggle}
-        trackColor={{ false: '#767577', true: '#2f95dc' }}
+        trackColor={{ false: '#767577', true: Colors.primary }}
         thumbColor={value ? '#ffffff' : '#f4f3f4'}
       />
     </View>
   );
 
-  const renderInfoItem = (label: string, value: string, icon: string) => (
-    <View style={styles.infoItem}>
-      <Text style={styles.infoIcon}>{icon}</Text>
+  const renderInfoItem = (label: string, value: string, iconName: string) => (
+    <View style={[styles.infoItem, { backgroundColor: isDark ? Colors.dark.secondaryBackground : Colors.light.secondaryBackground }]}>
+      <Ionicons name={iconName as any} size={18} color={Colors.primary} style={styles.infoIcon} />
       <View style={styles.infoText}>
-        <Text style={styles.infoLabel}>{label}</Text>
+        <Text style={[styles.infoLabel, { color: isDark ? Colors.dark.placeholderText : Colors.light.placeholderText }]}>{label}</Text>
         <Text style={styles.infoValue}>{value}</Text>
       </View>
     </View>
   );
 
-  const renderActionItem = (title: string, onPress: () => void, icon: string, color?: string) => (
-    <TouchableOpacity style={styles.actionItem} onPress={onPress}>
-      <Text style={styles.actionIcon}>{icon}</Text>
+  const renderActionItem = (title: string, onPress: () => void, iconName: string, color?: string) => (
+    <TouchableOpacity 
+      style={[styles.actionItem, { backgroundColor: isDark ? Colors.dark.cardBackground : Colors.light.cardBackground }]} 
+      onPress={onPress}
+    >
+      <Ionicons name={iconName as any} size={18} color={color || Colors.primary} style={styles.actionIcon} />
       <Text style={[styles.actionTitle, color && { color }]}>{title}</Text>
-      <Text style={styles.actionArrow}>›</Text>
+      <Ionicons name="chevron-forward" size={20} color={isDark ? Colors.dark.placeholderText : Colors.light.placeholderText} />
     </TouchableOpacity>
   );
 
@@ -183,27 +189,40 @@ export default function SettingsTabScreen() {
     <ScrollView style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.title}>Settings</Text>
-        <Text style={styles.subtitle}>Customize your Safe Street experience</Text>
+        <Text style={[styles.subtitle, { color: isDark ? Colors.dark.placeholderText : Colors.light.placeholderText }]}>
+          Customize your Safe Street experience
+        </Text>
+      </View>
+
+      {/* Theme Info */}
+      <View style={styles.section}>
+        <Text style={styles.sectionTitle}>🎨 Theme</Text>
+        <View style={[styles.themeInfo, { backgroundColor: isDark ? Colors.dark.cardBackground : Colors.light.cardBackground }]}>
+          <View style={styles.themeRow}>
+            <Ionicons name={isDark ? "moon" : "sunny"} size={20} color={Colors.primary} />
+            <View style={styles.themeText}>
+              <Text style={styles.themeTitle}>Current Theme</Text>
+              <Text style={[styles.themeSubtitle, { color: isDark ? Colors.dark.placeholderText : Colors.light.placeholderText }]}>
+                {isDark ? 'Dark Mode' : 'Light Mode'} (Device Default)
+              </Text>
+            </View>
+          </View>
+          <Text style={[styles.themeDescription, { color: isDark ? Colors.dark.placeholderText : Colors.light.placeholderText }]}>
+            Theme automatically follows your device settings
+          </Text>
+        </View>
       </View>
 
       {/* App Preferences */}
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>App Preferences</Text>
-        
-        {renderSettingItem(
-          'Dark Mode',
-          'Switch between light and dark themes',
-          settings.darkMode,
-          () => toggleSetting('darkMode'),
-          '🌙'
-        )}
+        <Text style={styles.sectionTitle}>⚙️ App Preferences</Text>
         
         {renderSettingItem(
           'Push Notifications',
           'Get notified about upload status and updates',
           settings.notifications,
           () => toggleSetting('notifications'),
-          '🔔'
+          'notifications'
         )}
         
         {renderSettingItem(
@@ -211,7 +230,7 @@ export default function SettingsTabScreen() {
           'Automatically capture location with images',
           settings.autoLocation,
           () => toggleSetting('autoLocation'),
-          '📍'
+          'location'
         )}
         
         {renderSettingItem(
@@ -219,7 +238,7 @@ export default function SettingsTabScreen() {
           'Upload images in higher resolution',
           settings.highQualityImages,
           () => toggleSetting('highQualityImages'),
-          '📸'
+          'camera'
         )}
         
         {renderSettingItem(
@@ -227,45 +246,45 @@ export default function SettingsTabScreen() {
           'Warn before uploading on mobile data',
           settings.dataUsageWarning,
           () => toggleSetting('dataUsageWarning'),
-          '📊'
+          'cellular'
         )}
       </View>
 
       {/* App Information */}
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>App Information</Text>
+        <Text style={styles.sectionTitle}>📱 App Information</Text>
         
-        {renderInfoItem('Version', appInfo.version, '📱')}
-        {renderInfoItem('Build Number', appInfo.buildNumber, '🔧')}
-        {renderInfoItem('Total Uploads', appInfo.totalUploads.toString(), '📤')}
-        {renderInfoItem('Storage Used', appInfo.storageUsed, '💾')}
+        {renderInfoItem('Version', appInfo.version, 'information-circle')}
+        {renderInfoItem('Build Number', appInfo.buildNumber, 'build')}
+        {renderInfoItem('Total Uploads', appInfo.totalUploads.toString(), 'cloud-upload')}
+        {renderInfoItem('Storage Used', appInfo.storageUsed, 'server')}
       </View>
 
       {/* Data Management */}
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Data Management</Text>
+        <Text style={styles.sectionTitle}>💾 Data Management</Text>
         
-        {renderActionItem('Export Data', exportData, '📋')}
-        {renderActionItem('Clear App Data', clearAppData, '🗑️', '#dc3545')}
+        {renderActionItem('Export Data', exportData, 'download')}
+        {renderActionItem('Clear App Data', clearAppData, 'trash', Colors.error)}
       </View>
 
       {/* Support & Legal */}
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Support & Legal</Text>
+        <Text style={styles.sectionTitle}>🛠️ Support & Legal</Text>
         
-        {renderActionItem('Contact Support', contactSupport, '💬')}
-        {renderActionItem('Privacy Policy', openPrivacyPolicy, '🔒')}
-        {renderActionItem('Terms of Service', openTermsOfService, '📄')}
+        {renderActionItem('Contact Support', contactSupport, 'mail')}
+        {renderActionItem('Privacy Policy', openPrivacyPolicy, 'shield-checkmark')}
+        {renderActionItem('Terms of Service', openTermsOfService, 'document-text')}
       </View>
 
       {/* About */}
-      <View style={styles.aboutSection}>
+      <View style={[styles.aboutSection, { backgroundColor: isDark ? Colors.dark.secondaryBackground : '#f0f8ff' }]}>
         <Text style={styles.aboutTitle}>About Safe Street</Text>
-        <Text style={styles.aboutText}>
+        <Text style={[styles.aboutText, { color: isDark ? Colors.dark.placeholderText : '#666' }]}>
           Safe Street helps communities report and track road damage using AI-powered analysis. 
           Together, we can make our roads safer for everyone.
         </Text>
-        <Text style={styles.aboutCopyright}>
+        <Text style={[styles.aboutCopyright, { color: isDark ? Colors.dark.placeholderText : '#999' }]}>
           © 2025 Safe Street. All rights reserved.
         </Text>
       </View>
@@ -289,7 +308,6 @@ const styles = StyleSheet.create({
   },
   subtitle: {
     fontSize: 16,
-    opacity: 0.7,
     textAlign: 'center',
   },
   section: {
@@ -300,7 +318,39 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 'bold',
     marginBottom: 15,
-    color: '#2f95dc',
+    color: Colors.primary,
+  },
+  themeInfo: {
+    paddingVertical: 15,
+    paddingHorizontal: 16,
+    borderRadius: 12,
+    marginBottom: 8,
+    elevation: 1,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
+  },
+  themeRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  themeText: {
+    marginLeft: 12,
+    flex: 1,
+  },
+  themeTitle: {
+    fontSize: 16,
+    fontWeight: '600',
+    marginBottom: 2,
+  },
+  themeSubtitle: {
+    fontSize: 12,
+  },
+  themeDescription: {
+    fontSize: 11,
+    fontStyle: 'italic',
   },
   settingItem: {
     flexDirection: 'row',
@@ -308,7 +358,6 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     paddingVertical: 15,
     paddingHorizontal: 16,
-    backgroundColor: '#ffffff',
     borderRadius: 12,
     marginBottom: 8,
     elevation: 1,
@@ -323,7 +372,6 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   settingIcon: {
-    fontSize: 20,
     marginRight: 12,
   },
   settingText: {
@@ -336,19 +384,16 @@ const styles = StyleSheet.create({
   },
   settingSubtitle: {
     fontSize: 12,
-    opacity: 0.7,
   },
   infoItem: {
     flexDirection: 'row',
     alignItems: 'center',
     paddingVertical: 12,
     paddingHorizontal: 16,
-    backgroundColor: '#f8f9fa',
     borderRadius: 12,
     marginBottom: 8,
   },
   infoIcon: {
-    fontSize: 18,
     marginRight: 12,
   },
   infoText: {
@@ -356,7 +401,6 @@ const styles = StyleSheet.create({
   },
   infoLabel: {
     fontSize: 14,
-    opacity: 0.7,
     marginBottom: 2,
   },
   infoValue: {
@@ -368,7 +412,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingVertical: 15,
     paddingHorizontal: 16,
-    backgroundColor: '#ffffff',
     borderRadius: 12,
     marginBottom: 8,
     elevation: 1,
@@ -378,7 +421,6 @@ const styles = StyleSheet.create({
     shadowRadius: 2,
   },
   actionIcon: {
-    fontSize: 18,
     marginRight: 12,
   },
   actionTitle: {
@@ -386,14 +428,9 @@ const styles = StyleSheet.create({
     fontWeight: '500',
     flex: 1,
   },
-  actionArrow: {
-    fontSize: 20,
-    opacity: 0.5,
-  },
   aboutSection: {
     margin: 20,
     padding: 20,
-    backgroundColor: '#f0f8ff',
     borderRadius: 12,
     alignItems: 'center',
   },
@@ -401,18 +438,16 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 'bold',
     marginBottom: 10,
-    color: '#2f95dc',
+    color: Colors.primary,
   },
   aboutText: {
     fontSize: 14,
     textAlign: 'center',
     lineHeight: 20,
     marginBottom: 15,
-    opacity: 0.8,
   },
   aboutCopyright: {
     fontSize: 12,
-    opacity: 0.6,
     textAlign: 'center',
   },
 });

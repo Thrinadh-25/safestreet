@@ -31,13 +31,18 @@ export const Colors = {
   shadow: '#000000',
   disabled: '#adb5bd',
   
-  // Theme colors (existing)
+  // Theme colors for device default
   light: {
     text: '#000',
     background: '#fff',
     tint: tintColorLight,
     tabIconDefault: '#ccc',
     tabIconSelected: tintColorLight,
+    // Additional light theme colors
+    cardBackground: '#ffffff',
+    borderColor: '#e1e1e1',
+    placeholderText: '#999999',
+    secondaryBackground: '#f8f9fa',
   },
   dark: {
     text: '#fff',
@@ -45,6 +50,11 @@ export const Colors = {
     tint: tintColorDark,
     tabIconDefault: '#ccc',
     tabIconSelected: tintColorDark,
+    // Additional dark theme colors
+    cardBackground: '#1c1c1e',
+    borderColor: '#38383a',
+    placeholderText: '#8e8e93',
+    secondaryBackground: '#2c2c2e',
   },
 };
 
