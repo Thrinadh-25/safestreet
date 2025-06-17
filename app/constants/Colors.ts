@@ -31,11 +31,11 @@ export const Colors = {
     tint: tintColorDark,
     tabIconDefault: '#8E8E93',
     tabIconSelected: tintColorDark,
-    cardBackground: '#1C1C1E',
-    borderColor: '#38383A',
+    cardBackground: '#000000', // Changed from #1C1C1E to match background
+    borderColor: '#2C2C2E', // Lighter border for subtle separation
     placeholderText: '#8E8E93',
-    secondaryBackground: '#1C1C1E',
-    separator: '#38383A',
+    secondaryBackground: '#000000', // Changed from #1C1C1E to match background
+    separator: '#2C2C2E', // Lighter separator
     headerBackground: '#000000',
     sectionBackground: '#000000',
   },
