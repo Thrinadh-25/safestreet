@@ -17,7 +17,8 @@ This document outlines the backend structure and MongoDB integration points for 
   createdAt: Date,
   updatedAt: Date,
   isActive: Boolean,
-  lastLogin: Date
+  lastLogin: Date,
+  deletedAt: Date (optional, for soft delete)
 }
 ```
 
@@ -252,6 +253,25 @@ This document outlines the backend structure and MongoDB integration points for 
 }
 ```
 
+#### DELETE /api/user/delete
+```javascript
+// Headers: Authorization: Bearer <token>
+
+// Response
+{
+  success: Boolean,
+  message: String
+}
+
+// Implementation Notes:
+// 1. This should perform a hard delete of the user account
+// 2. Delete all associated uploads and images from storage
+// 3. Remove all user data from the database
+// 4. Invalidate all user tokens
+// 5. Send confirmation email (optional)
+// 6. Log the deletion for audit purposes
+```
+
 ## File Storage Integration
 
 ### Image Upload Process
@@ -315,6 +335,49 @@ SMTP_PASS=your-app-password
 3. **File Validation**: Check file type, size, and scan for malware
 4. **Rate Limiting**: Implement upload limits per user/hour
 5. **Input Validation**: Sanitize all user inputs
+6. **Account Deletion**: Implement secure account deletion with proper data cleanup
+
+### Account Deletion Implementation
+```javascript
+// Example implementation for DELETE /api/user/delete
+app.delete('/api/user/delete', authenticateToken, async (req, res) => {
+  try {
+    const userId = req.user.id;
+    
+    // 1. Get all user uploads to delete associated files
+    const uploads = await Upload.find({ userId });
+    
+    // 2. Delete all images from cloud storage
+    for (const upload of uploads) {
+      await deleteFromCloudStorage(upload.imageUri);
+    }
+    
+    // 3. Delete all uploads from database
+    await Upload.deleteMany({ userId });
+    
+    // 4. Delete user account
+    await User.findByIdAndDelete(userId);
+    
+    // 5. Invalidate all user tokens (if using token blacklist)
+    await TokenBlacklist.create({ token: req.token });
+    
+    // 6. Log deletion for audit
+    console.log(`User account deleted: ${userId} at ${new Date()}`);
+    
+    res.json({
+      success: true,
+      message: 'Account deleted successfully'
+    });
+    
+  } catch (error) {
+    console.error('Account deletion error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to delete account'
+    });
+  }
+});
+```
 
 ### Performance Optimizations
 1. **Database Indexing**:
@@ -359,6 +422,7 @@ SMTP_PASS=your-app-password
 6. **Create API Routes**
 7. **Add Error Handling & Validation**
 8. **Setup AI Processing Pipeline**
+9. **Implement Account Deletion Endpoint**
 
 ## Frontend Integration Points
 
@@ -369,5 +433,14 @@ The mobile app expects these specific response formats and will make requests to
 - **Image Upload**: Upload tab uses multipart form upload
 - **Data Sync**: Track tab fetches user uploads
 - **Profile Management**: Settings tab manages user profile
+- **Account Deletion**: Settings tab calls delete endpoint with proper confirmation
 
 Make sure to handle CORS properly for web clients and implement proper error responses with appropriate HTTP status codes.
+
+### Account Deletion Security Notes:
+- Require user to be authenticated
+- Implement confirmation mechanism (typing confirmation text)
+- Log all deletion attempts for security audit
+- Consider implementing a grace period for account recovery
+- Send confirmation email after successful deletion
+- Ensure all associated data is properly cleaned up

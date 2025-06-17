@@ -6,6 +6,8 @@ import {
   Switch,
   Alert,
   Linking,
+  TextInput,
+  Modal,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Ionicons } from '@expo/vector-icons';
@@ -41,6 +43,10 @@ export default function SettingsTabScreen() {
     totalUploads: 0,
     storageUsed: '0 MB',
   });
+
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [deleteConfirmText, setDeleteConfirmText] = useState('');
+  const [isDeleting, setIsDeleting] = useState(false);
 
   useEffect(() => {
     loadSettings();
@@ -111,6 +117,74 @@ export default function SettingsTabScreen() {
         },
       ]
     );
+  };
+
+  const handleDeleteAccount = () => {
+    Alert.alert(
+      'Delete Account',
+      'This action cannot be undone. All your data, uploads, and account information will be permanently deleted.',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        { 
+          text: 'Continue', 
+          style: 'destructive',
+          onPress: () => setShowDeleteModal(true)
+        },
+      ]
+    );
+  };
+
+  const confirmDeleteAccount = async () => {
+    if (deleteConfirmText.toLowerCase() !== 'delete my account') {
+      Alert.alert('Error', 'Please type "delete my account" exactly to confirm.');
+      return;
+    }
+
+    setIsDeleting(true);
+    try {
+      // TODO: Replace with actual API call to delete account
+      // const response = await fetch('YOUR_BACKEND_URL/api/user/delete', {
+      //   method: 'DELETE',
+      //   headers: {
+      //     'Authorization': `Bearer ${state.token}`,
+      //     'Content-Type': 'application/json',
+      //   },
+      // });
+      
+      // if (response.ok) {
+      //   // Account deleted successfully on server
+      //   await AsyncStorage.clear();
+      //   router.replace('/auth/register');
+      // } else {
+      //   throw new Error('Failed to delete account');
+      // }
+
+      // Simulate API call for demo
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      
+      // Clear all local data
+      await AsyncStorage.clear();
+      
+      Alert.alert(
+        'Account Deleted',
+        'Your account has been permanently deleted. Thank you for using Safe Street.',
+        [
+          { 
+            text: 'OK', 
+            onPress: () => {
+              setShowDeleteModal(false);
+              router.replace('/auth/register');
+            }
+          }
+        ]
+      );
+      
+    } catch (error) {
+      console.error('Delete account error:', error);
+      Alert.alert('Error', 'Failed to delete account. Please try again or contact support.');
+    } finally {
+      setIsDeleting(false);
+    }
   };
 
   const clearAppData = () => {
@@ -212,6 +286,80 @@ export default function SettingsTabScreen() {
     </TouchableOpacity>
   );
 
+  const DeleteAccountModal = () => (
+    <Modal
+      animationType="slide"
+      transparent={true}
+      visible={showDeleteModal}
+      onRequestClose={() => !isDeleting && setShowDeleteModal(false)}
+    >
+      <View style={styles.modalOverlay}>
+        <View style={[styles.deleteModalContent, { backgroundColor: theme.cardBackground }]}>
+          <View style={styles.deleteModalHeader}>
+            <Ionicons name="warning" size={32} color={Colors.error} />
+            <Text style={[styles.deleteModalTitle, { color: theme.text }]}>Delete Account</Text>
+          </View>
+          
+          <Text style={[styles.deleteModalText, { color: theme.text }]}>
+            This action is permanent and cannot be undone. All your data will be deleted including:
+          </Text>
+          
+          <View style={styles.deleteModalList}>
+            <Text style={[styles.deleteModalListItem, { color: theme.placeholderText }]}>• All uploaded images and reports</Text>
+            <Text style={[styles.deleteModalListItem, { color: theme.placeholderText }]}>• Account information and settings</Text>
+            <Text style={[styles.deleteModalListItem, { color: theme.placeholderText }]}>• Upload history and AI analysis</Text>
+            <Text style={[styles.deleteModalListItem, { color: theme.placeholderText }]}>• All associated data</Text>
+          </View>
+          
+          <Text style={[styles.deleteModalConfirmText, { color: theme.text }]}>
+            Type "delete my account" to confirm:
+          </Text>
+          
+          <TextInput
+            style={[styles.deleteModalInput, { 
+              backgroundColor: theme.secondaryBackground, 
+              color: theme.text,
+              borderColor: theme.borderColor 
+            }]}
+            placeholder="delete my account"
+            placeholderTextColor={theme.placeholderText}
+            value={deleteConfirmText}
+            onChangeText={setDeleteConfirmText}
+            autoCapitalize="none"
+            editable={!isDeleting}
+          />
+          
+          <View style={styles.deleteModalButtons}>
+            <TouchableOpacity
+              style={[styles.deleteModalButton, styles.cancelButton, { backgroundColor: theme.secondaryBackground }]}
+              onPress={() => {
+                setShowDeleteModal(false);
+                setDeleteConfirmText('');
+              }}
+              disabled={isDeleting}
+            >
+              <Text style={[styles.cancelButtonText, { color: theme.text }]}>Cancel</Text>
+            </TouchableOpacity>
+            
+            <TouchableOpacity
+              style={[styles.deleteModalButton, styles.deleteButton, { 
+                backgroundColor: isDeleting ? theme.placeholderText : Colors.error 
+              }]}
+              onPress={confirmDeleteAccount}
+              disabled={isDeleting || deleteConfirmText.toLowerCase() !== 'delete my account'}
+            >
+              {isDeleting ? (
+                <Text style={styles.deleteButtonText}>Deleting...</Text>
+              ) : (
+                <Text style={styles.deleteButtonText}>Delete Account</Text>
+              )}
+            </TouchableOpacity>
+          </View>
+        </View>
+      </View>
+    </Modal>
+  );
+
   return (
     <View style={[styles.container, { backgroundColor: theme.background }]}>
       <ScrollView style={styles.scrollView}>
@@ -241,10 +389,16 @@ export default function SettingsTabScreen() {
                   )}
                 </View>
               </View>
-              <TouchableOpacity style={styles.signOutButton} onPress={handleLogout}>
-                <Ionicons name="log-out-outline" size={20} color={Colors.error} />
-                <Text style={[styles.signOutText, { color: Colors.error }]}>Sign Out</Text>
-              </TouchableOpacity>
+              <View style={styles.profileActions}>
+                <TouchableOpacity style={styles.signOutButton} onPress={handleLogout}>
+                  <Ionicons name="log-out-outline" size={20} color={Colors.error} />
+                  <Text style={[styles.signOutText, { color: Colors.error }]}>Sign Out</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.deleteAccountButton} onPress={handleDeleteAccount}>
+                  <Ionicons name="trash-outline" size={20} color={Colors.error} />
+                  <Text style={[styles.deleteAccountText, { color: Colors.error }]}>Delete Account</Text>
+                </TouchableOpacity>
+              </View>
             </View>
           </View>
         )}
@@ -344,6 +498,8 @@ export default function SettingsTabScreen() {
           </Text>
         </View>
       </ScrollView>
+
+      <DeleteAccountModal />
     </View>
   );
 }
@@ -421,6 +577,9 @@ const styles = StyleSheet.create({
   profilePhone: {
     fontSize: 14,
   },
+  profileActions: {
+    gap: 12,
+  },
   signOutButton: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -435,6 +594,21 @@ const styles = StyleSheet.create({
   signOutText: {
     fontSize: 16,
     fontWeight: '600',
+  },
+  deleteAccountButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    borderRadius: 8,
+    backgroundColor: Colors.error,
+    gap: 8,
+  },
+  deleteAccountText: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#FFFFFF',
   },
   themeInfo: {
     paddingVertical: 15,
@@ -564,5 +738,80 @@ const styles = StyleSheet.create({
   aboutCopyright: {
     fontSize: 12,
     textAlign: 'center',
+  },
+  // Delete Account Modal Styles
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20,
+  },
+  deleteModalContent: {
+    borderRadius: 16,
+    padding: 24,
+    width: '100%',
+    maxWidth: 400,
+  },
+  deleteModalHeader: {
+    alignItems: 'center',
+    marginBottom: 20,
+  },
+  deleteModalTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    marginTop: 12,
+  },
+  deleteModalText: {
+    fontSize: 16,
+    lineHeight: 22,
+    marginBottom: 16,
+  },
+  deleteModalList: {
+    marginBottom: 20,
+  },
+  deleteModalListItem: {
+    fontSize: 14,
+    lineHeight: 20,
+    marginBottom: 4,
+  },
+  deleteModalConfirmText: {
+    fontSize: 16,
+    fontWeight: '600',
+    marginBottom: 12,
+  },
+  deleteModalInput: {
+    borderWidth: 1,
+    borderRadius: 8,
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    fontSize: 16,
+    marginBottom: 24,
+  },
+  deleteModalButtons: {
+    flexDirection: 'row',
+    gap: 12,
+  },
+  deleteModalButton: {
+    flex: 1,
+    paddingVertical: 14,
+    borderRadius: 8,
+    alignItems: 'center',
+  },
+  cancelButton: {
+    borderWidth: 1,
+    borderColor: Colors.primary,
+  },
+  cancelButtonText: {
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  deleteButton: {
+    backgroundColor: Colors.error,
+  },
+  deleteButtonText: {
+    color: '#FFFFFF',
+    fontSize: 16,
+    fontWeight: '600',
   },
 });
