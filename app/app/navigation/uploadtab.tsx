@@ -9,6 +9,7 @@ import {
 } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import * as Location from 'expo-location';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Text, View } from '@/components/Themed';
 
 interface LocationData {
@@ -18,12 +19,20 @@ interface LocationData {
 }
 
 interface UploadData {
+  id: string;
   imageUri: string;
   location: LocationData;
   timestamp: string;
+  status: 'pending' | 'processing' | 'completed' | 'failed';
+  aiResponse?: {
+    damageType: string;
+    severity: string;
+    confidence: number;
+    recommendations: string[];
+  };
 }
 
-export default function TabOneScreen() {
+export default function UploadTabScreen() {
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [location, setLocation] = useState<LocationData | null>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -102,6 +111,17 @@ export default function TabOneScreen() {
     }
   };
 
+  const saveUploadToStorage = async (uploadInfo: UploadData) => {
+    try {
+      const existingUploads = await AsyncStorage.getItem('uploads');
+      const uploads = existingUploads ? JSON.parse(existingUploads) : [];
+      uploads.unshift(uploadInfo); // Add to beginning of array
+      await AsyncStorage.setItem('uploads', JSON.stringify(uploads));
+    } catch (error) {
+      console.error('Error saving upload:', error);
+    }
+  };
+
   const handleImageSelection = async (imageUri: string) => {
     setSelectedImage(imageUri);
     
@@ -112,13 +132,19 @@ export default function TabOneScreen() {
       
       // Create upload data
       const uploadInfo: UploadData = {
+        id: Date.now().toString(),
         imageUri,
         location: locationData,
         timestamp: new Date().toISOString(),
+        status: 'pending',
       };
       
       setUploadData(uploadInfo);
-      Alert.alert('Success', 'Image and location captured successfully!');
+      
+      // Save to AsyncStorage for tracking
+      await saveUploadToStorage(uploadInfo);
+      
+      Alert.alert('Success', 'Image and location captured successfully! Check Track tab to monitor progress.');
     }
   };
 
@@ -238,7 +264,11 @@ export default function TabOneScreen() {
               </Text>
               <Text style={styles.uploadInfoText}>
                 <Text style={styles.uploadInfoLabel}>Status: </Text>
-                Ready for upload
+                Ready for processing
+              </Text>
+              <Text style={styles.uploadInfoText}>
+                <Text style={styles.uploadInfoLabel}>ID: </Text>
+                {uploadData.id}
               </Text>
             </View>
           )}
@@ -260,8 +290,8 @@ export default function TabOneScreen() {
         <Text style={styles.infoText}>
           1. Select an image from camera or gallery{'\n'}
           2. Location coordinates are captured automatically{'\n'}
-          3. Review the details before uploading{'\n'}
-          4. Submit to report road damage
+          3. Upload is saved for tracking and processing{'\n'}
+          4. Check Track tab to monitor AI analysis progress
         </Text>
       </View>
     </ScrollView>

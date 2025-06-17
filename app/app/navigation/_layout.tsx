@@ -27,7 +27,7 @@ export default function TabLayout() {
         headerShown: useClientOnlyValue(false, true),
       }}>
       <Tabs.Screen
-        name="tab1"
+        name="uploadtab"
         options={{
           title: 'Upload',
           tabBarIcon: ({ color }) => <TabBarIcon name="camera" color={color} />,
@@ -48,17 +48,17 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="tab2"
+        name="tracktab"
         options={{
           title: 'Track',
-          tabBarIcon: ({ color }) => <TabBarIcon name="list" color={color} />,
+          tabBarIcon: ({ color }) => <TabBarIcon name="list-alt" color={color} />,
         }}
       />
       <Tabs.Screen
-        name="tab3"
+        name="settingstab"
         options={{
-          title: 'Profile',
-          tabBarIcon: ({ color }) => <TabBarIcon name="user" color={color} />,
+          title: 'Settings',
+          tabBarIcon: ({ color }) => <TabBarIcon name="cog" color={color} />,
         }}
       />
     </Tabs>
