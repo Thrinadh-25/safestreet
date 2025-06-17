@@ -9,6 +9,8 @@ import {
   ScrollView,
   ActivityIndicator,
   Dimensions,
+  Modal,
+  Pressable,
 } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import * as Location from 'expo-location';
@@ -16,14 +18,16 @@ import { Ionicons } from '@expo/vector-icons';
 import { useUpload } from '../context/UploadContext';
 import { Colors } from '../../constants/Colors';
 import { LocationData, UploadItem } from '../context/UploadContext';
+import { useColorScheme } from '@/components/useColorScheme';
 
-const { width } = Dimensions.get('window');
+const { width, height } = Dimensions.get('window');
 
 const UploadTab = () => {
+  const colorScheme = useColorScheme();
+  const isDark = colorScheme === 'dark';
   const { state, setCurrentImage, setCurrentLocation, addUpload, clearCurrentUpload, setUploading, updateUploadStatus } = useUpload();
   const [isLoadingLocation, setIsLoadingLocation] = useState<boolean>(false);
-
-  console.log('UploadTab re-rendered', { currentUpload: state.currentUpload, isUploading: state.isUploading });
+  const [showInfoModal, setShowInfoModal] = useState<boolean>(false);
 
   useEffect(() => {
     requestPermissions();
@@ -42,7 +46,7 @@ const UploadTab = () => {
 
     const locationPermission = await Location.requestForegroundPermissionsAsync();
     if (locationPermission.status !== 'granted') {
-      Alert.alert('Permission Required', 'Location permission is required to capture location data first.');
+      Alert.alert('Permission Required', 'Location permission is required to capture location data.');
     }
   };
 
@@ -61,7 +65,6 @@ const UploadTab = () => {
         timestamp: location.timestamp,
       };
 
-      console.log('Setting location:', locationData);
       setCurrentLocation(locationData);
       return locationData;
     } catch (error) {
@@ -70,19 +73,6 @@ const UploadTab = () => {
     } finally {
       setIsLoadingLocation(false);
     }
-  };
-
-  const showImagePickerOptions = () => {
-    Alert.alert(
-      'Select Image',
-      'Choose how you want to add an image',
-      [
-        { text: 'Camera', onPress: openCamera },
-        { text: 'Gallery', onPress: openGallery },
-        { text: 'Cancel', style: 'cancel' },
-      ],
-      { cancelable: true }
-    );
   };
 
   const openCamera = async () => {
@@ -96,7 +86,6 @@ const UploadTab = () => {
 
       if (!result.canceled && result.assets[0]) {
         const imageUri = result.assets[0].uri;
-        console.log('Setting image URI:', imageUri);
         setCurrentImage(imageUri);
         try {
           await getCurrentLocation();
@@ -121,7 +110,6 @@ const UploadTab = () => {
 
       if (!result.canceled && result.assets[0]) {
         const imageUri = result.assets[0].uri;
-        console.log('Setting image URI:', imageUri);
         setCurrentImage(imageUri);
         try {
           await getCurrentLocation();
@@ -146,7 +134,6 @@ const UploadTab = () => {
       return;
     }
 
-    console.log('Starting upload:', state.currentUpload);
     setUploading(true);
 
     const uploadItem: UploadItem = {
@@ -198,287 +185,403 @@ const UploadTab = () => {
     }
   };
 
+  const InfoModal = () => (
+    <Modal
+      animationType="slide"
+      transparent={true}
+      visible={showInfoModal}
+      onRequestClose={() => setShowInfoModal(false)}
+    >
+      <View style={styles.modalOverlay}>
+        <View style={[styles.modalContent, { backgroundColor: isDark ? Colors.dark.cardBackground : Colors.light.cardBackground }]}>
+          <View style={styles.modalHeader}>
+            <Text style={[styles.modalTitle, { color: isDark ? Colors.dark.text : Colors.light.text }]}>How it works</Text>
+            <TouchableOpacity onPress={() => setShowInfoModal(false)} style={styles.closeButton}>
+              <Ionicons name="close" size={24} color={isDark ? Colors.dark.text : Colors.light.text} />
+            </TouchableOpacity>
+          </View>
+          
+          <ScrollView style={styles.modalBody} showsVerticalScrollIndicator={false}>
+            <View style={styles.infoStep}>
+              <View style={styles.stepNumber}>
+                <Text style={styles.stepNumberText}>1</Text>
+              </View>
+              <View style={styles.stepContent}>
+                <Text style={[styles.stepTitle, { color: isDark ? Colors.dark.text : Colors.light.text }]}>Capture Image</Text>
+                <Text style={[styles.stepDescription, { color: isDark ? Colors.dark.placeholderText : Colors.light.placeholderText }]}>
+                  Take a photo with your camera or select from gallery
+                </Text>
+              </View>
+            </View>
+
+            <View style={styles.infoStep}>
+              <View style={styles.stepNumber}>
+                <Text style={styles.stepNumberText}>2</Text>
+              </View>
+              <View style={styles.stepContent}>
+                <Text style={[styles.stepTitle, { color: isDark ? Colors.dark.text : Colors.light.text }]}>Auto Location</Text>
+                <Text style={[styles.stepDescription, { color: isDark ? Colors.dark.placeholderText : Colors.light.placeholderText }]}>
+                  Location coordinates are captured automatically
+                </Text>
+              </View>
+            </View>
+
+            <View style={styles.infoStep}>
+              <View style={styles.stepNumber}>
+                <Text style={styles.stepNumberText}>3</Text>
+              </View>
+              <View style={styles.stepContent}>
+                <Text style={[styles.stepTitle, { color: isDark ? Colors.dark.text : Colors.light.text }]}>AI Analysis</Text>
+                <Text style={[styles.stepDescription, { color: isDark ? Colors.dark.placeholderText : Colors.light.placeholderText }]}>
+                  Our AI analyzes the damage and provides recommendations
+                </Text>
+              </View>
+            </View>
+
+            <View style={styles.infoStep}>
+              <View style={styles.stepNumber}>
+                <Text style={styles.stepNumberText}>4</Text>
+              </View>
+              <View style={styles.stepContent}>
+                <Text style={[styles.stepTitle, { color: isDark ? Colors.dark.text : Colors.light.text }]}>Track Progress</Text>
+                <Text style={[styles.stepDescription, { color: isDark ? Colors.dark.placeholderText : Colors.light.placeholderText }]}>
+                  Monitor your reports and repair status in the Track tab
+                </Text>
+              </View>
+            </View>
+          </ScrollView>
+        </View>
+      </View>
+    </Modal>
+  );
+
   return (
-    <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
-      <View style={styles.content}>
+    <View style={[styles.container, { backgroundColor: isDark ? Colors.dark.background : Colors.light.background }]}>
+      <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
+        {/* Header */}
         <View style={styles.header}>
-          <Text style={styles.title}>Upload Road Image</Text>
-          <Text style={styles.subtitle}>Capture road damage for analysis</Text>
+          <Text style={[styles.title, { color: isDark ? Colors.dark.text : Colors.light.text }]}>Upload</Text>
+          <TouchableOpacity onPress={() => setShowInfoModal(true)} style={styles.infoButton}>
+            <Ionicons name="information-circle-outline" size={24} color={Colors.primary} />
+          </TouchableOpacity>
         </View>
 
-        <View style={styles.section}>
+        {/* Image Section */}
+        <View style={styles.imageSection}>
           {!state.currentUpload?.imageUri ? (
-            <TouchableOpacity style={styles.uploadArea} onPress={showImagePickerOptions}>
-              <Ionicons name="camera" size={48} color={Colors.gray} />
-              <Text style={styles.uploadText}>Tap to add image</Text>
-              <Text style={styles.uploadSubtext}>Camera or Gallery</Text>
-            </TouchableOpacity>
+            <View style={[styles.placeholderContainer, { backgroundColor: isDark ? Colors.dark.secondaryBackground : Colors.light.secondaryBackground }]}>
+              <Ionicons name="image-outline" size={64} color={isDark ? Colors.dark.placeholderText : Colors.light.placeholderText} />
+              <Text style={[styles.placeholderText, { color: isDark ? Colors.dark.placeholderText : Colors.light.placeholderText }]}>
+                No image selected
+              </Text>
+            </View>
           ) : (
             <View style={styles.imageContainer}>
               <Image source={{ uri: state.currentUpload.imageUri }} style={styles.previewImage} />
-              <TouchableOpacity style={styles.changeButton} onPress={() => setCurrentImage('')}>
-                <Ionicons name="close-circle" size={24} color={Colors.error} />
-                <Text style={styles.changeButtonText}>Change</Text>
+              <TouchableOpacity style={styles.removeButton} onPress={() => setCurrentImage('')}>
+                <Ionicons name="close" size={20} color={Colors.white} />
               </TouchableOpacity>
             </View>
           )}
         </View>
 
-        <View style={styles.section}>
-          <View style={styles.locationHeader}>
-            <View style={styles.locationTitle}>
-              <Ionicons name="location" size={20} color={Colors.primary} />
-              <Text style={styles.sectionTitle}>Location</Text>
-            </View>
-            {isLoadingLocation && <ActivityIndicator size="small" color={Colors.primary} />}
-          </View>
+        {/* Action Buttons */}
+        <View style={styles.buttonSection}>
+          <TouchableOpacity 
+            style={[styles.actionButton, styles.cameraButton, { backgroundColor: Colors.primary }]} 
+            onPress={openCamera}
+          >
+            <Ionicons name="camera" size={24} color={Colors.white} />
+            <Text style={styles.buttonText}>Camera</Text>
+          </TouchableOpacity>
 
-          {state.currentUpload?.location ? (
-            <View style={styles.locationCard}>
-              <View style={styles.locationRow}>
-                <Text style={styles.locationLabel}>Latitude</Text>
-                <Text style={styles.locationValue}>
-                  {state.currentUpload.location.latitude.toFixed(6)}
-                </Text>
+          <TouchableOpacity 
+            style={[styles.actionButton, styles.galleryButton, { backgroundColor: isDark ? Colors.dark.cardBackground : Colors.light.cardBackground, borderColor: Colors.primary }]} 
+            onPress={openGallery}
+          >
+            <Ionicons name="images" size={24} color={Colors.primary} />
+            <Text style={[styles.buttonTextSecondary, { color: Colors.primary }]}>Gallery</Text>
+          </TouchableOpacity>
+        </View>
+
+        {/* Location Status */}
+        {state.currentUpload?.imageUri && (
+          <View style={styles.locationSection}>
+            <View style={[styles.locationCard, { backgroundColor: isDark ? Colors.dark.cardBackground : Colors.light.cardBackground }]}>
+              <View style={styles.locationHeader}>
+                <Ionicons name="location" size={20} color={Colors.primary} />
+                <Text style={[styles.locationTitle, { color: isDark ? Colors.dark.text : Colors.light.text }]}>Location</Text>
+                {isLoadingLocation && <ActivityIndicator size="small" color={Colors.primary} />}
               </View>
-              <View style={styles.locationRow}>
-                <Text style={styles.locationLabel}>Longitude</Text>
-                <Text style={styles.locationValue}>
-                  {state.currentUpload.location.longitude.toFixed(6)}
-                </Text>
-              </View>
-              {state.currentUpload.location.accuracy && (
-                <View style={styles.locationRow}>
-                  <Text style={styles.locationLabel}>Accuracy</Text>
-                  <Text style={styles.locationValue}>
-                    ±{state.currentUpload.location.accuracy.toFixed(0)}m
+              
+              {state.currentUpload?.location ? (
+                <View style={styles.locationInfo}>
+                  <Text style={[styles.locationText, { color: isDark ? Colors.dark.placeholderText : Colors.light.placeholderText }]}>
+                    {state.currentUpload.location.latitude.toFixed(6)}, {state.currentUpload.location.longitude.toFixed(6)}
                   </Text>
+                  {state.currentUpload.location.accuracy && (
+                    <Text style={[styles.accuracyText, { color: isDark ? Colors.dark.placeholderText : Colors.light.placeholderText }]}>
+                      ±{state.currentUpload.location.accuracy.toFixed(0)}m accuracy
+                    </Text>
+                  )}
+                </View>
+              ) : (
+                <View style={styles.noLocationInfo}>
+                  <Text style={[styles.noLocationText, { color: isDark ? Colors.dark.placeholderText : Colors.light.placeholderText }]}>
+                    {isLoadingLocation ? 'Getting location...' : 'Location not available'}
+                  </Text>
+                  {!isLoadingLocation && (
+                    <TouchableOpacity onPress={retryLocation} style={styles.retryButton}>
+                      <Text style={[styles.retryText, { color: Colors.primary }]}>Retry</Text>
+                    </TouchableOpacity>
+                  )}
                 </View>
               )}
-              <TouchableOpacity style={styles.updateLocationButton} onPress={retryLocation}>
-                <Ionicons name="refresh" size={16} color={Colors.primary} />
-                <Text style={styles.updateLocationText}>Update</Text>
-              </TouchableOpacity>
             </View>
-          ) : (
-            <View style={styles.noLocationCard}>
-              <Text style={styles.noLocationText}>
-                {isLoadingLocation ? 'Getting location...' : 'Location not captured'}
-              </Text>
-              {!isLoadingLocation && (
-                <TouchableOpacity style={styles.getLocationButton} onPress={retryLocation}>
-                  <Ionicons name="location" size={16} color={Colors.white} />
-                  <Text style={styles.getLocationButtonText}>Get Location</Text>
-                </TouchableOpacity>
-              )}
-            </View>
-          )}
-        </View>
+          </View>
+        )}
 
-        <TouchableOpacity
-          style={[
-            styles.uploadButton,
-            (!state.currentUpload?.imageUri || !state.currentUpload?.location || state.isUploading) &&
-            styles.uploadButtonDisabled,
-          ]}
-          onPress={handleUpload}
-          disabled={!state.currentUpload?.imageUri || !state.currentUpload?.location || state.isUploading}
-        >
-          {state.isUploading ? (
-            <ActivityIndicator size="small" color={Colors.white} />
-          ) : (
-            <>
-              <Ionicons name="cloud-upload" size={20} color={Colors.white} />
-              <Text style={styles.uploadButtonText}>Upload</Text>
-            </>
-          )}
-        </TouchableOpacity>
-      </View>
-    </ScrollView>
+        {/* Upload Button */}
+        {state.currentUpload?.imageUri && state.currentUpload?.location && (
+          <View style={styles.uploadSection}>
+            <TouchableOpacity
+              style={[
+                styles.uploadButton,
+                { backgroundColor: state.isUploading ? Colors.disabled : Colors.success },
+              ]}
+              onPress={handleUpload}
+              disabled={state.isUploading}
+            >
+              {state.isUploading ? (
+                <ActivityIndicator size="small" color={Colors.white} />
+              ) : (
+                <>
+                  <Ionicons name="cloud-upload" size={20} color={Colors.white} />
+                  <Text style={styles.uploadButtonText}>Upload</Text>
+                </>
+              )}
+            </TouchableOpacity>
+          </View>
+        )}
+      </ScrollView>
+
+      <InfoModal />
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.lightBackground,
   },
-  content: {
-    padding: 20,
+  scrollView: {
+    flex: 1,
   },
   header: {
-    marginBottom: 30,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
     alignItems: 'center',
+    paddingHorizontal: 24,
+    paddingTop: 20,
+    paddingBottom: 32,
   },
   title: {
-    fontSize: 28,
+    fontSize: 34,
     fontWeight: '700',
-    color: Colors.darkText,
-    marginBottom: 8,
+    letterSpacing: -0.5,
   },
-  subtitle: {
-    fontSize: 16,
-    color: Colors.gray,
-    textAlign: 'center',
+  infoButton: {
+    padding: 4,
   },
-  section: {
-    marginBottom: 24,
+  imageSection: {
+    paddingHorizontal: 24,
+    marginBottom: 32,
   },
-  uploadArea: {
-    backgroundColor: Colors.white,
-    borderRadius: 16,
-    padding: 40,
+  placeholderContainer: {
+    height: 280,
+    borderRadius: 20,
+    justifyContent: 'center',
     alignItems: 'center',
-    borderWidth: 2,
-    borderColor: Colors.border,
-    borderStyle: 'dashed',
   },
-  uploadText: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: Colors.text,
-    marginTop: 16,
-  },
-  uploadSubtext: {
-    fontSize: 14,
-    color: Colors.gray,
-    marginTop: 4,
+  placeholderText: {
+    fontSize: 16,
+    fontWeight: '500',
+    marginTop: 12,
   },
   imageContainer: {
     position: 'relative',
-    alignItems: 'center',
+    borderRadius: 20,
+    overflow: 'hidden',
   },
   previewImage: {
-    width: width - 40,
-    height: 240,
-    borderRadius: 16,
-    backgroundColor: Colors.lightGray,
+    width: '100%',
+    height: 280,
+    borderRadius: 20,
   },
-  changeButton: {
+  removeButton: {
     position: 'absolute',
     top: 12,
     right: 12,
-    backgroundColor: Colors.white,
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 20,
-    shadowColor: Colors.shadow,
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
-  },
-  changeButtonText: {
-    color: Colors.error,
-    fontSize: 14,
-    fontWeight: '500',
-    marginLeft: 4,
-  },
-  locationHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 12,
-  },
-  locationTitle: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  sectionTitle: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: Colors.darkText,
-    marginLeft: 8,
-  },
-  locationCard: {
-    backgroundColor: Colors.white,
-    borderRadius: 12,
-    padding: 16,
-    shadowColor: Colors.shadow,
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.05,
-    shadowRadius: 3,
-    elevation: 2,
-  },
-  locationRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingVertical: 8,
-  },
-  locationLabel: {
-    fontSize: 14,
-    color: Colors.gray,
-    fontWeight: '500',
-  },
-  locationValue: {
-    fontSize: 14,
-    color: Colors.darkText,
-    fontWeight: '600',
-  },
-  updateLocationButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    backgroundColor: 'rgba(0,0,0,0.6)',
+    borderRadius: 16,
+    width: 32,
+    height: 32,
     justifyContent: 'center',
-    marginTop: 12,
-    paddingVertical: 8,
-  },
-  updateLocationText: {
-    color: Colors.primary,
-    fontSize: 14,
-    fontWeight: '500',
-    marginLeft: 4,
-  },
-  noLocationCard: {
-    backgroundColor: Colors.white,
-    borderRadius: 12,
-    padding: 20,
     alignItems: 'center',
-    shadowColor: Colors.shadow,
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.05,
-    shadowRadius: 3,
-    elevation: 2,
   },
-  noLocationText: {
-    fontSize: 14,
-    color: Colors.gray,
-    marginBottom: 12,
-    textAlign: 'center',
+  buttonSection: {
+    paddingHorizontal: 24,
+    gap: 16,
+    marginBottom: 32,
   },
-  getLocationButton: {
-    backgroundColor: Colors.primary,
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    borderRadius: 8,
-  },
-  getLocationButtonText: {
-    color: Colors.white,
-    fontSize: 14,
-    fontWeight: '500',
-    marginLeft: 4,
-  },
-  uploadButton: {
-    backgroundColor: Colors.success,
+  actionButton: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
     paddingVertical: 16,
-    borderRadius: 12,
-    marginTop: 20,
+    borderRadius: 16,
+    gap: 12,
   },
-  uploadButtonDisabled: {
-    backgroundColor: Colors.disabled,
+  cameraButton: {
+    // Primary button styling applied via backgroundColor prop
+  },
+  galleryButton: {
+    borderWidth: 2,
+  },
+  buttonText: {
+    fontSize: 17,
+    fontWeight: '600',
+    color: Colors.white,
+  },
+  buttonTextSecondary: {
+    fontSize: 17,
+    fontWeight: '600',
+  },
+  locationSection: {
+    paddingHorizontal: 24,
+    marginBottom: 32,
+  },
+  locationCard: {
+    borderRadius: 16,
+    padding: 20,
+  },
+  locationHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    marginBottom: 12,
+  },
+  locationTitle: {
+    fontSize: 17,
+    fontWeight: '600',
+    flex: 1,
+  },
+  locationInfo: {
+    gap: 4,
+  },
+  locationText: {
+    fontSize: 15,
+    fontFamily: 'monospace',
+  },
+  accuracyText: {
+    fontSize: 13,
+  },
+  noLocationInfo: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  noLocationText: {
+    fontSize: 15,
+  },
+  retryButton: {
+    paddingVertical: 4,
+    paddingHorizontal: 8,
+  },
+  retryText: {
+    fontSize: 15,
+    fontWeight: '500',
+  },
+  uploadSection: {
+    paddingHorizontal: 24,
+    paddingBottom: 32,
+  },
+  uploadButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 16,
+    borderRadius: 16,
+    gap: 8,
   },
   uploadButtonText: {
+    fontSize: 17,
+    fontWeight: '600',
+    color: Colors.white,
+  },
+  // Modal Styles
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.5)',
+    justifyContent: 'flex-end',
+  },
+  modalContent: {
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    maxHeight: height * 0.7,
+    paddingTop: 20,
+  },
+  modalHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 24,
+    paddingBottom: 20,
+    borderBottomWidth: 1,
+    borderBottomColor: Colors.border,
+  },
+  modalTitle: {
+    fontSize: 20,
+    fontWeight: '600',
+  },
+  closeButton: {
+    padding: 4,
+  },
+  modalBody: {
+    paddingHorizontal: 24,
+    paddingTop: 20,
+  },
+  infoStep: {
+    flexDirection: 'row',
+    marginBottom: 24,
+    alignItems: 'flex-start',
+  },
+  stepNumber: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    backgroundColor: Colors.primary,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 16,
+  },
+  stepNumberText: {
     color: Colors.white,
     fontSize: 16,
     fontWeight: '600',
-    marginLeft: 8,
+  },
+  stepContent: {
+    flex: 1,
+    paddingTop: 2,
+  },
+  stepTitle: {
+    fontSize: 17,
+    fontWeight: '600',
+    marginBottom: 4,
+  },
+  stepDescription: {
+    fontSize: 15,
+    lineHeight: 20,
   },
 });
 
