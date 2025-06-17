@@ -1,157 +1,91 @@
-import React, { useState } from 'react';
-import { 
-  StyleSheet, 
-  Alert, 
-  TouchableOpacity, 
-  Image, 
+import React, { useState, useEffect } from 'react';
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  Image,
+  Alert,
+  StyleSheet,
   ScrollView,
-  ActivityIndicator 
+  ActivityIndicator,
+  Dimensions,
 } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import * as Location from 'expo-location';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { Text, View } from '@/components/Themed';
+import { Ionicons } from '@expo/vector-icons';
+import { useUpload } from '../context/UploadContext';
+import { Colors } from '../../constants/Colors';
+import { LocationData, UploadItem } from '../context/UploadContext';
 
-interface LocationData {
-  latitude: number;
-  longitude: number;
-  address?: string;
-}
+const { width } = Dimensions.get('window');
 
-interface UploadData {
-  id: string;
-  imageUri: string;
-  location: LocationData;
-  timestamp: string;
-  status: 'pending' | 'processing' | 'completed' | 'failed';
-  aiResponse?: {
-    damageType: string;
-    severity: string;
-    confidence: number;
-    recommendations: string[];
-  };
-}
+const UploadTab = () => {
+  const { state, setCurrentImage, setCurrentLocation, addUpload, clearCurrentUpload, setUploading, updateUploadStatus } = useUpload();
+  const [isLoadingLocation, setIsLoadingLocation] = useState<boolean>(false);
 
-export default function UploadTabScreen() {
-  const [selectedImage, setSelectedImage] = useState<string | null>(null);
-  const [location, setLocation] = useState<LocationData | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
-  const [uploadData, setUploadData] = useState<UploadData | null>(null);
+  console.log('UploadTab re-rendered', { currentUpload: state.currentUpload, isUploading: state.isUploading });
+
+  useEffect(() => {
+    requestPermissions();
+  }, []);
 
   const requestPermissions = async () => {
-    try {
-      // Request camera permissions
-      const cameraPermission = await ImagePicker.requestCameraPermissionsAsync();
-      if (cameraPermission.status !== 'granted') {
-        Alert.alert('Permission Required', 'Camera permission is required to take photos.');
-        return false;
-      }
+    const cameraPermission = await ImagePicker.requestCameraPermissionsAsync();
+    if (cameraPermission.status !== 'granted') {
+      Alert.alert('Permission Required', 'Camera permission is required to take photos.');
+    }
 
-      // Request media library permissions
-      const mediaPermission = await ImagePicker.requestMediaLibraryPermissionsAsync();
-      if (mediaPermission.status !== 'granted') {
-        Alert.alert('Permission Required', 'Media library permission is required to select photos.');
-        return false;
-      }
+    const mediaPermission = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    if (mediaPermission.status !== 'granted') {
+      Alert.alert('Permission Required', 'Media library permission is required to select photos.');
+    }
 
-      // Request location permissions
-      const locationPermission = await Location.requestForegroundPermissionsAsync();
-      if (locationPermission.status !== 'granted') {
-        Alert.alert('Permission Required', 'Location permission is required to capture coordinates.');
-        return false;
-      }
-
-      return true;
-    } catch (error) {
-      console.error('Error requesting permissions:', error);
-      Alert.alert('Error', 'Failed to request permissions');
-      return false;
+    const locationPermission = await Location.requestForegroundPermissionsAsync();
+    if (locationPermission.status !== 'granted') {
+      Alert.alert('Permission Required', 'Location permission is required to capture location data first.');
     }
   };
 
-  const getCurrentLocation = async (): Promise<LocationData | null> => {
+  const getCurrentLocation = async () => {
+    setIsLoadingLocation(true);
     try {
-      setIsLoading(true);
-      const locationData = await Location.getCurrentPositionAsync({
+      const location = await Location.getCurrentPositionAsync({
         accuracy: Location.Accuracy.High,
+        timeInterval: 5000,
       });
 
-      const { latitude, longitude } = locationData.coords;
-
-      // Get address from coordinates (reverse geocoding)
-      try {
-        const addressData = await Location.reverseGeocodeAsync({
-          latitude,
-          longitude,
-        });
-
-        const address = addressData[0] 
-          ? `${addressData[0].street || ''} ${addressData[0].city || ''} ${addressData[0].region || ''}`.trim()
-          : 'Address not found';
-
-        return {
-          latitude,
-          longitude,
-          address,
-        };
-      } catch (geocodeError) {
-        console.warn('Geocoding failed:', geocodeError);
-        return {
-          latitude,
-          longitude,
-          address: 'Address not available',
-        };
-      }
-    } catch (error) {
-      console.error('Error getting location:', error);
-      Alert.alert('Error', 'Failed to get current location');
-      return null;
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const saveUploadToStorage = async (uploadInfo: UploadData) => {
-    try {
-      const existingUploads = await AsyncStorage.getItem('uploads');
-      const uploads = existingUploads ? JSON.parse(existingUploads) : [];
-      uploads.unshift(uploadInfo); // Add to beginning of array
-      await AsyncStorage.setItem('uploads', JSON.stringify(uploads));
-    } catch (error) {
-      console.error('Error saving upload:', error);
-    }
-  };
-
-  const handleImageSelection = async (imageUri: string) => {
-    setSelectedImage(imageUri);
-    
-    // Get location after image selection
-    const locationData = await getCurrentLocation();
-    if (locationData) {
-      setLocation(locationData);
-      
-      // Create upload data
-      const uploadInfo: UploadData = {
-        id: Date.now().toString(),
-        imageUri,
-        location: locationData,
-        timestamp: new Date().toISOString(),
-        status: 'pending',
+      const locationData: LocationData = {
+        latitude: location.coords.latitude,
+        longitude: location.coords.longitude,
+        accuracy: location.coords.accuracy,
+        timestamp: location.timestamp,
       };
-      
-      setUploadData(uploadInfo);
-      
-      // Save to AsyncStorage for tracking
-      await saveUploadToStorage(uploadInfo);
-      
-      Alert.alert('Success', 'Image and location captured successfully! Check Track tab to monitor progress.');
+
+      console.log('Setting location:', locationData);
+      setCurrentLocation(locationData);
+      return locationData;
+    } catch (error) {
+      console.error('Location error:', error);
+      throw error;
+    } finally {
+      setIsLoadingLocation(false);
     }
+  };
+
+  const showImagePickerOptions = () => {
+    Alert.alert(
+      'Select Image',
+      'Choose how you want to add an image',
+      [
+        { text: 'Camera', onPress: openCamera },
+        { text: 'Gallery', onPress: openGallery },
+        { text: 'Cancel', style: 'cancel' },
+      ],
+      { cancelable: true }
+    );
   };
 
   const openCamera = async () => {
-    const hasPermissions = await requestPermissions();
-    if (!hasPermissions) return;
-
     try {
       const result = await ImagePicker.launchCameraAsync({
         mediaTypes: ImagePicker.MediaTypeOptions.Images,
@@ -161,18 +95,22 @@ export default function UploadTabScreen() {
       });
 
       if (!result.canceled && result.assets[0]) {
-        await handleImageSelection(result.assets[0].uri);
+        const imageUri = result.assets[0].uri;
+        console.log('Setting image URI:', imageUri);
+        setCurrentImage(imageUri);
+        try {
+          await getCurrentLocation();
+        } catch (error) {
+          Alert.alert('Location Error', 'Could not get location. Please try manually.');
+        }
       }
     } catch (error) {
-      console.error('Error opening camera:', error);
-      Alert.alert('Error', 'Failed to open camera');
+      Alert.alert('Error', 'Failed to open camera.');
+      console.error('Camera error:', error);
     }
   };
 
   const openGallery = async () => {
-    const hasPermissions = await requestPermissions();
-    if (!hasPermissions) return;
-
     try {
       const result = await ImagePicker.launchImageLibraryAsync({
         mediaTypes: ImagePicker.MediaTypeOptions.Images,
@@ -182,283 +120,366 @@ export default function UploadTabScreen() {
       });
 
       if (!result.canceled && result.assets[0]) {
-        await handleImageSelection(result.assets[0].uri);
+        const imageUri = result.assets[0].uri;
+        console.log('Setting image URI:', imageUri);
+        setCurrentImage(imageUri);
+        try {
+          await getCurrentLocation();
+        } catch (error) {
+          Alert.alert('Location Error', 'Could not get location. Please try manually.');
+        }
       }
     } catch (error) {
-      console.error('Error opening gallery:', error);
-      Alert.alert('Error', 'Failed to open gallery');
+      Alert.alert('Error', 'Failed to open gallery.');
+      console.error('Gallery error:', error);
     }
   };
 
-  const showImageOptions = () => {
-    Alert.alert(
-      'Select Image',
-      'Choose an option to select an image',
-      [
-        { text: 'Camera', onPress: openCamera },
-        { text: 'Gallery', onPress: openGallery },
-        { text: 'Cancel', style: 'cancel' },
-      ]
-    );
+  const handleUpload = async () => {
+    if (!state.currentUpload?.imageUri) {
+      Alert.alert('No Image', 'Please select an image first.');
+      return;
+    }
+
+    if (!state.currentUpload?.location) {
+      Alert.alert('No Location', 'Please capture location data first.');
+      return;
+    }
+
+    console.log('Starting upload:', state.currentUpload);
+    setUploading(true);
+
+    const uploadItem: UploadItem = {
+      imageUri: state.currentUpload.imageUri,
+      location: state.currentUpload.location,
+      timestamp: Date.now(),
+      status: 'pending',
+      repairStatus: 'Reported',
+      aiSummary: null,
+    };
+
+    try {
+      addUpload(uploadItem);
+
+      // Simulate upload and AI processing
+      await new Promise((resolve) => setTimeout(resolve, 2000));
+      
+      // Simulate AI analysis results
+      const aiResponses = [
+        'Type: Pothole, Severity: High, Priority: Urgent',
+        'Type: Crack, Severity: Medium, Priority: Moderate',
+        'Type: Surface Wear, Severity: Low, Priority: Low',
+        'Type: Edge Damage, Severity: Critical, Priority: Emergency'
+      ];
+      
+      const randomAI = aiResponses[Math.floor(Math.random() * aiResponses.length)];
+      
+      updateUploadStatus(uploadItem.timestamp, 'success', {
+        repairStatus: 'In Progress',
+        aiSummary: randomAI,
+      });
+
+      Alert.alert('Success!', 'Image uploaded successfully');
+      clearCurrentUpload();
+    } catch (error) {
+      updateUploadStatus(uploadItem.timestamp, 'failed', {});
+      Alert.alert('Upload Failed', 'Please try again.');
+      console.error('Upload error:', error);
+    } finally {
+      setUploading(false);
+    }
   };
 
-  const resetUpload = () => {
-    setSelectedImage(null);
-    setLocation(null);
-    setUploadData(null);
+  const retryLocation = async () => {
+    try {
+      await getCurrentLocation();
+    } catch (error) {
+      Alert.alert('Error', 'Failed to get location. Please check your GPS settings.');
+    }
   };
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
-      <View style={styles.header}>
-        <Text style={styles.title}>Upload Road Damage</Text>
-        <Text style={styles.subtitle}>Capture or select an image to report road damage</Text>
-      </View>
-
-      {!selectedImage ? (
-        <View style={styles.uploadSection}>
-          <TouchableOpacity style={styles.uploadButton} onPress={showImageOptions}>
-            <Text style={styles.uploadButtonText}>📷 Select Image</Text>
-            <Text style={styles.uploadButtonSubtext}>Camera or Gallery</Text>
-          </TouchableOpacity>
+    <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
+      <View style={styles.content}>
+        <View style={styles.header}>
+          <Text style={styles.title}>Upload Road Image</Text>
+          <Text style={styles.subtitle}>Capture road damage for analysis</Text>
         </View>
-      ) : (
-        <View style={styles.previewSection}>
-          <View style={styles.imageContainer}>
-            <Image source={{ uri: selectedImage }} style={styles.previewImage} />
-          </View>
 
-          {isLoading ? (
-            <View style={styles.loadingContainer}>
-              <ActivityIndicator size="large" color="#2f95dc" />
-              <Text style={styles.loadingText}>Getting location...</Text>
-            </View>
-          ) : location ? (
-            <View style={styles.locationContainer}>
-              <Text style={styles.locationTitle}>📍 Location Details</Text>
-              <View style={styles.locationInfo}>
-                <Text style={styles.locationText}>
-                  <Text style={styles.locationLabel}>Latitude: </Text>
-                  {location.latitude.toFixed(6)}
-                </Text>
-                <Text style={styles.locationText}>
-                  <Text style={styles.locationLabel}>Longitude: </Text>
-                  {location.longitude.toFixed(6)}
-                </Text>
-                {location.address && (
-                  <Text style={styles.locationText}>
-                    <Text style={styles.locationLabel}>Address: </Text>
-                    {location.address}
-                  </Text>
-                )}
-              </View>
-            </View>
-          ) : null}
-
-          {uploadData && (
-            <View style={styles.uploadInfo}>
-              <Text style={styles.uploadInfoTitle}>📋 Upload Summary</Text>
-              <Text style={styles.uploadInfoText}>
-                <Text style={styles.uploadInfoLabel}>Captured: </Text>
-                {new Date(uploadData.timestamp).toLocaleString()}
-              </Text>
-              <Text style={styles.uploadInfoText}>
-                <Text style={styles.uploadInfoLabel}>Status: </Text>
-                Ready for processing
-              </Text>
-              <Text style={styles.uploadInfoText}>
-                <Text style={styles.uploadInfoLabel}>ID: </Text>
-                {uploadData.id}
-              </Text>
+        <View style={styles.section}>
+          {!state.currentUpload?.imageUri ? (
+            <TouchableOpacity style={styles.uploadArea} onPress={showImagePickerOptions}>
+              <Ionicons name="camera" size={48} color={Colors.gray} />
+              <Text style={styles.uploadText}>Tap to add image</Text>
+              <Text style={styles.uploadSubtext}>Camera or Gallery</Text>
+            </TouchableOpacity>
+          ) : (
+            <View style={styles.imageContainer}>
+              <Image source={{ uri: state.currentUpload.imageUri }} style={styles.previewImage} />
+              <TouchableOpacity style={styles.changeButton} onPress={() => setCurrentImage('')}>
+                <Ionicons name="close-circle" size={24} color={Colors.error} />
+                <Text style={styles.changeButtonText}>Change</Text>
+              </TouchableOpacity>
             </View>
           )}
-
-          <View style={styles.actionButtons}>
-            <TouchableOpacity style={styles.resetButton} onPress={resetUpload}>
-              <Text style={styles.resetButtonText}>🔄 Reset</Text>
-            </TouchableOpacity>
-            
-            <TouchableOpacity style={styles.selectNewButton} onPress={showImageOptions}>
-              <Text style={styles.selectNewButtonText}>📷 Select New</Text>
-            </TouchableOpacity>
-          </View>
         </View>
-      )}
 
-      <View style={styles.infoSection}>
-        <Text style={styles.infoTitle}>ℹ️ How it works</Text>
-        <Text style={styles.infoText}>
-          1. Select an image from camera or gallery{'\n'}
-          2. Location coordinates are captured automatically{'\n'}
-          3. Upload is saved for tracking and processing{'\n'}
-          4. Check Track tab to monitor AI analysis progress
-        </Text>
+        <View style={styles.section}>
+          <View style={styles.locationHeader}>
+            <View style={styles.locationTitle}>
+              <Ionicons name="location" size={20} color={Colors.primary} />
+              <Text style={styles.sectionTitle}>Location</Text>
+            </View>
+            {isLoadingLocation && <ActivityIndicator size="small" color={Colors.primary} />}
+          </View>
+
+          {state.currentUpload?.location ? (
+            <View style={styles.locationCard}>
+              <View style={styles.locationRow}>
+                <Text style={styles.locationLabel}>Latitude</Text>
+                <Text style={styles.locationValue}>
+                  {state.currentUpload.location.latitude.toFixed(6)}
+                </Text>
+              </View>
+              <View style={styles.locationRow}>
+                <Text style={styles.locationLabel}>Longitude</Text>
+                <Text style={styles.locationValue}>
+                  {state.currentUpload.location.longitude.toFixed(6)}
+                </Text>
+              </View>
+              {state.currentUpload.location.accuracy && (
+                <View style={styles.locationRow}>
+                  <Text style={styles.locationLabel}>Accuracy</Text>
+                  <Text style={styles.locationValue}>
+                    ±{state.currentUpload.location.accuracy.toFixed(0)}m
+                  </Text>
+                </View>
+              )}
+              <TouchableOpacity style={styles.updateLocationButton} onPress={retryLocation}>
+                <Ionicons name="refresh" size={16} color={Colors.primary} />
+                <Text style={styles.updateLocationText}>Update</Text>
+              </TouchableOpacity>
+            </View>
+          ) : (
+            <View style={styles.noLocationCard}>
+              <Text style={styles.noLocationText}>
+                {isLoadingLocation ? 'Getting location...' : 'Location not captured'}
+              </Text>
+              {!isLoadingLocation && (
+                <TouchableOpacity style={styles.getLocationButton} onPress={retryLocation}>
+                  <Ionicons name="location" size={16} color={Colors.white} />
+                  <Text style={styles.getLocationButtonText}>Get Location</Text>
+                </TouchableOpacity>
+              )}
+            </View>
+          )}
+        </View>
+
+        <TouchableOpacity
+          style={[
+            styles.uploadButton,
+            (!state.currentUpload?.imageUri || !state.currentUpload?.location || state.isUploading) &&
+            styles.uploadButtonDisabled,
+          ]}
+          onPress={handleUpload}
+          disabled={!state.currentUpload?.imageUri || !state.currentUpload?.location || state.isUploading}
+        >
+          {state.isUploading ? (
+            <ActivityIndicator size="small" color={Colors.white} />
+          ) : (
+            <>
+              <Ionicons name="cloud-upload" size={20} color={Colors.white} />
+              <Text style={styles.uploadButtonText}>Upload</Text>
+            </>
+          )}
+        </TouchableOpacity>
       </View>
     </ScrollView>
   );
-}
+};
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: Colors.lightBackground,
   },
-  contentContainer: {
+  content: {
     padding: 20,
   },
   header: {
-    alignItems: 'center',
     marginBottom: 30,
+    alignItems: 'center',
   },
   title: {
-    fontSize: 24,
-    fontWeight: 'bold',
+    fontSize: 28,
+    fontWeight: '700',
+    color: Colors.darkText,
     marginBottom: 8,
   },
   subtitle: {
     fontSize: 16,
-    opacity: 0.7,
+    color: Colors.gray,
     textAlign: 'center',
   },
-  uploadSection: {
-    alignItems: 'center',
-    marginBottom: 30,
+  section: {
+    marginBottom: 24,
   },
-  uploadButton: {
-    backgroundColor: '#2f95dc',
-    paddingVertical: 20,
-    paddingHorizontal: 40,
-    borderRadius: 12,
+  uploadArea: {
+    backgroundColor: Colors.white,
+    borderRadius: 16,
+    padding: 40,
     alignItems: 'center',
-    minWidth: 200,
-    elevation: 3,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
+    borderWidth: 2,
+    borderColor: Colors.border,
+    borderStyle: 'dashed',
   },
-  uploadButtonText: {
-    color: 'white',
+  uploadText: {
     fontSize: 18,
-    fontWeight: 'bold',
-    marginBottom: 4,
+    fontWeight: '600',
+    color: Colors.text,
+    marginTop: 16,
   },
-  uploadButtonSubtext: {
-    color: 'white',
+  uploadSubtext: {
     fontSize: 14,
-    opacity: 0.9,
-  },
-  previewSection: {
-    marginBottom: 30,
+    color: Colors.gray,
+    marginTop: 4,
   },
   imageContainer: {
+    position: 'relative',
     alignItems: 'center',
-    marginBottom: 20,
   },
   previewImage: {
-    width: 300,
-    height: 225,
-    borderRadius: 12,
-    resizeMode: 'cover',
+    width: width - 40,
+    height: 240,
+    borderRadius: 16,
+    backgroundColor: Colors.lightGray,
   },
-  loadingContainer: {
+  changeButton: {
+    position: 'absolute',
+    top: 12,
+    right: 12,
+    backgroundColor: Colors.white,
+    flexDirection: 'row',
     alignItems: 'center',
-    padding: 20,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 20,
+    shadowColor: Colors.shadow,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
   },
-  loadingText: {
-    marginTop: 10,
-    fontSize: 16,
-    opacity: 0.7,
-  },
-  locationContainer: {
-    backgroundColor: '#f0f8ff',
-    padding: 16,
-    borderRadius: 12,
-    marginBottom: 20,
-  },
-  locationTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginBottom: 12,
-    color: '#2f95dc',
-  },
-  locationInfo: {
-    gap: 8,
-  },
-  locationText: {
+  changeButtonText: {
+    color: Colors.error,
     fontSize: 14,
-    lineHeight: 20,
+    fontWeight: '500',
+    marginLeft: 4,
   },
-  locationLabel: {
-    fontWeight: 'bold',
-    color: '#333',
-  },
-  uploadInfo: {
-    backgroundColor: '#f0fff0',
-    padding: 16,
-    borderRadius: 12,
-    marginBottom: 20,
-  },
-  uploadInfoTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginBottom: 12,
-    color: '#228b22',
-  },
-  uploadInfoText: {
-    fontSize: 14,
-    lineHeight: 20,
-    marginBottom: 4,
-  },
-  uploadInfoLabel: {
-    fontWeight: 'bold',
-    color: '#333',
-  },
-  actionButtons: {
+  locationHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    gap: 12,
+    alignItems: 'center',
+    marginBottom: 12,
   },
-  resetButton: {
-    flex: 1,
-    backgroundColor: '#ff6b6b',
-    paddingVertical: 12,
-    paddingHorizontal: 20,
-    borderRadius: 8,
+  locationTitle: {
+    flexDirection: 'row',
     alignItems: 'center',
   },
-  resetButtonText: {
-    color: 'white',
-    fontSize: 16,
-    fontWeight: 'bold',
+  sectionTitle: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: Colors.darkText,
+    marginLeft: 8,
   },
-  selectNewButton: {
-    flex: 1,
-    backgroundColor: '#2f95dc',
-    paddingVertical: 12,
-    paddingHorizontal: 20,
-    borderRadius: 8,
-    alignItems: 'center',
-  },
-  selectNewButtonText: {
-    color: 'white',
-    fontSize: 16,
-    fontWeight: 'bold',
-  },
-  infoSection: {
-    backgroundColor: '#fff9c4',
+  locationCard: {
+    backgroundColor: Colors.white,
+    borderRadius: 12,
     padding: 16,
+    shadowColor: Colors.shadow,
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.05,
+    shadowRadius: 3,
+    elevation: 2,
+  },
+  locationRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingVertical: 8,
+  },
+  locationLabel: {
+    fontSize: 14,
+    color: Colors.gray,
+    fontWeight: '500',
+  },
+  locationValue: {
+    fontSize: 14,
+    color: Colors.darkText,
+    fontWeight: '600',
+  },
+  updateLocationButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: 12,
+    paddingVertical: 8,
+  },
+  updateLocationText: {
+    color: Colors.primary,
+    fontSize: 14,
+    fontWeight: '500',
+    marginLeft: 4,
+  },
+  noLocationCard: {
+    backgroundColor: Colors.white,
+    borderRadius: 12,
+    padding: 20,
+    alignItems: 'center',
+    shadowColor: Colors.shadow,
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.05,
+    shadowRadius: 3,
+    elevation: 2,
+  },
+  noLocationText: {
+    fontSize: 14,
+    color: Colors.gray,
+    marginBottom: 12,
+    textAlign: 'center',
+  },
+  getLocationButton: {
+    backgroundColor: Colors.primary,
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 8,
+  },
+  getLocationButtonText: {
+    color: Colors.white,
+    fontSize: 14,
+    fontWeight: '500',
+    marginLeft: 4,
+  },
+  uploadButton: {
+    backgroundColor: Colors.success,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 16,
     borderRadius: 12,
     marginTop: 20,
   },
-  infoTitle: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    marginBottom: 8,
-    color: '#b8860b',
+  uploadButtonDisabled: {
+    backgroundColor: Colors.disabled,
   },
-  infoText: {
-    fontSize: 14,
-    lineHeight: 20,
-    color: '#8b7355',
+  uploadButtonText: {
+    color: Colors.white,
+    fontSize: 16,
+    fontWeight: '600',
+    marginLeft: 8,
   },
 });
+
+export default UploadTab;
