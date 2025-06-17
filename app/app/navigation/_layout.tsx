@@ -1,64 +1,44 @@
-import React from 'react';
-import FontAwesome from '@expo/vector-icons/FontAwesome';
-import { Link, Tabs } from 'expo-router';
-import { Pressable } from 'react-native';
+import { Tabs } from 'expo-router';
+import { Ionicons } from '@expo/vector-icons';
+import { Colors } from '../../constants/Colors';
 
-import Colors from '@/constants/Colors';
-import { useColorScheme } from '@/components/useColorScheme';
-import { useClientOnlyValue } from '@/components/useClientOnlyValue';
-
-// You can explore the built-in icon families and icons on the web at https://icons.expo.fyi/
-function TabBarIcon(props: {
-  name: React.ComponentProps<typeof FontAwesome>['name'];
-  color: string;
-}) {
-  return <FontAwesome size={28} style={{ marginBottom: -3 }} {...props} />;
-}
-
-export default function TabLayout() {
-  const colorScheme = useColorScheme();
-
+export default function Layout() {
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
-        // Disable the static render of the header on web
-        // to prevent a hydration error in React Navigation v6.
-        headerShown: useClientOnlyValue(false, true),
-      }}>
+        tabBarActiveTintColor: Colors.primary,
+        tabBarInactiveTintColor: Colors.gray,
+        tabBarStyle: { backgroundColor: Colors.white },
+      }}
+    >
       <Tabs.Screen
-        name="tab1"
+        name="UploadTab"
         options={{
           title: 'Upload',
-          tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
-          headerRight: () => (
-            <Link href="/modal" asChild>
-              <Pressable>
-                {({ pressed }) => (
-                  <FontAwesome
-                    name="info-circle"
-                    size={25}
-                    color={Colors[colorScheme ?? 'light'].text}
-                    style={{ marginRight: 15, opacity: pressed ? 0.5 : 1 }}
-                  />
-                )}
-              </Pressable>
-            </Link>
+          tabBarLabel: 'Upload',
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="cloud-upload" size={size} color={color} />
           ),
         }}
       />
       <Tabs.Screen
-        name="tab2"
+        name="TrackTab"
         options={{
           title: 'Track',
-          tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
+          tabBarLabel: 'Track',
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="list" size={size} color={color} />
+          ),
         }}
       />
       <Tabs.Screen
-        name="tab3"
+        name="SettingsTab"
         options={{
-          title: 'Profile',
-          tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
+          title: 'Settings',
+          tabBarLabel: 'Settings',
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="settings" size={size} color={color} />
+          ),
         }}
       />
     </Tabs>

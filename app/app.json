@@ -1,38 +1,45 @@
 {
   "expo": {
-    "name": "app",
-    "slug": "app",
+    "name": "SafeStreet",
+    "slug": "safestreet",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/icon.png",
-    "scheme": "app",
-    "userInterfaceStyle": "automatic",
-    "newArchEnabled": true,
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
     "splash": {
-      "image": "./assets/images/splash-icon.png",
+      "image": "./assets/splash.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "infoPlist": {
+        "NSCameraUsageDescription": "This app needs camera access to capture road damage images",
+        "NSPhotoLibraryUsageDescription": "This app needs photo library access to select road damage images",
+        "NSLocationWhenInUseUsageDescription": "This app needs location access to record where road damage images were taken"
+      }
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/images/adaptive-icon.png",
+        "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "edgeToEdgeEnabled": true
+      "permissions": [
+        "CAMERA",
+        "READ_EXTERNAL_STORAGE",
+        "WRITE_EXTERNAL_STORAGE",
+        "ACCESS_FINE_LOCATION",
+        "ACCESS_COARSE_LOCATION"
+      ]
     },
     "web": {
-      "bundler": "metro",
-      "output": "static",
-      "favicon": "./assets/images/favicon.png"
+      "favicon": "./assets/favicon.png"
     },
     "plugins": [
       "expo-router"
-    ],
-    "experiments": {
-      "typedRoutes": true
-    }
+    ]
   }
 }

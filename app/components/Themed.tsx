@@ -5,7 +5,7 @@
 
 import { Text as DefaultText, View as DefaultView } from 'react-native';
 
-import Colors from '@/constants/Colors';
+import { Colors } from '../constants/Colors';
 import { useColorScheme } from './useColorScheme';
 
 type ThemeProps = {
@@ -16,18 +16,35 @@ type ThemeProps = {
 export type TextProps = ThemeProps & DefaultText['props'];
 export type ViewProps = ThemeProps & DefaultView['props'];
 
+// Define the keys available in your Colors object
+type ColorName = keyof typeof Colors;
+
+// Modified useThemeColor to work with flat Colors structure
 export function useThemeColor(
   props: { light?: string; dark?: string },
-  colorName: keyof typeof Colors.light & keyof typeof Colors.dark
+  colorName: 'text' | 'background' // Specify expected color names
 ) {
   const theme = useColorScheme() ?? 'light';
   const colorFromProps = props[theme];
 
   if (colorFromProps) {
     return colorFromProps;
-  } else {
-    return Colors[theme][colorName];
   }
+
+  // Since Colors is flat, we directly access it
+  // Map 'background' to 'lightBackground' since Colors doesn't have 'background'
+  if (colorName === 'background') {
+    // Try to use Colors.background if it exists, otherwise fallback to white
+    return Colors.background ?? Colors.white;
+  }
+
+  // For 'text', Colors has a matching key
+  if (colorName === 'text') {
+    return Colors.text;
+  }
+
+  // Fallback to white if colorName doesn't match (though this shouldn't happen with our limited colorName type)
+  return Colors.white;
 }
 
 export function Text(props: TextProps) {
