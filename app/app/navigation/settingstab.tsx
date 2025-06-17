@@ -9,9 +9,11 @@ import {
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Ionicons } from '@expo/vector-icons';
+import { router } from 'expo-router';
 import { Text, View } from '@/components/Themed';
 import { Colors } from '../../constants/Colors';
 import { useColorScheme } from '@/components/useColorScheme';
+import { useAuth } from '../context/AuthContext';
 
 interface AppSettings {
   notifications: boolean;
@@ -24,6 +26,7 @@ export default function SettingsTabScreen() {
   const colorScheme = useColorScheme();
   const isDark = colorScheme === 'dark';
   const theme = isDark ? Colors.dark : Colors.light;
+  const { state, logout } = useAuth();
   
   const [settings, setSettings] = useState<AppSettings>({
     notifications: true,
@@ -85,6 +88,29 @@ export default function SettingsTabScreen() {
   const toggleSetting = (key: keyof AppSettings) => {
     const newSettings = { ...settings, [key]: !settings[key] };
     saveSettings(newSettings);
+  };
+
+  const handleLogout = () => {
+    Alert.alert(
+      'Sign Out',
+      'Are you sure you want to sign out?',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        { 
+          text: 'Sign Out', 
+          style: 'destructive',
+          onPress: async () => {
+            try {
+              await logout();
+              router.replace('/auth/login');
+            } catch (error) {
+              console.error('Logout error:', error);
+              Alert.alert('Error', 'Failed to sign out. Please try again.');
+            }
+          }
+        },
+      ]
+    );
   };
 
   const clearAppData = () => {
@@ -195,6 +221,33 @@ export default function SettingsTabScreen() {
             Customize your Safe Street experience
           </Text>
         </View>
+
+        {/* User Profile */}
+        {state.user && (
+          <View style={styles.section}>
+            <Text style={[styles.sectionTitle, { color: Colors.primary }]}>👤 Profile</Text>
+            <View style={[styles.profileCard, { backgroundColor: theme.cardBackground }]}>
+              <View style={styles.profileInfo}>
+                <View style={[styles.profileAvatar, { backgroundColor: Colors.primary }]}>
+                  <Text style={styles.profileAvatarText}>
+                    {state.user.fullName.charAt(0).toUpperCase()}
+                  </Text>
+                </View>
+                <View style={styles.profileDetails}>
+                  <Text style={[styles.profileName, { color: theme.text }]}>{state.user.fullName}</Text>
+                  <Text style={[styles.profileEmail, { color: theme.placeholderText }]}>{state.user.email}</Text>
+                  {state.user.phone && (
+                    <Text style={[styles.profilePhone, { color: theme.placeholderText }]}>{state.user.phone}</Text>
+                  )}
+                </View>
+              </View>
+              <TouchableOpacity style={styles.signOutButton} onPress={handleLogout}>
+                <Ionicons name="log-out-outline" size={20} color={Colors.error} />
+                <Text style={[styles.signOutText, { color: Colors.error }]}>Sign Out</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        )}
 
         {/* Theme Info */}
         <View style={styles.section}>
@@ -324,6 +377,64 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 'bold',
     marginBottom: 15,
+  },
+  profileCard: {
+    paddingVertical: 20,
+    paddingHorizontal: 16,
+    borderRadius: 12,
+    elevation: 1,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
+  },
+  profileInfo: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 16,
+  },
+  profileAvatar: {
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 16,
+  },
+  profileAvatarText: {
+    color: '#FFFFFF',
+    fontSize: 24,
+    fontWeight: 'bold',
+  },
+  profileDetails: {
+    flex: 1,
+  },
+  profileName: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 4,
+  },
+  profileEmail: {
+    fontSize: 14,
+    marginBottom: 2,
+  },
+  profilePhone: {
+    fontSize: 14,
+  },
+  signOutButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: Colors.error,
+    gap: 8,
+  },
+  signOutText: {
+    fontSize: 16,
+    fontWeight: '600',
   },
   themeInfo: {
     paddingVertical: 15,
