@@ -25,6 +25,8 @@ const { width, height } = Dimensions.get('window');
 const UploadTab = () => {
   const colorScheme = useColorScheme();
   const isDark = colorScheme === 'dark';
+  const theme = isDark ? Colors.dark : Colors.light;
+  
   const { state, setCurrentImage, setCurrentLocation, addUpload, clearCurrentUpload, setUploading, updateUploadStatus } = useUpload();
   const [isLoadingLocation, setIsLoadingLocation] = useState<boolean>(false);
   const [showInfoModal, setShowInfoModal] = useState<boolean>(false);
@@ -193,74 +195,76 @@ const UploadTab = () => {
       onRequestClose={() => setShowInfoModal(false)}
     >
       <View style={styles.modalOverlay}>
-        <View style={[styles.modalContent, { backgroundColor: isDark ? Colors.dark.cardBackground : Colors.light.cardBackground }]}>
-          <View style={styles.modalHeader}>
-            <Text style={[styles.modalTitle, { color: isDark ? Colors.dark.text : Colors.light.text }]}>How it works</Text>
-            <TouchableOpacity onPress={() => setShowInfoModal(false)} style={styles.closeButton}>
-              <Ionicons name="close" size={24} color={isDark ? Colors.dark.text : Colors.light.text} />
-            </TouchableOpacity>
+        <Pressable style={styles.modalOverlay} onPress={() => setShowInfoModal(false)}>
+          <View style={[styles.modalContent, { backgroundColor: theme.cardBackground }]}>
+            <View style={[styles.modalHeader, { borderBottomColor: theme.separator }]}>
+              <Text style={[styles.modalTitle, { color: theme.text }]}>How it works</Text>
+              <TouchableOpacity onPress={() => setShowInfoModal(false)} style={styles.closeButton}>
+                <Ionicons name="close" size={24} color={theme.text} />
+              </TouchableOpacity>
+            </View>
+            
+            <ScrollView style={styles.modalBody} showsVerticalScrollIndicator={false}>
+              <View style={styles.infoStep}>
+                <View style={styles.stepNumber}>
+                  <Text style={styles.stepNumberText}>1</Text>
+                </View>
+                <View style={styles.stepContent}>
+                  <Text style={[styles.stepTitle, { color: theme.text }]}>Capture Image</Text>
+                  <Text style={[styles.stepDescription, { color: theme.placeholderText }]}>
+                    Take a photo with your camera or select from gallery
+                  </Text>
+                </View>
+              </View>
+
+              <View style={styles.infoStep}>
+                <View style={styles.stepNumber}>
+                  <Text style={styles.stepNumberText}>2</Text>
+                </View>
+                <View style={styles.stepContent}>
+                  <Text style={[styles.stepTitle, { color: theme.text }]}>Auto Location</Text>
+                  <Text style={[styles.stepDescription, { color: theme.placeholderText }]}>
+                    Location coordinates are captured automatically
+                  </Text>
+                </View>
+              </View>
+
+              <View style={styles.infoStep}>
+                <View style={styles.stepNumber}>
+                  <Text style={styles.stepNumberText}>3</Text>
+                </View>
+                <View style={styles.stepContent}>
+                  <Text style={[styles.stepTitle, { color: theme.text }]}>AI Analysis</Text>
+                  <Text style={[styles.stepDescription, { color: theme.placeholderText }]}>
+                    Our AI analyzes the damage and provides recommendations
+                  </Text>
+                </View>
+              </View>
+
+              <View style={styles.infoStep}>
+                <View style={styles.stepNumber}>
+                  <Text style={styles.stepNumberText}>4</Text>
+                </View>
+                <View style={styles.stepContent}>
+                  <Text style={[styles.stepTitle, { color: theme.text }]}>Track Progress</Text>
+                  <Text style={[styles.stepDescription, { color: theme.placeholderText }]}>
+                    Monitor your reports and repair status in the Track tab
+                  </Text>
+                </View>
+              </View>
+            </ScrollView>
           </View>
-          
-          <ScrollView style={styles.modalBody} showsVerticalScrollIndicator={false}>
-            <View style={styles.infoStep}>
-              <View style={styles.stepNumber}>
-                <Text style={styles.stepNumberText}>1</Text>
-              </View>
-              <View style={styles.stepContent}>
-                <Text style={[styles.stepTitle, { color: isDark ? Colors.dark.text : Colors.light.text }]}>Capture Image</Text>
-                <Text style={[styles.stepDescription, { color: isDark ? Colors.dark.placeholderText : Colors.light.placeholderText }]}>
-                  Take a photo with your camera or select from gallery
-                </Text>
-              </View>
-            </View>
-
-            <View style={styles.infoStep}>
-              <View style={styles.stepNumber}>
-                <Text style={styles.stepNumberText}>2</Text>
-              </View>
-              <View style={styles.stepContent}>
-                <Text style={[styles.stepTitle, { color: isDark ? Colors.dark.text : Colors.light.text }]}>Auto Location</Text>
-                <Text style={[styles.stepDescription, { color: isDark ? Colors.dark.placeholderText : Colors.light.placeholderText }]}>
-                  Location coordinates are captured automatically
-                </Text>
-              </View>
-            </View>
-
-            <View style={styles.infoStep}>
-              <View style={styles.stepNumber}>
-                <Text style={styles.stepNumberText}>3</Text>
-              </View>
-              <View style={styles.stepContent}>
-                <Text style={[styles.stepTitle, { color: isDark ? Colors.dark.text : Colors.light.text }]}>AI Analysis</Text>
-                <Text style={[styles.stepDescription, { color: isDark ? Colors.dark.placeholderText : Colors.light.placeholderText }]}>
-                  Our AI analyzes the damage and provides recommendations
-                </Text>
-              </View>
-            </View>
-
-            <View style={styles.infoStep}>
-              <View style={styles.stepNumber}>
-                <Text style={styles.stepNumberText}>4</Text>
-              </View>
-              <View style={styles.stepContent}>
-                <Text style={[styles.stepTitle, { color: isDark ? Colors.dark.text : Colors.light.text }]}>Track Progress</Text>
-                <Text style={[styles.stepDescription, { color: isDark ? Colors.dark.placeholderText : Colors.light.placeholderText }]}>
-                  Monitor your reports and repair status in the Track tab
-                </Text>
-              </View>
-            </View>
-          </ScrollView>
-        </View>
+        </Pressable>
       </View>
     </Modal>
   );
 
   return (
-    <View style={[styles.container, { backgroundColor: isDark ? Colors.dark.background : Colors.light.background }]}>
+    <View style={[styles.container, { backgroundColor: theme.background }]}>
       <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
         {/* Header */}
-        <View style={styles.header}>
-          <Text style={[styles.title, { color: isDark ? Colors.dark.text : Colors.light.text }]}>Upload</Text>
+        <View style={[styles.header, { backgroundColor: theme.headerBackground }]}>
+          <Text style={[styles.title, { color: theme.text }]}>Upload</Text>
           <TouchableOpacity onPress={() => setShowInfoModal(true)} style={styles.infoButton}>
             <Ionicons name="information-circle-outline" size={24} color={Colors.primary} />
           </TouchableOpacity>
@@ -269,9 +273,9 @@ const UploadTab = () => {
         {/* Image Section */}
         <View style={styles.imageSection}>
           {!state.currentUpload?.imageUri ? (
-            <View style={[styles.placeholderContainer, { backgroundColor: isDark ? Colors.dark.secondaryBackground : Colors.light.secondaryBackground }]}>
-              <Ionicons name="image-outline" size={64} color={isDark ? Colors.dark.placeholderText : Colors.light.placeholderText} />
-              <Text style={[styles.placeholderText, { color: isDark ? Colors.dark.placeholderText : Colors.light.placeholderText }]}>
+            <View style={[styles.placeholderContainer, { backgroundColor: theme.secondaryBackground }]}>
+              <Ionicons name="image-outline" size={64} color={theme.placeholderText} />
+              <Text style={[styles.placeholderText, { color: theme.placeholderText }]}>
                 No image selected
               </Text>
             </View>
@@ -279,7 +283,7 @@ const UploadTab = () => {
             <View style={styles.imageContainer}>
               <Image source={{ uri: state.currentUpload.imageUri }} style={styles.previewImage} />
               <TouchableOpacity style={styles.removeButton} onPress={() => setCurrentImage('')}>
-                <Ionicons name="close" size={20} color={Colors.white} />
+                <Ionicons name="close" size={20} color="#FFFFFF" />
               </TouchableOpacity>
             </View>
           )}
@@ -291,12 +295,12 @@ const UploadTab = () => {
             style={[styles.actionButton, styles.cameraButton, { backgroundColor: Colors.primary }]} 
             onPress={openCamera}
           >
-            <Ionicons name="camera" size={24} color={Colors.white} />
+            <Ionicons name="camera" size={24} color="#FFFFFF" />
             <Text style={styles.buttonText}>Camera</Text>
           </TouchableOpacity>
 
           <TouchableOpacity 
-            style={[styles.actionButton, styles.galleryButton, { backgroundColor: isDark ? Colors.dark.cardBackground : Colors.light.cardBackground, borderColor: Colors.primary }]} 
+            style={[styles.actionButton, styles.galleryButton, { backgroundColor: theme.cardBackground, borderColor: Colors.primary }]} 
             onPress={openGallery}
           >
             <Ionicons name="images" size={24} color={Colors.primary} />
@@ -307,27 +311,27 @@ const UploadTab = () => {
         {/* Location Status */}
         {state.currentUpload?.imageUri && (
           <View style={styles.locationSection}>
-            <View style={[styles.locationCard, { backgroundColor: isDark ? Colors.dark.cardBackground : Colors.light.cardBackground }]}>
+            <View style={[styles.locationCard, { backgroundColor: theme.cardBackground }]}>
               <View style={styles.locationHeader}>
                 <Ionicons name="location" size={20} color={Colors.primary} />
-                <Text style={[styles.locationTitle, { color: isDark ? Colors.dark.text : Colors.light.text }]}>Location</Text>
+                <Text style={[styles.locationTitle, { color: theme.text }]}>Location</Text>
                 {isLoadingLocation && <ActivityIndicator size="small" color={Colors.primary} />}
               </View>
               
               {state.currentUpload?.location ? (
                 <View style={styles.locationInfo}>
-                  <Text style={[styles.locationText, { color: isDark ? Colors.dark.placeholderText : Colors.light.placeholderText }]}>
+                  <Text style={[styles.locationText, { color: theme.placeholderText }]}>
                     {state.currentUpload.location.latitude.toFixed(6)}, {state.currentUpload.location.longitude.toFixed(6)}
                   </Text>
                   {state.currentUpload.location.accuracy && (
-                    <Text style={[styles.accuracyText, { color: isDark ? Colors.dark.placeholderText : Colors.light.placeholderText }]}>
+                    <Text style={[styles.accuracyText, { color: theme.placeholderText }]}>
                       ±{state.currentUpload.location.accuracy.toFixed(0)}m accuracy
                     </Text>
                   )}
                 </View>
               ) : (
                 <View style={styles.noLocationInfo}>
-                  <Text style={[styles.noLocationText, { color: isDark ? Colors.dark.placeholderText : Colors.light.placeholderText }]}>
+                  <Text style={[styles.noLocationText, { color: theme.placeholderText }]}>
                     {isLoadingLocation ? 'Getting location...' : 'Location not available'}
                   </Text>
                   {!isLoadingLocation && (
@@ -347,16 +351,16 @@ const UploadTab = () => {
             <TouchableOpacity
               style={[
                 styles.uploadButton,
-                { backgroundColor: state.isUploading ? Colors.disabled : Colors.success },
+                { backgroundColor: state.isUploading ? theme.placeholderText : Colors.success },
               ]}
               onPress={handleUpload}
               disabled={state.isUploading}
             >
               {state.isUploading ? (
-                <ActivityIndicator size="small" color={Colors.white} />
+                <ActivityIndicator size="small" color="#FFFFFF" />
               ) : (
                 <>
-                  <Ionicons name="cloud-upload" size={20} color={Colors.white} />
+                  <Ionicons name="cloud-upload" size={20} color="#FFFFFF" />
                   <Text style={styles.uploadButtonText}>Upload</Text>
                 </>
               )}
@@ -451,7 +455,7 @@ const styles = StyleSheet.create({
   buttonText: {
     fontSize: 17,
     fontWeight: '600',
-    color: Colors.white,
+    color: '#FFFFFF',
   },
   buttonTextSecondary: {
     fontSize: 17,
@@ -517,7 +521,7 @@ const styles = StyleSheet.create({
   uploadButtonText: {
     fontSize: 17,
     fontWeight: '600',
-    color: Colors.white,
+    color: '#FFFFFF',
   },
   // Modal Styles
   modalOverlay: {
@@ -538,7 +542,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 24,
     paddingBottom: 20,
     borderBottomWidth: 1,
-    borderBottomColor: Colors.border,
   },
   modalTitle: {
     fontSize: 20,
@@ -566,7 +569,7 @@ const styles = StyleSheet.create({
     marginRight: 16,
   },
   stepNumberText: {
-    color: Colors.white,
+    color: '#FFFFFF',
     fontSize: 16,
     fontWeight: '600',
   },

@@ -6,12 +6,12 @@ import {
   Switch,
   Alert,
   Linking,
-  useColorScheme
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Ionicons } from '@expo/vector-icons';
 import { Text, View } from '@/components/Themed';
-import Colors from '@/constants/Colors';
+import { Colors } from '../../constants/Colors';
+import { useColorScheme } from '@/components/useColorScheme';
 
 interface AppSettings {
   notifications: boolean;
@@ -23,6 +23,7 @@ interface AppSettings {
 export default function SettingsTabScreen() {
   const colorScheme = useColorScheme();
   const isDark = colorScheme === 'dark';
+  const theme = isDark ? Colors.dark : Colors.light;
   
   const [settings, setSettings] = useState<AppSettings>({
     notifications: true,
@@ -147,12 +148,12 @@ export default function SettingsTabScreen() {
     onToggle: () => void,
     iconName: string
   ) => (
-    <View style={[styles.settingItem, { backgroundColor: isDark ? Colors.dark.cardBackground : Colors.light.cardBackground }]}>
+    <View style={[styles.settingItem, { backgroundColor: theme.cardBackground }]}>
       <View style={styles.settingInfo}>
         <Ionicons name={iconName as any} size={20} color={Colors.primary} style={styles.settingIcon} />
         <View style={styles.settingText}>
-          <Text style={styles.settingTitle}>{title}</Text>
-          <Text style={[styles.settingSubtitle, { color: isDark ? Colors.dark.placeholderText : Colors.light.placeholderText }]}>{subtitle}</Text>
+          <Text style={[styles.settingTitle, { color: theme.text }]}>{title}</Text>
+          <Text style={[styles.settingSubtitle, { color: theme.placeholderText }]}>{subtitle}</Text>
         </View>
       </View>
       <Switch
@@ -165,135 +166,140 @@ export default function SettingsTabScreen() {
   );
 
   const renderInfoItem = (label: string, value: string, iconName: string) => (
-    <View style={[styles.infoItem, { backgroundColor: isDark ? Colors.dark.secondaryBackground : Colors.light.secondaryBackground }]}>
+    <View style={[styles.infoItem, { backgroundColor: theme.secondaryBackground }]}>
       <Ionicons name={iconName as any} size={18} color={Colors.primary} style={styles.infoIcon} />
       <View style={styles.infoText}>
-        <Text style={[styles.infoLabel, { color: isDark ? Colors.dark.placeholderText : Colors.light.placeholderText }]}>{label}</Text>
-        <Text style={styles.infoValue}>{value}</Text>
+        <Text style={[styles.infoLabel, { color: theme.placeholderText }]}>{label}</Text>
+        <Text style={[styles.infoValue, { color: theme.text }]}>{value}</Text>
       </View>
     </View>
   );
 
   const renderActionItem = (title: string, onPress: () => void, iconName: string, color?: string) => (
     <TouchableOpacity 
-      style={[styles.actionItem, { backgroundColor: isDark ? Colors.dark.cardBackground : Colors.light.cardBackground }]} 
+      style={[styles.actionItem, { backgroundColor: theme.cardBackground }]} 
       onPress={onPress}
     >
       <Ionicons name={iconName as any} size={18} color={color || Colors.primary} style={styles.actionIcon} />
-      <Text style={[styles.actionTitle, color && { color }]}>{title}</Text>
-      <Ionicons name="chevron-forward" size={20} color={isDark ? Colors.dark.placeholderText : Colors.light.placeholderText} />
+      <Text style={[styles.actionTitle, { color: theme.text }, color && { color }]}>{title}</Text>
+      <Ionicons name="chevron-forward" size={20} color={theme.placeholderText} />
     </TouchableOpacity>
   );
 
   return (
-    <ScrollView style={styles.container}>
-      <View style={styles.header}>
-        <Text style={styles.title}>Settings</Text>
-        <Text style={[styles.subtitle, { color: isDark ? Colors.dark.placeholderText : Colors.light.placeholderText }]}>
-          Customize your Safe Street experience
-        </Text>
-      </View>
-
-      {/* Theme Info */}
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>🎨 Theme</Text>
-        <View style={[styles.themeInfo, { backgroundColor: isDark ? Colors.dark.cardBackground : Colors.light.cardBackground }]}>
-          <View style={styles.themeRow}>
-            <Ionicons name={isDark ? "moon" : "sunny"} size={20} color={Colors.primary} />
-            <View style={styles.themeText}>
-              <Text style={styles.themeTitle}>Current Theme</Text>
-              <Text style={[styles.themeSubtitle, { color: isDark ? Colors.dark.placeholderText : Colors.light.placeholderText }]}>
-                {isDark ? 'Dark Mode' : 'Light Mode'} (Device Default)
-              </Text>
-            </View>
-          </View>
-          <Text style={[styles.themeDescription, { color: isDark ? Colors.dark.placeholderText : Colors.light.placeholderText }]}>
-            Theme automatically follows your device settings
+    <View style={[styles.container, { backgroundColor: theme.background }]}>
+      <ScrollView style={styles.scrollView}>
+        <View style={[styles.header, { backgroundColor: theme.headerBackground }]}>
+          <Text style={[styles.title, { color: theme.text }]}>Settings</Text>
+          <Text style={[styles.subtitle, { color: theme.placeholderText }]}>
+            Customize your Safe Street experience
           </Text>
         </View>
-      </View>
 
-      {/* App Preferences */}
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>⚙️ App Preferences</Text>
-        
-        {renderSettingItem(
-          'Push Notifications',
-          'Get notified about upload status and updates',
-          settings.notifications,
-          () => toggleSetting('notifications'),
-          'notifications'
-        )}
-        
-        {renderSettingItem(
-          'Auto Location',
-          'Automatically capture location with images',
-          settings.autoLocation,
-          () => toggleSetting('autoLocation'),
-          'location'
-        )}
-        
-        {renderSettingItem(
-          'High Quality Images',
-          'Upload images in higher resolution',
-          settings.highQualityImages,
-          () => toggleSetting('highQualityImages'),
-          'camera'
-        )}
-        
-        {renderSettingItem(
-          'Data Usage Warning',
-          'Warn before uploading on mobile data',
-          settings.dataUsageWarning,
-          () => toggleSetting('dataUsageWarning'),
-          'cellular'
-        )}
-      </View>
+        {/* Theme Info */}
+        <View style={styles.section}>
+          <Text style={[styles.sectionTitle, { color: Colors.primary }]}>🎨 Theme</Text>
+          <View style={[styles.themeInfo, { backgroundColor: theme.cardBackground }]}>
+            <View style={styles.themeRow}>
+              <Ionicons name={isDark ? "moon" : "sunny"} size={20} color={Colors.primary} />
+              <View style={styles.themeText}>
+                <Text style={[styles.themeTitle, { color: theme.text }]}>Current Theme</Text>
+                <Text style={[styles.themeSubtitle, { color: theme.placeholderText }]}>
+                  {isDark ? 'Dark Mode' : 'Light Mode'} (Device Default)
+                </Text>
+              </View>
+            </View>
+            <Text style={[styles.themeDescription, { color: theme.placeholderText }]}>
+              Theme automatically follows your device settings
+            </Text>
+          </View>
+        </View>
 
-      {/* App Information */}
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>📱 App Information</Text>
-        
-        {renderInfoItem('Version', appInfo.version, 'information-circle')}
-        {renderInfoItem('Build Number', appInfo.buildNumber, 'build')}
-        {renderInfoItem('Total Uploads', appInfo.totalUploads.toString(), 'cloud-upload')}
-        {renderInfoItem('Storage Used', appInfo.storageUsed, 'server')}
-      </View>
+        {/* App Preferences */}
+        <View style={styles.section}>
+          <Text style={[styles.sectionTitle, { color: Colors.primary }]}>⚙️ App Preferences</Text>
+          
+          {renderSettingItem(
+            'Push Notifications',
+            'Get notified about upload status and updates',
+            settings.notifications,
+            () => toggleSetting('notifications'),
+            'notifications'
+          )}
+          
+          {renderSettingItem(
+            'Auto Location',
+            'Automatically capture location with images',
+            settings.autoLocation,
+            () => toggleSetting('autoLocation'),
+            'location'
+          )}
+          
+          {renderSettingItem(
+            'High Quality Images',
+            'Upload images in higher resolution',
+            settings.highQualityImages,
+            () => toggleSetting('highQualityImages'),
+            'camera'
+          )}
+          
+          {renderSettingItem(
+            'Data Usage Warning',
+            'Warn before uploading on mobile data',
+            settings.dataUsageWarning,
+            () => toggleSetting('dataUsageWarning'),
+            'cellular'
+          )}
+        </View>
 
-      {/* Data Management */}
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>💾 Data Management</Text>
-        
-        {renderActionItem('Export Data', exportData, 'download')}
-        {renderActionItem('Clear App Data', clearAppData, 'trash', Colors.error)}
-      </View>
+        {/* App Information */}
+        <View style={styles.section}>
+          <Text style={[styles.sectionTitle, { color: Colors.primary }]}>📱 App Information</Text>
+          
+          {renderInfoItem('Version', appInfo.version, 'information-circle')}
+          {renderInfoItem('Build Number', appInfo.buildNumber, 'build')}
+          {renderInfoItem('Total Uploads', appInfo.totalUploads.toString(), 'cloud-upload')}
+          {renderInfoItem('Storage Used', appInfo.storageUsed, 'server')}
+        </View>
 
-      {/* Support & Legal */}
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>🛠️ Support & Legal</Text>
-        
-        {renderActionItem('Contact Support', contactSupport, 'mail')}
-        {renderActionItem('Privacy Policy', openPrivacyPolicy, 'shield-checkmark')}
-        {renderActionItem('Terms of Service', openTermsOfService, 'document-text')}
-      </View>
+        {/* Data Management */}
+        <View style={styles.section}>
+          <Text style={[styles.sectionTitle, { color: Colors.primary }]}>💾 Data Management</Text>
+          
+          {renderActionItem('Export Data', exportData, 'download')}
+          {renderActionItem('Clear App Data', clearAppData, 'trash', Colors.error)}
+        </View>
 
-      {/* About */}
-      <View style={[styles.aboutSection, { backgroundColor: isDark ? Colors.dark.secondaryBackground : '#f0f8ff' }]}>
-        <Text style={styles.aboutTitle}>About Safe Street</Text>
-        <Text style={[styles.aboutText, { color: isDark ? Colors.dark.placeholderText : '#666' }]}>
-          Safe Street helps communities report and track road damage using AI-powered analysis. 
-          Together, we can make our roads safer for everyone.
-        </Text>
-        <Text style={[styles.aboutCopyright, { color: isDark ? Colors.dark.placeholderText : '#999' }]}>
-          © 2025 Safe Street. All rights reserved.
-        </Text>
-      </View>
-    </ScrollView>
+        {/* Support & Legal */}
+        <View style={styles.section}>
+          <Text style={[styles.sectionTitle, { color: Colors.primary }]}>🛠️ Support & Legal</Text>
+          
+          {renderActionItem('Contact Support', contactSupport, 'mail')}
+          {renderActionItem('Privacy Policy', openPrivacyPolicy, 'shield-checkmark')}
+          {renderActionItem('Terms of Service', openTermsOfService, 'document-text')}
+        </View>
+
+        {/* About */}
+        <View style={[styles.aboutSection, { backgroundColor: theme.secondaryBackground }]}>
+          <Text style={[styles.aboutTitle, { color: Colors.primary }]}>About Safe Street</Text>
+          <Text style={[styles.aboutText, { color: theme.placeholderText }]}>
+            Safe Street helps communities report and track road damage using AI-powered analysis. 
+            Together, we can make our roads safer for everyone.
+          </Text>
+          <Text style={[styles.aboutCopyright, { color: theme.placeholderText }]}>
+            © 2025 Safe Street. All rights reserved.
+          </Text>
+        </View>
+      </ScrollView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
+    flex: 1,
+  },
+  scrollView: {
     flex: 1,
   },
   header: {
@@ -318,7 +324,6 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 'bold',
     marginBottom: 15,
-    color: Colors.primary,
   },
   themeInfo: {
     paddingVertical: 15,
@@ -438,7 +443,6 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 'bold',
     marginBottom: 10,
-    color: Colors.primary,
   },
   aboutText: {
     fontSize: 14,

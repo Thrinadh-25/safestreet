@@ -1,60 +1,43 @@
-const tintColorLight = '#2f95dc';
-const tintColorDark = '#fff';
+const tintColorLight = '#007AFF';
+const tintColorDark = '#0A84FF';
 
 export const Colors = {
   // Primary colors
-  primary: '#2f95dc',
+  primary: '#007AFF',
   secondary: '#6c757d',
-  success: '#28a745',
-  error: '#dc3545',
-  warning: '#ffc107',
-  info: '#17a2b8',
+  success: '#34C759',
+  error: '#FF3B30',
+  warning: '#FF9500',
+  info: '#5AC8FA',
   
-  // Text colors
-  text: '#333333',
-  darkText: '#1a1a1a',
-  lightText: '#666666',
-  white: '#ffffff',
-  
-  // Background colors
-  background: '#ffffff',
-  lightBackground: '#f8f9fa',
-  darkBackground: '#343a40',
-  
-  // Gray scale
-  gray: '#6c757d',
-  lightGray: '#e9ecef',
-  darkGray: '#495057',
-  
-  // Border and shadow
-  border: '#dee2e6',
-  shadow: '#000000',
-  disabled: '#adb5bd',
-  
-  // Theme colors for device default
+  // Theme-specific colors
   light: {
-    text: '#000',
-    background: '#fff',
+    text: '#000000',
+    background: '#FFFFFF',
     tint: tintColorLight,
-    tabIconDefault: '#ccc',
+    tabIconDefault: '#C7C7CC',
     tabIconSelected: tintColorLight,
-    // Additional light theme colors
-    cardBackground: '#ffffff',
-    borderColor: '#e1e1e1',
-    placeholderText: '#999999',
-    secondaryBackground: '#f8f9fa',
+    cardBackground: '#FFFFFF',
+    borderColor: '#E5E5EA',
+    placeholderText: '#8E8E93',
+    secondaryBackground: '#F2F2F7',
+    separator: '#C6C6C8',
+    headerBackground: '#FFFFFF',
+    sectionBackground: '#F2F2F7',
   },
   dark: {
-    text: '#fff',
-    background: '#000',
+    text: '#FFFFFF',
+    background: '#000000',
     tint: tintColorDark,
-    tabIconDefault: '#ccc',
+    tabIconDefault: '#8E8E93',
     tabIconSelected: tintColorDark,
-    // Additional dark theme colors
-    cardBackground: '#1c1c1e',
-    borderColor: '#38383a',
-    placeholderText: '#8e8e93',
-    secondaryBackground: '#2c2c2e',
+    cardBackground: '#1C1C1E',
+    borderColor: '#38383A',
+    placeholderText: '#8E8E93',
+    secondaryBackground: '#1C1C1E',
+    separator: '#38383A',
+    headerBackground: '#000000',
+    sectionBackground: '#000000',
   },
 };
 
