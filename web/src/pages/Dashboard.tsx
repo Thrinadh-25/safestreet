@@ -42,7 +42,7 @@ interface RecentReport {
   reportedBy: string;
 }
 
-const Dashboard: React.FC = () => {
+const Dashboard = (): React.ReactElement => {
   const [stats, setStats] = useState<DashboardStats>({
     totalReports: 0,
     pendingReports: 0,

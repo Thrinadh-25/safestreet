@@ -48,7 +48,7 @@ interface Report {
   aiAnalysis: string;
 }
 
-const Reports: React.FC = () => {
+const Reports = (): React.ReactElement => {
   const [reports, setReports] = useState<Report[]>([]);
   const [filteredReports, setFilteredReports] = useState<Report[]>([]);
   const [page, setPage] = useState(0);

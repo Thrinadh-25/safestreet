@@ -1,18 +1,17 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import {
   Box,
   Typography,
   Grid,
   Card,
   CardContent,
-  Paper,
   Select,
   MenuItem,
   FormControl,
   InputLabel,
 } from '@mui/material';
 
-const Analytics: React.FC = () => {
+const Analytics = (): React.ReactElement => {
   const [timeRange, setTimeRange] = useState('30');
 
   return (

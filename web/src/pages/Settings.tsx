@@ -8,18 +8,16 @@ import {
   Button,
   Switch,
   FormControlLabel,
-  Divider,
   Alert,
   Card,
   CardContent,
   List,
   ListItem,
   ListItemText,
-  ListItemSecondaryAction,
 } from '@mui/material';
-import { Save, Notifications, Security, Email } from '@mui/icons-material';
+import { Save, Notifications, Security } from '@mui/icons-material';
 
-const Settings: React.FC = () => {
+const Settings = (): React.ReactElement => {
   const [settings, setSettings] = useState({
     siteName: 'Safe Street Admin',
     adminEmail: 'admin@safestreet.com',
