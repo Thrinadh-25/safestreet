@@ -1,6 +1,5 @@
 import React, { createContext, useContext, useReducer, useEffect, ReactNode } from 'react';
 import { User, AuthState } from '../types';
-import { authService } from '../services/authService';
 
 type AuthAction =
   | { type: 'SET_LOADING'; payload: boolean }
@@ -68,10 +67,11 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
   const checkAuthStatus = () => {
     try {
-      const token = authService.getToken();
-      const user = authService.getCurrentUser();
+      const token = localStorage.getItem('token');
+      const userStr = localStorage.getItem('user');
       
-      if (token && user) {
+      if (token && userStr) {
+        const user = JSON.parse(userStr);
         dispatch({ type: 'SET_USER', payload: { user, token } });
       } else {
         dispatch({ type: 'CLEAR_USER' });
@@ -84,25 +84,63 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
   const login = async (email: string, password: string) => {
     try {
-      const { user, token } = await authService.login({ email, password });
-      dispatch({ type: 'SET_USER', payload: { user, token } });
+      dispatch({ type: 'SET_LOADING', payload: true });
+      
+      // Mock login for demo - replace with actual API call
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      const mockUser: User = {
+        id: '1',
+        fullName: 'Admin User',
+        email: email,
+        createdAt: new Date().toISOString(),
+        isActive: true,
+      };
+      
+      const mockToken = 'mock_token_' + Date.now();
+      
+      localStorage.setItem('token', mockToken);
+      localStorage.setItem('user', JSON.stringify(mockUser));
+      
+      dispatch({ type: 'SET_USER', payload: { user: mockUser, token: mockToken } });
     } catch (error) {
+      dispatch({ type: 'SET_LOADING', payload: false });
       throw error;
     }
   };
 
   const register = async (data: { fullName: string; email: string; password: string; phone?: string }) => {
     try {
-      const { user, token } = await authService.register(data);
-      dispatch({ type: 'SET_USER', payload: { user, token } });
+      dispatch({ type: 'SET_LOADING', payload: true });
+      
+      // Mock register for demo - replace with actual API call
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      const mockUser: User = {
+        id: '1',
+        fullName: data.fullName,
+        email: data.email,
+        phone: data.phone,
+        createdAt: new Date().toISOString(),
+        isActive: true,
+      };
+      
+      const mockToken = 'mock_token_' + Date.now();
+      
+      localStorage.setItem('token', mockToken);
+      localStorage.setItem('user', JSON.stringify(mockUser));
+      
+      dispatch({ type: 'SET_USER', payload: { user: mockUser, token: mockToken } });
     } catch (error) {
+      dispatch({ type: 'SET_LOADING', payload: false });
       throw error;
     }
   };
 
   const logout = async () => {
     try {
-      await authService.logout();
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
       dispatch({ type: 'CLEAR_USER' });
     } catch (error) {
       console.error('Logout error:', error);

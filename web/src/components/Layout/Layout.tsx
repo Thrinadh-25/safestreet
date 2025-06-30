@@ -1,10 +1,13 @@
 import React, { useState } from 'react';
 import { Box, Toolbar } from '@mui/material';
-import { Outlet } from 'react-router-dom';
 import Sidebar from './Sidebar';
 import Header from './Header';
 
-const Layout: React.FC = () => {
+interface LayoutProps {
+  children: React.ReactNode;
+}
+
+const Layout: React.FC<LayoutProps> = ({ children }) => {
   const [mobileOpen, setMobileOpen] = useState(false);
 
   const handleDrawerToggle = () => {
@@ -26,7 +29,7 @@ const Layout: React.FC = () => {
       >
         <Toolbar />
         <Box sx={{ p: 3 }}>
-          <Outlet />
+          {children}
         </Box>
       </Box>
     </Box>
