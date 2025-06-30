@@ -29,7 +29,6 @@ import {
 } from '@mui/material';
 import {
   Search,
-  FilterList,
   Download,
   Visibility,
   Delete,
@@ -40,13 +39,11 @@ import {
   Image,
   MoreVert,
   PlayArrow,
-  Pause,
-  Stop,
   Engineering,
   Priority,
   BugReport,
 } from '@mui/icons-material';
-import { Upload, PaginatedResponse } from '../types';
+import { Upload } from '../types';
 import { uploadService } from '../services/uploadService';
 import { format } from 'date-fns';
 
