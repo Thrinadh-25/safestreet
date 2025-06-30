@@ -146,7 +146,6 @@ const Users: React.FC = () => {
     if (!userToDelete) return;
     
     try {
-      // In production, make API call to delete user
       setUsers(prev => prev.filter(u => u.id !== userToDelete.id));
       setDeleteDialogOpen(false);
       setUserToDelete(null);
@@ -157,7 +156,6 @@ const Users: React.FC = () => {
 
   const handleToggleUserStatus = async (user: User) => {
     try {
-      // In production, make API call to toggle user status
       setUsers(prev => prev.map(u => 
         u.id === user.id ? { ...u, isActive: !u.isActive } : u
       ));
@@ -174,7 +172,7 @@ const Users: React.FC = () => {
           <Typography variant="h4" sx={{ fontWeight: 700, mb: 1 }}>
             User Management
           </Typography>
-          <Typography variant="body1" sx={{ color: '#6c757d' }}>
+          <Typography variant="body1" sx={{ color: 'text.secondary' }}>
             Manage user accounts and permissions
           </Typography>
         </Box>
@@ -184,8 +182,8 @@ const Users: React.FC = () => {
           startIcon={<PersonAdd />}
           sx={{
             borderRadius: 2,
-            background: 'linear-gradient(135deg, #007AFF 0%, #0A84FF 100%)',
-            boxShadow: '0 4px 12px rgba(0,122,255,0.3)',
+            textTransform: 'none',
+            fontWeight: 500,
           }}
         >
           Add User
@@ -193,7 +191,7 @@ const Users: React.FC = () => {
       </Box>
 
       {/* Search */}
-      <Card sx={{ mb: 3, borderRadius: 3, boxShadow: '0 4px 12px rgba(0,0,0,0.05)' }}>
+      <Card sx={{ mb: 3, borderRadius: 3, border: '1px solid', borderColor: 'divider' }}>
         <CardContent sx={{ p: 3 }}>
           <TextField
             fullWidth
@@ -203,9 +201,14 @@ const Users: React.FC = () => {
             InputProps={{
               startAdornment: (
                 <InputAdornment position="start">
-                  <Search sx={{ color: '#6c757d' }} />
+                  <Search sx={{ color: 'text.secondary' }} />
                 </InputAdornment>
               ),
+            }}
+            sx={{
+              '& .MuiOutlinedInput-root': {
+                borderRadius: 2,
+              },
             }}
           />
         </CardContent>
@@ -227,14 +230,14 @@ const Users: React.FC = () => {
         <Card
           sx={{
             borderRadius: 3,
-            boxShadow: '0 4px 12px rgba(0,0,0,0.05)',
-            border: '1px solid #f0f0f0',
+            border: '1px solid',
+            borderColor: 'divider',
           }}
         >
           <TableContainer component={Paper} sx={{ borderRadius: 3 }}>
             <Table>
               <TableHead>
-                <TableRow sx={{ bgcolor: '#f8f9fa' }}>
+                <TableRow sx={{ bgcolor: 'action.hover' }}>
                   <TableCell sx={{ fontWeight: 600, py: 2 }}>User</TableCell>
                   <TableCell sx={{ fontWeight: 600, py: 2 }}>Contact</TableCell>
                   <TableCell sx={{ fontWeight: 600, py: 2 }}>Status</TableCell>
@@ -249,7 +252,7 @@ const Users: React.FC = () => {
                     key={user.id}
                     sx={{
                       '&:hover': {
-                        bgcolor: '#f8f9fa',
+                        bgcolor: 'action.hover',
                       },
                     }}
                   >
@@ -259,7 +262,7 @@ const Users: React.FC = () => {
                           sx={{
                             width: 40,
                             height: 40,
-                            bgcolor: '#007AFF',
+                            bgcolor: 'primary.main',
                             fontSize: '1rem',
                             fontWeight: 600,
                           }}
@@ -270,7 +273,7 @@ const Users: React.FC = () => {
                           <Typography variant="subtitle2" sx={{ fontWeight: 600 }}>
                             {user.fullName}
                           </Typography>
-                          <Typography variant="caption" sx={{ color: '#6c757d' }}>
+                          <Typography variant="caption" sx={{ color: 'text.secondary' }}>
                             ID: {user.id}
                           </Typography>
                         </Box>
@@ -280,13 +283,13 @@ const Users: React.FC = () => {
                     <TableCell sx={{ py: 2 }}>
                       <Box>
                         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.5 }}>
-                          <Email sx={{ fontSize: 14, color: '#6c757d' }} />
+                          <Email sx={{ fontSize: 14, color: 'text.secondary' }} />
                           <Typography variant="body2">{user.email}</Typography>
                         </Box>
                         {user.phone && (
                           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                            <Phone sx={{ fontSize: 14, color: '#6c757d' }} />
-                            <Typography variant="body2" sx={{ color: '#6c757d' }}>
+                            <Phone sx={{ fontSize: 14, color: 'text.secondary' }} />
+                            <Typography variant="body2" sx={{ color: 'text.secondary' }}>
                               {user.phone}
                             </Typography>
                           </Box>
@@ -300,8 +303,8 @@ const Users: React.FC = () => {
                         label={user.isActive ? 'Active' : 'Inactive'}
                         size="small"
                         sx={{
-                          bgcolor: user.isActive ? '#34c75915' : '#ff3b3015',
-                          color: user.isActive ? '#34c759' : '#ff3b30',
+                          bgcolor: user.isActive ? '#7ED32115' : '#D0021B15',
+                          color: user.isActive ? '#7ED321' : '#D0021B',
                           fontWeight: 600,
                         }}
                       />
@@ -314,7 +317,7 @@ const Users: React.FC = () => {
                     </TableCell>
                     
                     <TableCell sx={{ py: 2 }}>
-                      <Typography variant="body2" sx={{ color: '#6c757d' }}>
+                      <Typography variant="body2" sx={{ color: 'text.secondary' }}>
                         {user.lastLogin 
                           ? format(new Date(user.lastLogin), 'MMM dd, HH:mm')
                           : 'Never'
@@ -327,21 +330,21 @@ const Users: React.FC = () => {
                         <IconButton
                           size="small"
                           onClick={() => handleViewDetails(user)}
-                          sx={{ color: '#007AFF' }}
+                          sx={{ color: 'primary.main' }}
                         >
                           <Edit />
                         </IconButton>
                         <IconButton
                           size="small"
                           onClick={() => handleToggleUserStatus(user)}
-                          sx={{ color: user.isActive ? '#ff9500' : '#34c759' }}
+                          sx={{ color: user.isActive ? 'warning.main' : 'success.main' }}
                         >
                           {user.isActive ? <Block /> : <CheckCircle />}
                         </IconButton>
                         <IconButton
                           size="small"
                           onClick={() => handleDeleteClick(user)}
-                          sx={{ color: '#ff3b30' }}
+                          sx={{ color: 'error.main' }}
                         >
                           <Delete />
                         </IconButton>
@@ -355,7 +358,7 @@ const Users: React.FC = () => {
 
           {users.length === 0 && !loading && (
             <Box sx={{ p: 4, textAlign: 'center' }}>
-              <Typography variant="body1" sx={{ color: '#6c757d' }}>
+              <Typography variant="body1" sx={{ color: 'text.secondary' }}>
                 No users found
               </Typography>
             </Box>
@@ -381,6 +384,9 @@ const Users: React.FC = () => {
         onClose={() => setDetailDialogOpen(false)}
         maxWidth="sm"
         fullWidth
+        PaperProps={{
+          sx: { borderRadius: 3 }
+        }}
       >
         <DialogTitle>User Details</DialogTitle>
         <DialogContent>
@@ -392,7 +398,7 @@ const Users: React.FC = () => {
                     sx={{
                       width: 80,
                       height: 80,
-                      bgcolor: '#007AFF',
+                      bgcolor: 'primary.main',
                       fontSize: '2rem',
                       fontWeight: 600,
                       mx: 'auto',
@@ -410,8 +416,8 @@ const Users: React.FC = () => {
                     label={selectedUser.isActive ? 'Active' : 'Inactive'}
                     size="small"
                     sx={{
-                      bgcolor: selectedUser.isActive ? '#34c75915' : '#ff3b3015',
-                      color: selectedUser.isActive ? '#34c759' : '#ff3b30',
+                      bgcolor: selectedUser.isActive ? '#7ED32115' : '#D0021B15',
+                      color: selectedUser.isActive ? '#7ED321' : '#D0021B',
                       fontWeight: 600,
                     }}
                   />
@@ -419,7 +425,7 @@ const Users: React.FC = () => {
                 
                 <Grid item xs={12}>
                   <Box sx={{ mb: 2 }}>
-                    <Typography variant="body2" sx={{ color: '#6c757d', mb: 1 }}>
+                    <Typography variant="body2" sx={{ color: 'text.secondary', mb: 1 }}>
                       <strong>Email:</strong>
                     </Typography>
                     <Typography variant="body1">{selectedUser.email}</Typography>
@@ -427,7 +433,7 @@ const Users: React.FC = () => {
                   
                   {selectedUser.phone && (
                     <Box sx={{ mb: 2 }}>
-                      <Typography variant="body2" sx={{ color: '#6c757d', mb: 1 }}>
+                      <Typography variant="body2" sx={{ color: 'text.secondary', mb: 1 }}>
                         <strong>Phone:</strong>
                       </Typography>
                       <Typography variant="body1">{selectedUser.phone}</Typography>
@@ -435,7 +441,7 @@ const Users: React.FC = () => {
                   )}
                   
                   <Box sx={{ mb: 2 }}>
-                    <Typography variant="body2" sx={{ color: '#6c757d', mb: 1 }}>
+                    <Typography variant="body2" sx={{ color: 'text.secondary', mb: 1 }}>
                       <strong>Member Since:</strong>
                     </Typography>
                     <Typography variant="body1">
@@ -444,7 +450,7 @@ const Users: React.FC = () => {
                   </Box>
                   
                   <Box sx={{ mb: 2 }}>
-                    <Typography variant="body2" sx={{ color: '#6c757d', mb: 1 }}>
+                    <Typography variant="body2" sx={{ color: 'text.secondary', mb: 1 }}>
                       <strong>Last Login:</strong>
                     </Typography>
                     <Typography variant="body1">
@@ -471,6 +477,9 @@ const Users: React.FC = () => {
       <Dialog
         open={deleteDialogOpen}
         onClose={() => setDeleteDialogOpen(false)}
+        PaperProps={{
+          sx: { borderRadius: 3 }
+        }}
       >
         <DialogTitle>Delete User</DialogTitle>
         <DialogContent>

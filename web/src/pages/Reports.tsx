@@ -26,6 +26,7 @@ import {
   ListItemIcon,
   ListItemText,
   Divider,
+  Stack,
 } from '@mui/material';
 import {
   Search,
@@ -42,9 +43,9 @@ import {
   Engineering,
   PriorityHigh,
   BugReport,
+  FilterList,
 } from '@mui/icons-material';
 import { Upload } from '../types';
-import { uploadService } from '../services/uploadService';
 import { format } from 'date-fns';
 
 const Reports: React.FC = () => {
@@ -84,7 +85,7 @@ const Reports: React.FC = () => {
       setLoading(true);
       setError('');
       
-      // Mock data for demonstration with enhanced AI insights
+      // Mock data for demonstration
       const mockUploads: Upload[] = [
         {
           id: '1',
@@ -158,42 +159,6 @@ const Reports: React.FC = () => {
           updatedAt: '2024-01-15T09:15:00Z',
           processedAt: '2024-01-15T09:17:00Z',
         },
-        {
-          id: '3',
-          userId: 'user3',
-          user: {
-            id: 'user3',
-            fullName: 'Mike Johnson',
-            email: 'mike@example.com',
-            createdAt: '2024-01-01T00:00:00Z',
-            isActive: true,
-          },
-          imageUri: 'https://images.pexels.com/photos/1029604/pexels-photo-1029604.jpeg',
-          imageMetadata: {
-            originalName: 'surface_wear_oak_st.jpg',
-            size: 1800000,
-            mimeType: 'image/jpeg',
-            dimensions: { width: 1920, height: 1080 }
-          },
-          location: {
-            latitude: 40.7505,
-            longitude: -73.9934,
-            address: '789 Oak St, Brooklyn, NY 11201'
-          },
-          status: 'success',
-          aiAnalysis: {
-            damageType: 'Surface Wear',
-            severity: 'Low',
-            confidence: 0.92,
-            recommendations: ['Routine maintenance sufficient', 'Resurface in next cycle'],
-            processingTime: 1.5,
-            modelVersion: '1.0.0'
-          },
-          repairStatus: 'Completed',
-          createdAt: '2024-01-14T16:45:00Z',
-          updatedAt: '2024-01-15T11:30:00Z',
-          processedAt: '2024-01-14T16:47:00Z',
-        },
       ];
       
       setUploads(mockUploads);
@@ -231,7 +196,6 @@ const Reports: React.FC = () => {
     if (!uploadToDelete) return;
     
     try {
-      await uploadService.deleteUpload(uploadToDelete.id);
       setUploads(prev => prev.filter(u => u.id !== uploadToDelete.id));
       setDeleteDialogOpen(false);
       setUploadToDelete(null);
@@ -240,107 +204,33 @@ const Reports: React.FC = () => {
     }
   };
 
-  const handleStatusMenuOpen = (event: React.MouseEvent<HTMLElement>, upload: Upload) => {
-    event.stopPropagation();
-    setStatusMenuAnchor(event.currentTarget);
-    setSelectedUploadForStatus(upload);
-  };
-
-  const handleStatusMenuClose = () => {
-    setStatusMenuAnchor(null);
-    setSelectedUploadForStatus(null);
-  };
-
-  const handleStatusChange = async (newStatus: string) => {
-    if (!selectedUploadForStatus) return;
-    
-    try {
-      // Update the upload status locally (in production, make API call)
-      setUploads(prev => prev.map(upload => 
-        upload.id === selectedUploadForStatus.id 
-          ? { ...upload, repairStatus: newStatus }
-          : upload
-      ));
-      
-      handleStatusMenuClose();
-    } catch (err: any) {
-      setError(err.message || 'Failed to update status');
-    }
-  };
-
-  const handleExport = async () => {
-    try {
-      const blob = await uploadService.exportUploads(filters);
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `reports_${format(new Date(), 'yyyy-MM-dd')}.csv`;
-      document.body.appendChild(a);
-      a.click();
-      window.URL.revokeObjectURL(url);
-      document.body.removeChild(a);
-    } catch (err: any) {
-      setError(err.message || 'Failed to export reports');
-    }
-  };
-
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'pending': return '#ff9500';
-      case 'processing': return '#007AFF';
-      case 'success': return '#34c759';
-      case 'failed': return '#ff3b30';
-      default: return '#6c757d';
-    }
-  };
-
-  const getStatusIcon = (status: string) => {
-    switch (status) {
-      case 'pending': return <Schedule />;
-      case 'processing': return <Schedule />;
-      case 'success': return <CheckCircle />;
-      case 'failed': return <Error />;
-      default: return <Schedule />;
+      case 'pending': return '#F5A623';
+      case 'processing': return '#4A90E2';
+      case 'success': return '#7ED321';
+      case 'failed': return '#D0021B';
+      default: return '#9E9E9E';
     }
   };
 
   const getSeverityColor = (severity: string) => {
     switch (severity) {
-      case 'Low': return '#34c759';
-      case 'Medium': return '#ff9500';
-      case 'High': return '#ff6b35';
-      case 'Critical': return '#ff3b30';
-      default: return '#6c757d';
+      case 'Low': return '#7ED321';
+      case 'Medium': return '#F5A623';
+      case 'High': return '#FF6B35';
+      case 'Critical': return '#D0021B';
+      default: return '#9E9E9E';
     }
   };
 
   const getRepairStatusColor = (status: string) => {
     switch (status) {
-      case 'Reported': return '#ff9500';
-      case 'In Progress': return '#007AFF';
-      case 'Completed': return '#34c759';
-      case 'Should Start': return '#ff6b35';
-      default: return '#6c757d';
-    }
-  };
-
-  const getRepairStatusIcon = (status: string) => {
-    switch (status) {
-      case 'Reported': return <BugReport />;
-      case 'In Progress': return <Engineering />;
-      case 'Completed': return <CheckCircle />;
-      case 'Should Start': return <PlayArrow />;
-      default: return <Schedule />;
-    }
-  };
-
-  const getPriorityFromSeverity = (severity: string) => {
-    switch (severity) {
-      case 'Critical': return 'Emergency';
-      case 'High': return 'Urgent';
-      case 'Medium': return 'Moderate';
-      case 'Low': return 'Low';
-      default: return 'Unknown';
+      case 'Reported': return '#F5A623';
+      case 'In Progress': return '#4A90E2';
+      case 'Completed': return '#7ED321';
+      case 'Should Start': return '#FF6B35';
+      default: return '#9E9E9E';
     }
   };
 
@@ -357,7 +247,7 @@ const Reports: React.FC = () => {
       </Box>
 
       {/* Filters */}
-      <Card sx={{ mb: 3, borderRadius: 3 }}>
+      <Card sx={{ mb: 3, borderRadius: 3, border: '1px solid', borderColor: 'divider' }}>
         <CardContent sx={{ p: 3 }}>
           <Grid container spacing={3} alignItems="center">
             <Grid item xs={12} md={4}>
@@ -373,6 +263,11 @@ const Reports: React.FC = () => {
                     </InputAdornment>
                   ),
                 }}
+                sx={{
+                  '& .MuiOutlinedInput-root': {
+                    borderRadius: 2,
+                  },
+                }}
               />
             </Grid>
             
@@ -383,6 +278,7 @@ const Reports: React.FC = () => {
                   value={filters.status}
                   label="Status"
                   onChange={(e) => handleFilterChange('status', e.target.value)}
+                  sx={{ borderRadius: 2 }}
                 >
                   <MenuItem value="">All</MenuItem>
                   <MenuItem value="pending">Pending</MenuItem>
@@ -400,6 +296,7 @@ const Reports: React.FC = () => {
                   value={filters.severity}
                   label="Severity"
                   onChange={(e) => handleFilterChange('severity', e.target.value)}
+                  sx={{ borderRadius: 2 }}
                 >
                   <MenuItem value="">All</MenuItem>
                   <MenuItem value="Low">Low</MenuItem>
@@ -417,6 +314,7 @@ const Reports: React.FC = () => {
                   value={filters.damageType}
                   label="Damage Type"
                   onChange={(e) => handleFilterChange('damageType', e.target.value)}
+                  sx={{ borderRadius: 2 }}
                 >
                   <MenuItem value="">All</MenuItem>
                   <MenuItem value="Pothole">Pothole</MenuItem>
@@ -432,8 +330,12 @@ const Reports: React.FC = () => {
                 fullWidth
                 variant="outlined"
                 startIcon={<Download />}
-                onClick={handleExport}
-                sx={{ height: 56 }}
+                sx={{ 
+                  height: 56,
+                  borderRadius: 2,
+                  textTransform: 'none',
+                  fontWeight: 500,
+                }}
               >
                 Export
               </Button>
@@ -462,9 +364,13 @@ const Reports: React.FC = () => {
                 <Card
                   sx={{
                     borderRadius: 3,
-                    transition: 'all 0.3s ease',
+                    border: '1px solid',
+                    borderColor: 'divider',
+                    transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
                     '&:hover': {
                       transform: 'translateY(-2px)',
+                      boxShadow: '0 8px 24px rgba(0, 0, 0, 0.12)',
+                      borderColor: 'primary.main',
                     },
                   }}
                 >
@@ -500,7 +406,6 @@ const Reports: React.FC = () => {
                           
                           <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
                             <Chip
-                              icon={getStatusIcon(upload.status)}
                               label={upload.status.toUpperCase()}
                               size="small"
                               sx={{
@@ -511,7 +416,6 @@ const Reports: React.FC = () => {
                             />
                             <IconButton
                               size="small"
-                              onClick={(e) => handleStatusMenuOpen(e, upload)}
                               sx={{ color: 'text.secondary' }}
                             >
                               <MoreVert />
@@ -533,51 +437,26 @@ const Reports: React.FC = () => {
                               🤖 AI Analysis
                             </Typography>
                             
-                            <Grid container spacing={2} sx={{ mb: 1 }}>
-                              <Grid item xs={12} sm={4}>
-                                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                                  <BugReport sx={{ fontSize: 16, color: 'text.secondary' }} />
-                                  <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-                                    Type:
-                                  </Typography>
-                                  <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                                    {upload.aiAnalysis.damageType}
-                                  </Typography>
-                                </Box>
-                              </Grid>
-                              
-                              <Grid item xs={12} sm={4}>
-                                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                                  <PriorityHigh sx={{ fontSize: 16, color: getSeverityColor(upload.aiAnalysis.severity) }} />
-                                  <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-                                    Severity:
-                                  </Typography>
-                                  <Chip
-                                    label={upload.aiAnalysis.severity}
-                                    size="small"
-                                    sx={{
-                                      bgcolor: `${getSeverityColor(upload.aiAnalysis.severity)}15`,
-                                      color: getSeverityColor(upload.aiAnalysis.severity),
-                                      fontWeight: 600,
-                                      fontSize: '0.75rem',
-                                      height: 20,
-                                    }}
-                                  />
-                                </Box>
-                              </Grid>
-                              
-                              <Grid item xs={12} sm={4}>
-                                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                                  <PriorityHigh sx={{ fontSize: 16, color: 'warning.main' }} />
-                                  <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-                                    Priority:
-                                  </Typography>
-                                  <Typography variant="body2" sx={{ fontWeight: 600, color: 'warning.main' }}>
-                                    {getPriorityFromSeverity(upload.aiAnalysis.severity)}
-                                  </Typography>
-                                </Box>
-                              </Grid>
-                            </Grid>
+                            <Stack direction="row" spacing={2} sx={{ mb: 1 }}>
+                              <Chip
+                                label={upload.aiAnalysis.damageType}
+                                size="small"
+                                sx={{
+                                  bgcolor: 'primary.light',
+                                  color: 'primary.main',
+                                  fontWeight: 600,
+                                }}
+                              />
+                              <Chip
+                                label={upload.aiAnalysis.severity}
+                                size="small"
+                                sx={{
+                                  bgcolor: `${getSeverityColor(upload.aiAnalysis.severity)}15`,
+                                  color: getSeverityColor(upload.aiAnalysis.severity),
+                                  fontWeight: 600,
+                                }}
+                              />
+                            </Stack>
                             
                             <Typography variant="body2" sx={{ color: 'text.primary', mb: 1 }}>
                               <strong>Recommendations:</strong> {upload.aiAnalysis.recommendations.join(', ')}
@@ -591,7 +470,6 @@ const Reports: React.FC = () => {
 
                         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                           <Chip
-                            icon={getRepairStatusIcon(upload.repairStatus)}
                             label={`Repair: ${upload.repairStatus}`}
                             size="small"
                             sx={{
@@ -640,48 +518,15 @@ const Reports: React.FC = () => {
         </>
       )}
 
-      {/* Status Change Menu */}
-      <Menu
-        anchorEl={statusMenuAnchor}
-        open={Boolean(statusMenuAnchor)}
-        onClose={handleStatusMenuClose}
-        PaperProps={{
-          sx: { minWidth: 200 }
-        }}
-      >
-        <MenuItem onClick={() => handleStatusChange('Should Start')}>
-          <ListItemIcon>
-            <PlayArrow sx={{ color: 'warning.main' }} />
-          </ListItemIcon>
-          <ListItemText primary="Should Start" />
-        </MenuItem>
-        <MenuItem onClick={() => handleStatusChange('In Progress')}>
-          <ListItemIcon>
-            <Engineering sx={{ color: 'info.main' }} />
-          </ListItemIcon>
-          <ListItemText primary="In Progress" />
-        </MenuItem>
-        <MenuItem onClick={() => handleStatusChange('Completed')}>
-          <ListItemIcon>
-            <CheckCircle sx={{ color: 'success.main' }} />
-          </ListItemIcon>
-          <ListItemText primary="Completed" />
-        </MenuItem>
-        <Divider />
-        <MenuItem onClick={() => handleViewDetails(selectedUploadForStatus!)}>
-          <ListItemIcon>
-            <Visibility />
-          </ListItemIcon>
-          <ListItemText primary="View Details" />
-        </MenuItem>
-      </Menu>
-
       {/* Detail Dialog */}
       <Dialog
         open={detailDialogOpen}
         onClose={() => setDetailDialogOpen(false)}
         maxWidth="md"
         fullWidth
+        PaperProps={{
+          sx: { borderRadius: 3 }
+        }}
       >
         <DialogTitle>Report Details</DialogTitle>
         <DialogContent>
@@ -742,9 +587,6 @@ const Reports: React.FC = () => {
                         Severity: {selectedUpload.aiAnalysis.severity}
                       </Typography>
                       <Typography variant="body2" sx={{ mb: 1 }}>
-                        Priority: {getPriorityFromSeverity(selectedUpload.aiAnalysis.severity)}
-                      </Typography>
-                      <Typography variant="body2" sx={{ mb: 1 }}>
                         Confidence: {(selectedUpload.aiAnalysis.confidence * 100).toFixed(1)}%
                       </Typography>
                       <Typography variant="body2">
@@ -766,6 +608,9 @@ const Reports: React.FC = () => {
       <Dialog
         open={deleteDialogOpen}
         onClose={() => setDeleteDialogOpen(false)}
+        PaperProps={{
+          sx: { borderRadius: 3 }
+        }}
       >
         <DialogTitle>Delete Report</DialogTitle>
         <DialogContent>

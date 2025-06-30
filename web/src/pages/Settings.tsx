@@ -110,7 +110,6 @@ const Settings: React.FC = () => {
     setSuccess('');
 
     try {
-      // In production, make API call to update profile
       updateUser(profileData);
       setSuccess('Profile updated successfully');
     } catch (err: any) {
@@ -143,7 +142,6 @@ const Settings: React.FC = () => {
     setSuccess('');
 
     try {
-      // In production, make API call to update password
       setSuccess('Password updated successfully');
       setPasswordData({
         currentPassword: '',
@@ -159,26 +157,11 @@ const Settings: React.FC = () => {
 
   const handleDeleteAccount = async () => {
     try {
-      // In production, make API call to delete account
       await logout();
-      // Redirect will be handled by auth context
     } catch (err: any) {
       setError(err.message || 'Failed to delete account');
     }
     setDeleteDialogOpen(false);
-  };
-
-  const getThemeIcon = (mode: string) => {
-    switch (mode) {
-      case 'light':
-        return <LightMode />;
-      case 'dark':
-        return <DarkMode />;
-      case 'system':
-        return <SettingsBrightness />;
-      default:
-        return <SettingsBrightness />;
-    }
   };
 
   const getThemeLabel = (mode: string) => {
@@ -225,6 +208,8 @@ const Settings: React.FC = () => {
           <Card
             sx={{
               borderRadius: 3,
+              border: '1px solid',
+              borderColor: 'divider',
               mb: 3,
             }}
           >
@@ -245,6 +230,11 @@ const Settings: React.FC = () => {
                       value={profileData.fullName}
                       onChange={(e) => handleProfileChange('fullName', e.target.value)}
                       disabled={loading}
+                      sx={{
+                        '& .MuiOutlinedInput-root': {
+                          borderRadius: 2,
+                        },
+                      }}
                     />
                   </Grid>
                   
@@ -256,6 +246,11 @@ const Settings: React.FC = () => {
                       value={profileData.email}
                       onChange={(e) => handleProfileChange('email', e.target.value)}
                       disabled={loading}
+                      sx={{
+                        '& .MuiOutlinedInput-root': {
+                          borderRadius: 2,
+                        },
+                      }}
                     />
                   </Grid>
                   
@@ -266,6 +261,11 @@ const Settings: React.FC = () => {
                       value={profileData.phone}
                       onChange={(e) => handleProfileChange('phone', e.target.value)}
                       disabled={loading}
+                      sx={{
+                        '& .MuiOutlinedInput-root': {
+                          borderRadius: 2,
+                        },
+                      }}
                     />
                   </Grid>
                   
@@ -277,6 +277,8 @@ const Settings: React.FC = () => {
                       disabled={loading}
                       sx={{
                         borderRadius: 2,
+                        textTransform: 'none',
+                        fontWeight: 500,
                       }}
                     >
                       {loading ? 'Saving...' : 'Save Changes'}
@@ -291,6 +293,8 @@ const Settings: React.FC = () => {
           <Card
             sx={{
               borderRadius: 3,
+              border: '1px solid',
+              borderColor: 'divider',
               mb: 3,
             }}
           >
@@ -312,6 +316,11 @@ const Settings: React.FC = () => {
                       value={passwordData.currentPassword}
                       onChange={(e) => handlePasswordChange('currentPassword', e.target.value)}
                       disabled={loading}
+                      sx={{
+                        '& .MuiOutlinedInput-root': {
+                          borderRadius: 2,
+                        },
+                      }}
                     />
                   </Grid>
                   
@@ -323,6 +332,11 @@ const Settings: React.FC = () => {
                       value={passwordData.newPassword}
                       onChange={(e) => handlePasswordChange('newPassword', e.target.value)}
                       disabled={loading}
+                      sx={{
+                        '& .MuiOutlinedInput-root': {
+                          borderRadius: 2,
+                        },
+                      }}
                     />
                   </Grid>
                   
@@ -334,6 +348,11 @@ const Settings: React.FC = () => {
                       value={passwordData.confirmPassword}
                       onChange={(e) => handlePasswordChange('confirmPassword', e.target.value)}
                       disabled={loading}
+                      sx={{
+                        '& .MuiOutlinedInput-root': {
+                          borderRadius: 2,
+                        },
+                      }}
                     />
                   </Grid>
                   
@@ -345,6 +364,8 @@ const Settings: React.FC = () => {
                       disabled={loading}
                       sx={{
                         borderRadius: 2,
+                        textTransform: 'none',
+                        fontWeight: 500,
                       }}
                     >
                       {loading ? 'Updating...' : 'Update Password'}
@@ -362,6 +383,8 @@ const Settings: React.FC = () => {
           <Card
             sx={{
               borderRadius: 3,
+              border: '1px solid',
+              borderColor: 'divider',
               mb: 3,
             }}
           >
@@ -395,6 +418,8 @@ const Settings: React.FC = () => {
           <Card
             sx={{
               borderRadius: 3,
+              border: '1px solid',
+              borderColor: 'divider',
               mb: 3,
             }}
           >
@@ -412,6 +437,7 @@ const Settings: React.FC = () => {
                   value={themeState.mode}
                   label="Theme Mode"
                   onChange={(e) => handleThemeChange(e.target.value as 'light' | 'dark' | 'system')}
+                  sx={{ borderRadius: 2 }}
                 >
                   <MenuItem value="system">
                     <ListItemIcon>
@@ -461,6 +487,8 @@ const Settings: React.FC = () => {
           <Card
             sx={{
               borderRadius: 3,
+              border: '1px solid',
+              borderColor: 'divider',
               mb: 3,
             }}
           >
@@ -518,7 +546,7 @@ const Settings: React.FC = () => {
             sx={{
               borderRadius: 3,
               border: '1px solid',
-              borderColor: 'error.light',
+              borderColor: 'error.main',
               bgcolor: 'error.light',
               backgroundImage: 'none',
             }}
@@ -540,7 +568,11 @@ const Settings: React.FC = () => {
                 color="error"
                 startIcon={<Delete />}
                 onClick={() => setDeleteDialogOpen(true)}
-                sx={{ borderRadius: 2 }}
+                sx={{ 
+                  borderRadius: 2,
+                  textTransform: 'none',
+                  fontWeight: 500,
+                }}
               >
                 Delete Account
               </Button>
@@ -555,6 +587,9 @@ const Settings: React.FC = () => {
         onClose={() => setDeleteDialogOpen(false)}
         maxWidth="sm"
         fullWidth
+        PaperProps={{
+          sx: { borderRadius: 3 }
+        }}
       >
         <DialogTitle sx={{ color: 'error.main' }}>Delete Account</DialogTitle>
         <DialogContent>

@@ -17,15 +17,19 @@ const StatsCard: React.FC<StatsCardProps> = ({ title, value, icon, color, trend 
     <Card
       sx={{
         borderRadius: 3,
-        transition: 'all 0.3s ease',
+        border: '1px solid',
+        borderColor: 'divider',
+        transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
         '&:hover': {
-          transform: 'translateY(-2px)',
+          transform: 'translateY(-4px)',
+          boxShadow: '0 12px 32px rgba(0, 0, 0, 0.12)',
+          borderColor: 'primary.main',
         },
       }}
     >
       <CardContent sx={{ p: 3 }}>
-        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <Box>
+        <Box sx={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', mb: 2 }}>
+          <Box sx={{ flex: 1 }}>
             <Typography
               variant="body2"
               sx={{
@@ -43,31 +47,43 @@ const StatsCard: React.FC<StatsCardProps> = ({ title, value, icon, color, trend 
               variant="h4"
               sx={{
                 fontWeight: 700,
-                color: 'text.primary', // This ensures proper contrast in both themes
+                color: 'text.primary',
                 mb: trend ? 1 : 0,
+                fontSize: '2rem',
               }}
             >
               {value}
             </Typography>
             {trend && (
-              <Typography
-                variant="body2"
-                sx={{
-                  color: trend.isPositive ? 'success.main' : 'error.main',
-                  fontWeight: 600,
-                  fontSize: '0.875rem',
-                }}
-              >
-                {trend.isPositive ? '+' : ''}{trend.value}%
-              </Typography>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                <Box
+                  sx={{
+                    width: 8,
+                    height: 8,
+                    borderRadius: '50%',
+                    bgcolor: trend.isPositive ? 'success.main' : 'error.main',
+                  }}
+                />
+                <Typography
+                  variant="body2"
+                  sx={{
+                    color: trend.isPositive ? 'success.main' : 'error.main',
+                    fontWeight: 600,
+                    fontSize: '0.875rem',
+                  }}
+                >
+                  {trend.isPositive ? '+' : ''}{trend.value}%
+                </Typography>
+              </Box>
             )}
           </Box>
           <Avatar
             sx={{
-              width: 56,
-              height: 56,
+              width: 48,
+              height: 48,
               bgcolor: `${color}15`,
               color: color,
+              transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
             }}
           >
             {icon}

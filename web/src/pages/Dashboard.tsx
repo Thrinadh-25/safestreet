@@ -7,33 +7,30 @@ import {
   CardContent,
   CircularProgress,
   Alert,
+  Button,
+  Chip,
+  Avatar,
+  List,
+  ListItem,
+  ListItemAvatar,
+  ListItemText,
+  ListItemSecondaryAction,
+  IconButton,
 } from '@mui/material';
 import {
   CloudUpload,
   Schedule,
   CheckCircle,
   Warning,
+  TrendingUp,
+  Refresh,
+  MoreVert,
+  LocationOn,
+  Image,
 } from '@mui/icons-material';
 import StatsCard from '../components/Dashboard/StatsCard';
-import RecentUploads from '../components/Dashboard/RecentUploads';
 import { DashboardStats } from '../types';
-import { dashboardService } from '../services/dashboardService';
-import {
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-  PieChart,
-  Pie,
-  Cell,
-  LineChart,
-  Line,
-} from 'recharts';
-
-const COLORS = ['#007AFF', '#34C759', '#FF9500', '#FF3B30'];
+import { format } from 'date-fns';
 
 const Dashboard: React.FC = () => {
   const [stats, setStats] = useState<DashboardStats | null>(null);
@@ -135,6 +132,26 @@ const Dashboard: React.FC = () => {
     }
   };
 
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'pending': return '#F5A623';
+      case 'processing': return '#4A90E2';
+      case 'success': return '#7ED321';
+      case 'failed': return '#D0021B';
+      default: return '#9E9E9E';
+    }
+  };
+
+  const getSeverityColor = (severity: string) => {
+    switch (severity) {
+      case 'Low': return '#7ED321';
+      case 'Medium': return '#F5A623';
+      case 'High': return '#FF6B35';
+      case 'Critical': return '#D0021B';
+      default: return '#9E9E9E';
+    }
+  };
+
   if (loading) {
     return (
       <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: 400 }}>
@@ -162,204 +179,259 @@ const Dashboard: React.FC = () => {
   return (
     <Box>
       {/* Header */}
-      <Box sx={{ mb: 4 }}>
-        <Typography variant="h4" sx={{ fontWeight: 700, mb: 1 }}>
-          Dashboard Overview
-        </Typography>
-        <Typography variant="body1" sx={{ color: 'text.secondary' }}>
-          Monitor road damage reports and repair progress
-        </Typography>
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 4 }}>
+        <Box>
+          <Typography variant="h4" sx={{ fontWeight: 700, mb: 1, color: 'text.primary' }}>
+            Welcome back, Admin! 👋
+          </Typography>
+          <Typography variant="body1" sx={{ color: 'text.secondary' }}>
+            Here's what's happening with SafeStreets today
+          </Typography>
+        </Box>
+        
+        <Button
+          variant="outlined"
+          startIcon={<Refresh />}
+          onClick={loadDashboardStats}
+          sx={{
+            borderRadius: 2,
+            textTransform: 'none',
+            fontWeight: 500,
+          }}
+        >
+          Refresh
+        </Button>
       </Box>
 
       {/* Stats Cards */}
       <Grid container spacing={3} sx={{ mb: 4 }}>
-        <Grid item xs={12} sm={6} md={3}>
+        <Grid item xs={12} sm={6} lg={3}>
           <StatsCard
             title="Total Reports"
             value={stats.totalUploads.toLocaleString()}
             icon={<CloudUpload />}
-            color="#007AFF"
+            color="#4A90E2"
             trend={{ value: 12.5, isPositive: true }}
           />
         </Grid>
-        <Grid item xs={12} sm={6} md={3}>
+        <Grid item xs={12} sm={6} lg={3}>
           <StatsCard
             title="Pending"
             value={stats.pendingReports}
             icon={<Schedule />}
-            color="#FF9500"
+            color="#F5A623"
             trend={{ value: -8.2, isPositive: false }}
           />
         </Grid>
-        <Grid item xs={12} sm={6} md={3}>
+        <Grid item xs={12} sm={6} lg={3}>
           <StatsCard
             title="Completed"
             value={stats.completedRepairs.toLocaleString()}
             icon={<CheckCircle />}
-            color="#34C759"
+            color="#7ED321"
             trend={{ value: 15.3, isPositive: true }}
           />
         </Grid>
-        <Grid item xs={12} sm={6} md={3}>
+        <Grid item xs={12} sm={6} lg={3}>
           <StatsCard
             title="Critical Issues"
             value={stats.criticalIssues}
             icon={<Warning />}
-            color="#FF3B30"
+            color="#D0021B"
             trend={{ value: -25.0, isPositive: true }}
           />
         </Grid>
       </Grid>
 
-      {/* Charts and Recent Uploads */}
+      {/* Main Content */}
       <Grid container spacing={3}>
-        {/* Monthly Trends */}
+        {/* Recent Reports */}
         <Grid item xs={12} lg={8}>
           <Card
             sx={{
               borderRadius: 3,
+              border: '1px solid',
+              borderColor: 'divider',
               mb: 3,
             }}
           >
-            <CardContent sx={{ p: 3 }}>
-              <Typography variant="h6" sx={{ fontWeight: 600, mb: 3 }}>
-                Monthly Trends
-              </Typography>
-              <ResponsiveContainer width="100%" height={300}>
-                <LineChart data={stats.monthlyTrends}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,0,0,0.1)" />
-                  <XAxis dataKey="month" stroke="currentColor" />
-                  <YAxis stroke="currentColor" />
-                  <Tooltip
-                    contentStyle={{
-                      backgroundColor: 'var(--mui-palette-background-paper)',
-                      border: '1px solid var(--mui-palette-divider)',
-                      borderRadius: '8px',
-                      color: 'var(--mui-palette-text-primary)',
-                    }}
-                  />
-                  <Line
-                    type="monotone"
-                    dataKey="uploads"
-                    stroke="#007AFF"
-                    strokeWidth={3}
-                    dot={{ fill: '#007AFF', strokeWidth: 2, r: 4 }}
-                    name="Reports"
-                  />
-                  <Line
-                    type="monotone"
-                    dataKey="completed"
-                    stroke="#34C759"
-                    strokeWidth={3}
-                    dot={{ fill: '#34C759', strokeWidth: 2, r: 4 }}
-                    name="Completed"
-                  />
-                </LineChart>
-              </ResponsiveContainer>
-            </CardContent>
-          </Card>
+            <CardContent sx={{ p: 0 }}>
+              <Box sx={{ p: 3, pb: 1, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <Box>
+                  <Typography variant="h6" sx={{ fontWeight: 600, mb: 1 }}>
+                    Recent Reports
+                  </Typography>
+                  <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+                    Latest damage reports from the field
+                  </Typography>
+                </Box>
+                <Button
+                  variant="text"
+                  endIcon={<TrendingUp />}
+                  sx={{ textTransform: 'none', fontWeight: 500 }}
+                >
+                  View All
+                </Button>
+              </Box>
 
-          {/* Damage Type Distribution */}
-          <Card
-            sx={{
-              borderRadius: 3,
-            }}
-          >
-            <CardContent sx={{ p: 3 }}>
-              <Typography variant="h6" sx={{ fontWeight: 600, mb: 3 }}>
-                Damage Type Distribution
-              </Typography>
-              <ResponsiveContainer width="100%" height={300}>
-                <BarChart data={stats.damageTypeDistribution}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,0,0,0.1)" />
-                  <XAxis dataKey="type" stroke="currentColor" />
-                  <YAxis stroke="currentColor" />
-                  <Tooltip
-                    contentStyle={{
-                      backgroundColor: 'var(--mui-palette-background-paper)',
-                      border: '1px solid var(--mui-palette-divider)',
-                      borderRadius: '8px',
-                      color: 'var(--mui-palette-text-primary)',
+              <List sx={{ px: 2 }}>
+                {stats.recentUploads.map((upload, index) => (
+                  <ListItem
+                    key={upload.id}
+                    sx={{
+                      borderRadius: 2,
+                      mb: 1,
+                      transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
+                      '&:hover': {
+                        bgcolor: 'action.hover',
+                      },
                     }}
-                  />
-                  <Bar dataKey="count" fill="#007AFF" radius={[4, 4, 0, 0]} />
-                </BarChart>
-              </ResponsiveContainer>
+                  >
+                    <ListItemAvatar>
+                      <Avatar
+                        sx={{
+                          bgcolor: 'primary.light',
+                          color: 'primary.main',
+                        }}
+                      >
+                        <Image />
+                      </Avatar>
+                    </ListItemAvatar>
+                    
+                    <ListItemText
+                      disableTypography
+                      primary={
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.5 }}>
+                          <Typography variant="subtitle2" sx={{ fontWeight: 600 }}>
+                            {upload.aiAnalysis?.damageType || 'Processing...'}
+                          </Typography>
+                          {upload.aiAnalysis?.severity && (
+                            <Chip
+                              label={upload.aiAnalysis.severity}
+                              size="small"
+                              sx={{
+                                bgcolor: `${getSeverityColor(upload.aiAnalysis.severity)}15`,
+                                color: getSeverityColor(upload.aiAnalysis.severity),
+                                fontWeight: 600,
+                                fontSize: '0.75rem',
+                                height: 20,
+                              }}
+                            />
+                          )}
+                        </Box>
+                      }
+                      secondary={
+                        <Box>
+                          <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, mb: 0.5 }}>
+                            <LocationOn sx={{ fontSize: 14, color: 'text.secondary' }} />
+                            <Typography variant="caption" sx={{ color: 'text.secondary' }}>
+                              {upload.location.latitude.toFixed(4)}, {upload.location.longitude.toFixed(4)}
+                            </Typography>
+                          </Box>
+                          <Typography variant="caption" sx={{ color: 'text.secondary' }}>
+                            {format(new Date(upload.createdAt), 'MMM dd, yyyy • HH:mm')}
+                          </Typography>
+                        </Box>
+                      }
+                    />
+                    
+                    <ListItemSecondaryAction>
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                        <Chip
+                          label={upload.status.toUpperCase()}
+                          size="small"
+                          sx={{
+                            bgcolor: `${getStatusColor(upload.status)}15`,
+                            color: getStatusColor(upload.status),
+                            fontWeight: 600,
+                            fontSize: '0.7rem',
+                          }}
+                        />
+                        <IconButton size="small">
+                          <MoreVert fontSize="small" />
+                        </IconButton>
+                      </Box>
+                    </ListItemSecondaryAction>
+                  </ListItem>
+                ))}
+              </List>
+
+              {stats.recentUploads.length === 0 && (
+                <Box sx={{ p: 4, textAlign: 'center' }}>
+                  <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+                    No recent uploads
+                  </Typography>
+                </Box>
+              )}
             </CardContent>
           </Card>
         </Grid>
 
-        {/* Sidebar */}
+        {/* Quick Actions */}
         <Grid item xs={12} lg={4}>
-          {/* Severity Distribution */}
           <Card
             sx={{
               borderRadius: 3,
-              mb: 3,
+              border: '1px solid',
+              borderColor: 'divider',
             }}
           >
             <CardContent sx={{ p: 3 }}>
               <Typography variant="h6" sx={{ fontWeight: 600, mb: 3 }}>
-                Severity Distribution
+                Quick Actions
               </Typography>
-              <ResponsiveContainer width="100%" height={250}>
-                <PieChart>
-                  <Pie
-                    data={stats.severityDistribution}
-                    cx="50%"
-                    cy="50%"
-                    innerRadius={60}
-                    outerRadius={100}
-                    paddingAngle={5}
-                    dataKey="count"
-                  >
-                    {stats.severityDistribution.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                    ))}
-                  </Pie>
-                  <Tooltip
-                    contentStyle={{
-                      backgroundColor: 'var(--mui-palette-background-paper)',
-                      border: '1px solid var(--mui-palette-divider)',
-                      borderRadius: '8px',
-                      color: 'var(--mui-palette-text-primary)',
-                    }}
-                  />
-                </PieChart>
-              </ResponsiveContainer>
-              <Box sx={{ mt: 2 }}>
-                {stats.severityDistribution.map((item, index) => (
+              
+              <Grid container spacing={2}>
+                <Grid item xs={6}>
                   <Box
-                    key={item.severity}
                     sx={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'space-between',
-                      mb: 1,
+                      p: 2,
+                      borderRadius: 2,
+                      border: '2px dashed',
+                      borderColor: 'primary.main',
+                      textAlign: 'center',
+                      cursor: 'pointer',
+                      transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
+                      '&:hover': {
+                        bgcolor: 'primary.light',
+                        borderColor: 'primary.dark',
+                        transform: 'translateY(-2px)',
+                      },
                     }}
                   >
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                      <Box
-                        sx={{
-                          width: 12,
-                          height: 12,
-                          borderRadius: '50%',
-                          bgcolor: COLORS[index % COLORS.length],
-                        }}
-                      />
-                      <Typography variant="body2">{item.severity}</Typography>
-                    </Box>
-                    <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                      {item.count} ({item.percentage}%)
+                    <CloudUpload sx={{ color: 'primary.main', fontSize: 32, mb: 1 }} />
+                    <Typography variant="body2" sx={{ fontWeight: 500 }}>
+                      Reports
                     </Typography>
                   </Box>
-                ))}
-              </Box>
+                </Grid>
+                
+                <Grid item xs={6}>
+                  <Box
+                    sx={{
+                      p: 2,
+                      borderRadius: 2,
+                      border: '2px dashed',
+                      borderColor: 'secondary.main',
+                      textAlign: 'center',
+                      cursor: 'pointer',
+                      transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
+                      '&:hover': {
+                        bgcolor: 'secondary.light',
+                        borderColor: 'secondary.dark',
+                        transform: 'translateY(-2px)',
+                      },
+                    }}
+                  >
+                    <TrendingUp sx={{ color: 'secondary.main', fontSize: 32, mb: 1 }} />
+                    <Typography variant="body2" sx={{ fontWeight: 500 }}>
+                      Analytics
+                    </Typography>
+                  </Box>
+                </Grid>
+              </Grid>
             </CardContent>
           </Card>
-
-          {/* Recent Uploads */}
-          <RecentUploads uploads={stats.recentUploads} />
         </Grid>
       </Grid>
     </Box>

@@ -11,25 +11,15 @@ import {
   MenuItem,
   CircularProgress,
   Alert,
+  Chip,
+  Stack,
 } from '@mui/material';
 import {
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-  LineChart,
-  Line,
-  PieChart,
-  Pie,
-  Cell,
-  AreaChart,
-  Area,
-} from 'recharts';
-
-const COLORS = ['#007AFF', '#34C759', '#FF9500', '#FF3B30', '#5AC8FA', '#AF52DE'];
+  TrendingUp,
+  TrendingDown,
+  Assessment,
+  Timeline,
+} from '@mui/icons-material';
 
 const Analytics: React.FC = () => {
   const [loading, setLoading] = useState(true);
@@ -38,42 +28,29 @@ const Analytics: React.FC = () => {
   
   // Mock data for demonstration
   const [analyticsData] = useState({
-    damageTypesByMonth: [
-      { month: 'Jan', Pothole: 45, Crack: 32, 'Surface Wear': 28, 'Edge Damage': 18 },
-      { month: 'Feb', Pothole: 52, Crack: 38, 'Surface Wear': 31, 'Edge Damage': 22 },
-      { month: 'Mar', Pothole: 48, Crack: 41, 'Surface Wear': 35, 'Edge Damage': 25 },
-      { month: 'Apr', Pothole: 61, Crack: 45, 'Surface Wear': 38, 'Edge Damage': 28 },
-      { month: 'May', Pothole: 58, Crack: 48, 'Surface Wear': 42, 'Edge Damage': 31 },
-      { month: 'Jun', Pothole: 65, Crack: 52, 'Surface Wear': 45, 'Edge Damage': 34 },
+    summary: {
+      totalReports: 1247,
+      avgResponseTime: '4.2 hours',
+      completionRate: '89.3%',
+      criticalIssues: 5,
+    },
+    trends: [
+      { metric: 'Total Reports', value: '+12.5%', isPositive: true },
+      { metric: 'Response Time', value: '-8.2%', isPositive: true },
+      { metric: 'Completion Rate', value: '+15.3%', isPositive: true },
+      { metric: 'Critical Issues', value: '-25.0%', isPositive: true },
     ],
-    severityTrends: [
-      { month: 'Jan', Low: 89, Medium: 67, High: 34, Critical: 12 },
-      { month: 'Feb', Low: 95, Medium: 72, High: 38, Critical: 15 },
-      { month: 'Mar', Low: 102, Medium: 78, High: 42, Critical: 18 },
-      { month: 'Apr', Low: 108, Medium: 85, High: 45, Critical: 21 },
-      { month: 'May', Low: 115, Medium: 91, High: 48, Critical: 24 },
-      { month: 'Jun', Low: 122, Medium: 98, High: 52, Critical: 28 },
+    damageTypes: [
+      { type: 'Pothole', count: 456, percentage: 36.6, trend: '+5.2%' },
+      { type: 'Surface Crack', count: 321, percentage: 25.7, trend: '+2.1%' },
+      { type: 'Surface Wear', count: 289, percentage: 23.2, trend: '-1.5%' },
+      { type: 'Edge Damage', count: 181, percentage: 14.5, trend: '+3.8%' },
     ],
-    responseTimeAnalysis: [
-      { category: 'Critical', avgHours: 2.5, target: 4 },
-      { category: 'High', avgHours: 12.3, target: 24 },
-      { category: 'Medium', avgHours: 48.7, target: 72 },
-      { category: 'Low', avgHours: 168.2, target: 240 },
-    ],
-    geographicDistribution: [
-      { area: 'Downtown', count: 234, percentage: 28.5 },
-      { area: 'Midtown', count: 189, percentage: 23.0 },
-      { area: 'Uptown', count: 156, percentage: 19.0 },
-      { area: 'East Side', count: 134, percentage: 16.3 },
-      { area: 'West Side', count: 108, percentage: 13.2 },
-    ],
-    completionRates: [
-      { month: 'Jan', completed: 85, total: 102 },
-      { month: 'Feb', completed: 92, total: 108 },
-      { month: 'Mar', completed: 98, total: 115 },
-      { month: 'Apr', completed: 105, total: 123 },
-      { month: 'May', completed: 112, total: 131 },
-      { month: 'Jun', completed: 118, total: 138 },
+    severityBreakdown: [
+      { severity: 'Low', count: 523, percentage: 41.9, color: '#7ED321' },
+      { severity: 'Medium', count: 398, percentage: 31.9, color: '#F5A623' },
+      { severity: 'High', count: 251, percentage: 20.1, color: '#FF6B35' },
+      { severity: 'Critical', count: 75, percentage: 6.0, color: '#D0021B' },
     ],
   });
 
@@ -110,7 +87,7 @@ const Analytics: React.FC = () => {
           <Typography variant="h4" sx={{ fontWeight: 700, mb: 1 }}>
             Analytics & Insights
           </Typography>
-          <Typography variant="body1" sx={{ color: '#6c757d' }}>
+          <Typography variant="body1" sx={{ color: 'text.secondary' }}>
             Comprehensive analysis of road damage patterns and repair efficiency
           </Typography>
         </Box>
@@ -121,6 +98,7 @@ const Analytics: React.FC = () => {
             value={timeRange}
             label="Time Range"
             onChange={(e) => setTimeRange(e.target.value)}
+            sx={{ borderRadius: 2 }}
           >
             <MenuItem value="7d">Last 7 days</MenuItem>
             <MenuItem value="30d">Last 30 days</MenuItem>
@@ -131,290 +109,283 @@ const Analytics: React.FC = () => {
       </Box>
 
       <Grid container spacing={3}>
-        {/* Damage Types by Month */}
-        <Grid item xs={12} lg={8}>
-          <Card
-            sx={{
-              borderRadius: 3,
-              boxShadow: '0 4px 12px rgba(0,0,0,0.05)',
-              border: '1px solid #f0f0f0',
-              mb: 3,
-            }}
-          >
-            <CardContent sx={{ p: 3 }}>
-              <Typography variant="h6" sx={{ fontWeight: 600, mb: 3 }}>
-                Damage Types Over Time
-              </Typography>
-              <ResponsiveContainer width="100%" height={350}>
-                <AreaChart data={analyticsData.damageTypesByMonth}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-                  <XAxis dataKey="month" stroke="#6c757d" />
-                  <YAxis stroke="#6c757d" />
-                  <Tooltip
-                    contentStyle={{
-                      backgroundColor: 'white',
-                      border: '1px solid #e9ecef',
-                      borderRadius: '8px',
-                      boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
-                    }}
-                  />
-                  <Area
-                    type="monotone"
-                    dataKey="Pothole"
-                    stackId="1"
-                    stroke="#007AFF"
-                    fill="#007AFF"
-                    fillOpacity={0.8}
-                  />
-                  <Area
-                    type="monotone"
-                    dataKey="Crack"
-                    stackId="1"
-                    stroke="#34C759"
-                    fill="#34C759"
-                    fillOpacity={0.8}
-                  />
-                  <Area
-                    type="monotone"
-                    dataKey="Surface Wear"
-                    stackId="1"
-                    stroke="#FF9500"
-                    fill="#FF9500"
-                    fillOpacity={0.8}
-                  />
-                  <Area
-                    type="monotone"
-                    dataKey="Edge Damage"
-                    stackId="1"
-                    stroke="#FF3B30"
-                    fill="#FF3B30"
-                    fillOpacity={0.8}
-                  />
-                </AreaChart>
-              </ResponsiveContainer>
-            </CardContent>
-          </Card>
-        </Grid>
-
-        {/* Geographic Distribution */}
-        <Grid item xs={12} lg={4}>
-          <Card
-            sx={{
-              borderRadius: 3,
-              boxShadow: '0 4px 12px rgba(0,0,0,0.05)',
-              border: '1px solid #f0f0f0',
-              mb: 3,
-            }}
-          >
-            <CardContent sx={{ p: 3 }}>
-              <Typography variant="h6" sx={{ fontWeight: 600, mb: 3 }}>
-                Geographic Distribution
-              </Typography>
-              <ResponsiveContainer width="100%" height={250}>
-                <PieChart>
-                  <Pie
-                    data={analyticsData.geographicDistribution}
-                    cx="50%"
-                    cy="50%"
-                    innerRadius={60}
-                    outerRadius={100}
-                    paddingAngle={5}
-                    dataKey="count"
-                  >
-                    {analyticsData.geographicDistribution.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                    ))}
-                  </Pie>
-                  <Tooltip
-                    contentStyle={{
-                      backgroundColor: 'white',
-                      border: '1px solid #e9ecef',
-                      borderRadius: '8px',
-                      boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
-                    }}
-                  />
-                </PieChart>
-              </ResponsiveContainer>
-              <Box sx={{ mt: 2 }}>
-                {analyticsData.geographicDistribution.map((item, index) => (
-                  <Box
-                    key={item.area}
-                    sx={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'space-between',
-                      mb: 1,
-                    }}
-                  >
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                      <Box
-                        sx={{
-                          width: 12,
-                          height: 12,
-                          borderRadius: '50%',
-                          bgcolor: COLORS[index % COLORS.length],
-                        }}
-                      />
-                      <Typography variant="body2">{item.area}</Typography>
-                    </Box>
-                    <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                      {item.count} ({item.percentage}%)
-                    </Typography>
+        {/* Summary Cards */}
+        <Grid item xs={12}>
+          <Grid container spacing={3}>
+            <Grid item xs={12} sm={6} md={3}>
+              <Card
+                sx={{
+                  borderRadius: 3,
+                  border: '1px solid',
+                  borderColor: 'divider',
+                  transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                  '&:hover': {
+                    transform: 'translateY(-2px)',
+                    boxShadow: '0 8px 24px rgba(0, 0, 0, 0.12)',
+                  },
+                }}
+              >
+                <CardContent sx={{ p: 3 }}>
+                  <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
+                    <Assessment sx={{ color: 'primary.main', fontSize: 32 }} />
+                    <Chip
+                      label="+12.5%"
+                      size="small"
+                      sx={{
+                        bgcolor: 'success.light',
+                        color: 'success.main',
+                        fontWeight: 600,
+                      }}
+                    />
                   </Box>
-                ))}
-              </Box>
-            </CardContent>
-          </Card>
+                  <Typography variant="h4" sx={{ fontWeight: 700, mb: 1 }}>
+                    {analyticsData.summary.totalReports}
+                  </Typography>
+                  <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+                    Total Reports
+                  </Typography>
+                </CardContent>
+              </Card>
+            </Grid>
+
+            <Grid item xs={12} sm={6} md={3}>
+              <Card
+                sx={{
+                  borderRadius: 3,
+                  border: '1px solid',
+                  borderColor: 'divider',
+                  transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                  '&:hover': {
+                    transform: 'translateY(-2px)',
+                    boxShadow: '0 8px 24px rgba(0, 0, 0, 0.12)',
+                  },
+                }}
+              >
+                <CardContent sx={{ p: 3 }}>
+                  <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
+                    <Timeline sx={{ color: 'secondary.main', fontSize: 32 }} />
+                    <Chip
+                      label="-8.2%"
+                      size="small"
+                      sx={{
+                        bgcolor: 'success.light',
+                        color: 'success.main',
+                        fontWeight: 600,
+                      }}
+                    />
+                  </Box>
+                  <Typography variant="h4" sx={{ fontWeight: 700, mb: 1 }}>
+                    {analyticsData.summary.avgResponseTime}
+                  </Typography>
+                  <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+                    Avg Response Time
+                  </Typography>
+                </CardContent>
+              </Card>
+            </Grid>
+
+            <Grid item xs={12} sm={6} md={3}>
+              <Card
+                sx={{
+                  borderRadius: 3,
+                  border: '1px solid',
+                  borderColor: 'divider',
+                  transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                  '&:hover': {
+                    transform: 'translateY(-2px)',
+                    boxShadow: '0 8px 24px rgba(0, 0, 0, 0.12)',
+                  },
+                }}
+              >
+                <CardContent sx={{ p: 3 }}>
+                  <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
+                    <TrendingUp sx={{ color: 'success.main', fontSize: 32 }} />
+                    <Chip
+                      label="+15.3%"
+                      size="small"
+                      sx={{
+                        bgcolor: 'success.light',
+                        color: 'success.main',
+                        fontWeight: 600,
+                      }}
+                    />
+                  </Box>
+                  <Typography variant="h4" sx={{ fontWeight: 700, mb: 1 }}>
+                    {analyticsData.summary.completionRate}
+                  </Typography>
+                  <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+                    Completion Rate
+                  </Typography>
+                </CardContent>
+              </Card>
+            </Grid>
+
+            <Grid item xs={12} sm={6} md={3}>
+              <Card
+                sx={{
+                  borderRadius: 3,
+                  border: '1px solid',
+                  borderColor: 'divider',
+                  transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                  '&:hover': {
+                    transform: 'translateY(-2px)',
+                    boxShadow: '0 8px 24px rgba(0, 0, 0, 0.12)',
+                  },
+                }}
+              >
+                <CardContent sx={{ p: 3 }}>
+                  <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
+                    <TrendingDown sx={{ color: 'error.main', fontSize: 32 }} />
+                    <Chip
+                      label="-25.0%"
+                      size="small"
+                      sx={{
+                        bgcolor: 'success.light',
+                        color: 'success.main',
+                        fontWeight: 600,
+                      }}
+                    />
+                  </Box>
+                  <Typography variant="h4" sx={{ fontWeight: 700, mb: 1 }}>
+                    {analyticsData.summary.criticalIssues}
+                  </Typography>
+                  <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+                    Critical Issues
+                  </Typography>
+                </CardContent>
+              </Card>
+            </Grid>
+          </Grid>
         </Grid>
 
-        {/* Severity Trends */}
-        <Grid item xs={12} lg={8}>
+        {/* Damage Types Analysis */}
+        <Grid item xs={12} md={6}>
           <Card
             sx={{
               borderRadius: 3,
-              boxShadow: '0 4px 12px rgba(0,0,0,0.05)',
-              border: '1px solid #f0f0f0',
-              mb: 3,
+              border: '1px solid',
+              borderColor: 'divider',
+              height: '100%',
             }}
           >
             <CardContent sx={{ p: 3 }}>
               <Typography variant="h6" sx={{ fontWeight: 600, mb: 3 }}>
-                Severity Trends
+                Damage Types Distribution
               </Typography>
-              <ResponsiveContainer width="100%" height={300}>
-                <LineChart data={analyticsData.severityTrends}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-                  <XAxis dataKey="month" stroke="#6c757d" />
-                  <YAxis stroke="#6c757d" />
-                  <Tooltip
-                    contentStyle={{
-                      backgroundColor: 'white',
-                      border: '1px solid #e9ecef',
-                      borderRadius: '8px',
-                      boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
-                    }}
-                  />
-                  <Line
-                    type="monotone"
-                    dataKey="Low"
-                    stroke="#34C759"
-                    strokeWidth={3}
-                    dot={{ fill: '#34C759', strokeWidth: 2, r: 4 }}
-                  />
-                  <Line
-                    type="monotone"
-                    dataKey="Medium"
-                    stroke="#FF9500"
-                    strokeWidth={3}
-                    dot={{ fill: '#FF9500', strokeWidth: 2, r: 4 }}
-                  />
-                  <Line
-                    type="monotone"
-                    dataKey="High"
-                    stroke="#FF6B35"
-                    strokeWidth={3}
-                    dot={{ fill: '#FF6B35', strokeWidth: 2, r: 4 }}
-                  />
-                  <Line
-                    type="monotone"
-                    dataKey="Critical"
-                    stroke="#FF3B30"
-                    strokeWidth={3}
-                    dot={{ fill: '#FF3B30', strokeWidth: 2, r: 4 }}
-                  />
-                </LineChart>
-              </ResponsiveContainer>
-            </CardContent>
-          </Card>
-        </Grid>
-
-        {/* Response Time Analysis */}
-        <Grid item xs={12} lg={4}>
-          <Card
-            sx={{
-              borderRadius: 3,
-              boxShadow: '0 4px 12px rgba(0,0,0,0.05)',
-              border: '1px solid #f0f0f0',
-              mb: 3,
-            }}
-          >
-            <CardContent sx={{ p: 3 }}>
-              <Typography variant="h6" sx={{ fontWeight: 600, mb: 3 }}>
-                Response Time Analysis
-              </Typography>
-              <Box sx={{ mb: 3 }}>
-                {analyticsData.responseTimeAnalysis.map((item, index) => (
-                  <Box key={item.category} sx={{ mb: 3 }}>
-                    <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
+              
+              <Stack spacing={2}>
+                {analyticsData.damageTypes.map((item, index) => (
+                  <Box key={item.type}>
+                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
                       <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                        {item.category}
+                        {item.type}
                       </Typography>
-                      <Typography variant="body2" sx={{ color: '#6c757d' }}>
-                        {item.avgHours}h avg
-                      </Typography>
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                        <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+                          {item.count}
+                        </Typography>
+                        <Chip
+                          label={item.trend}
+                          size="small"
+                          sx={{
+                            bgcolor: item.trend.startsWith('+') ? 'success.light' : 'error.light',
+                            color: item.trend.startsWith('+') ? 'success.main' : 'error.main',
+                            fontWeight: 600,
+                            fontSize: '0.7rem',
+                          }}
+                        />
+                      </Box>
                     </Box>
                     <Box
                       sx={{
                         width: '100%',
                         height: 8,
-                        bgcolor: '#f0f0f0',
+                        bgcolor: 'action.hover',
                         borderRadius: 4,
                         overflow: 'hidden',
                       }}
                     >
                       <Box
                         sx={{
-                          width: `${Math.min((item.avgHours / item.target) * 100, 100)}%`,
+                          width: `${item.percentage}%`,
                           height: '100%',
-                          bgcolor: item.avgHours <= item.target ? '#34C759' : '#FF3B30',
+                          bgcolor: 'primary.main',
                           borderRadius: 4,
+                          transition: 'width 1s ease-in-out',
                         }}
                       />
                     </Box>
-                    <Typography variant="caption" sx={{ color: '#6c757d' }}>
-                      Target: {item.target}h
+                    <Typography variant="caption" sx={{ color: 'text.secondary' }}>
+                      {item.percentage}%
                     </Typography>
                   </Box>
                 ))}
-              </Box>
+              </Stack>
             </CardContent>
           </Card>
         </Grid>
 
-        {/* Completion Rates */}
-        <Grid item xs={12}>
+        {/* Severity Breakdown */}
+        <Grid item xs={12} md={6}>
           <Card
             sx={{
               borderRadius: 3,
-              boxShadow: '0 4px 12px rgba(0,0,0,0.05)',
-              border: '1px solid #f0f0f0',
+              border: '1px solid',
+              borderColor: 'divider',
+              height: '100%',
             }}
           >
             <CardContent sx={{ p: 3 }}>
               <Typography variant="h6" sx={{ fontWeight: 600, mb: 3 }}>
-                Completion Rates
+                Severity Breakdown
               </Typography>
-              <ResponsiveContainer width="100%" height={300}>
-                <BarChart data={analyticsData.completionRates}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-                  <XAxis dataKey="month" stroke="#6c757d" />
-                  <YAxis stroke="#6c757d" />
-                  <Tooltip
-                    contentStyle={{
-                      backgroundColor: 'white',
-                      border: '1px solid #e9ecef',
-                      borderRadius: '8px',
-                      boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
-                    }}
-                    formatter={(value, name) => [
-                      value,
-                      name === 'completed' ? 'Completed' : 'Total Reports'
-                    ]}
-                  />
-                  <Bar dataKey="total" fill="#E5E5EA" radius={[4, 4, 0, 0]} />
-                  <Bar dataKey="completed" fill="#34C759" radius={[4, 4, 0, 0]} />
-                </BarChart>
-              </ResponsiveContainer>
+              
+              <Stack spacing={2}>
+                {analyticsData.severityBreakdown.map((item, index) => (
+                  <Box key={item.severity}>
+                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                        <Box
+                          sx={{
+                            width: 12,
+                            height: 12,
+                            borderRadius: '50%',
+                            bgcolor: item.color,
+                          }}
+                        />
+                        <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                          {item.severity}
+                        </Typography>
+                      </Box>
+                      <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+                        {item.count}
+                      </Typography>
+                    </Box>
+                    <Box
+                      sx={{
+                        width: '100%',
+                        height: 8,
+                        bgcolor: 'action.hover',
+                        borderRadius: 4,
+                        overflow: 'hidden',
+                      }}
+                    >
+                      <Box
+                        sx={{
+                          width: `${item.percentage}%`,
+                          height: '100%',
+                          bgcolor: item.color,
+                          borderRadius: 4,
+                          transition: 'width 1s ease-in-out',
+                        }}
+                      />
+                    </Box>
+                    <Typography variant="caption" sx={{ color: 'text.secondary' }}>
+                      {item.percentage}%
+                    </Typography>
+                  </Box>
+                ))}
+              </Stack>
             </CardContent>
           </Card>
         </Grid>
