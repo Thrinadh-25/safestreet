@@ -94,6 +94,7 @@ const RecentUploads: React.FC<RecentUploadsProps> = ({ uploads }) => {
               </ListItemAvatar>
               
               <ListItemText
+                disableTypography
                 primary={
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.5 }}>
                     <Typography variant="subtitle2" sx={{ fontWeight: 600 }}>
