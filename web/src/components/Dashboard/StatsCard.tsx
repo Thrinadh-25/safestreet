@@ -17,12 +17,9 @@ const StatsCard: React.FC<StatsCardProps> = ({ title, value, icon, color, trend 
     <Card
       sx={{
         borderRadius: 3,
-        boxShadow: '0 4px 12px rgba(0,0,0,0.05)',
-        border: '1px solid #f0f0f0',
         transition: 'all 0.3s ease',
         '&:hover': {
           transform: 'translateY(-2px)',
-          boxShadow: '0 8px 24px rgba(0,0,0,0.1)',
         },
       }}
     >
@@ -32,7 +29,7 @@ const StatsCard: React.FC<StatsCardProps> = ({ title, value, icon, color, trend 
             <Typography
               variant="body2"
               sx={{
-                color: '#6c757d',
+                color: 'text.secondary',
                 fontWeight: 500,
                 mb: 1,
                 textTransform: 'uppercase',
@@ -46,7 +43,7 @@ const StatsCard: React.FC<StatsCardProps> = ({ title, value, icon, color, trend 
               variant="h4"
               sx={{
                 fontWeight: 700,
-                color: '#1a1a1a',
+                color: 'text.primary', // This ensures proper contrast in both themes
                 mb: trend ? 1 : 0,
               }}
             >
@@ -56,7 +53,7 @@ const StatsCard: React.FC<StatsCardProps> = ({ title, value, icon, color, trend 
               <Typography
                 variant="body2"
                 sx={{
-                  color: trend.isPositive ? '#28a745' : '#dc3545',
+                  color: trend.isPositive ? 'success.main' : 'error.main',
                   fontWeight: 600,
                   fontSize: '0.875rem',
                 }}

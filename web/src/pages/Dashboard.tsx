@@ -49,10 +49,6 @@ const Dashboard: React.FC = () => {
       setLoading(true);
       setError('');
       
-      // For demo purposes, we'll use mock data
-      // In production, uncomment the line below:
-      // const data = await dashboardService.getDashboardStats();
-      
       // Mock data for demonstration
       const mockStats: DashboardStats = {
         totalUploads: 1247,
@@ -63,7 +59,7 @@ const Dashboard: React.FC = () => {
           {
             id: '1',
             userId: 'user1',
-            imageUri: 'https://example.com/image1.jpg',
+            imageUri: 'https://images.pexels.com/photos/1029604/pexels-photo-1029604.jpeg',
             imageMetadata: {
               originalName: 'pothole1.jpg',
               size: 2048000,
@@ -91,7 +87,7 @@ const Dashboard: React.FC = () => {
           {
             id: '2',
             userId: 'user2',
-            imageUri: 'https://example.com/image2.jpg',
+            imageUri: 'https://images.pexels.com/photos/1029604/pexels-photo-1029604.jpeg',
             imageMetadata: {
               originalName: 'crack1.jpg',
               size: 1536000,
@@ -170,7 +166,7 @@ const Dashboard: React.FC = () => {
         <Typography variant="h4" sx={{ fontWeight: 700, mb: 1 }}>
           Dashboard Overview
         </Typography>
-        <Typography variant="body1" sx={{ color: '#6c757d' }}>
+        <Typography variant="body1" sx={{ color: 'text.secondary' }}>
           Monitor road damage reports and repair progress
         </Typography>
       </Box>
@@ -222,8 +218,6 @@ const Dashboard: React.FC = () => {
           <Card
             sx={{
               borderRadius: 3,
-              boxShadow: '0 4px 12px rgba(0,0,0,0.05)',
-              border: '1px solid #f0f0f0',
               mb: 3,
             }}
           >
@@ -233,15 +227,15 @@ const Dashboard: React.FC = () => {
               </Typography>
               <ResponsiveContainer width="100%" height={300}>
                 <LineChart data={stats.monthlyTrends}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-                  <XAxis dataKey="month" stroke="#6c757d" />
-                  <YAxis stroke="#6c757d" />
+                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,0,0,0.1)" />
+                  <XAxis dataKey="month" stroke="currentColor" />
+                  <YAxis stroke="currentColor" />
                   <Tooltip
                     contentStyle={{
-                      backgroundColor: 'white',
-                      border: '1px solid #e9ecef',
+                      backgroundColor: 'var(--mui-palette-background-paper)',
+                      border: '1px solid var(--mui-palette-divider)',
                       borderRadius: '8px',
-                      boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+                      color: 'var(--mui-palette-text-primary)',
                     }}
                   />
                   <Line
@@ -269,8 +263,6 @@ const Dashboard: React.FC = () => {
           <Card
             sx={{
               borderRadius: 3,
-              boxShadow: '0 4px 12px rgba(0,0,0,0.05)',
-              border: '1px solid #f0f0f0',
             }}
           >
             <CardContent sx={{ p: 3 }}>
@@ -279,15 +271,15 @@ const Dashboard: React.FC = () => {
               </Typography>
               <ResponsiveContainer width="100%" height={300}>
                 <BarChart data={stats.damageTypeDistribution}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-                  <XAxis dataKey="type" stroke="#6c757d" />
-                  <YAxis stroke="#6c757d" />
+                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,0,0,0.1)" />
+                  <XAxis dataKey="type" stroke="currentColor" />
+                  <YAxis stroke="currentColor" />
                   <Tooltip
                     contentStyle={{
-                      backgroundColor: 'white',
-                      border: '1px solid #e9ecef',
+                      backgroundColor: 'var(--mui-palette-background-paper)',
+                      border: '1px solid var(--mui-palette-divider)',
                       borderRadius: '8px',
-                      boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+                      color: 'var(--mui-palette-text-primary)',
                     }}
                   />
                   <Bar dataKey="count" fill="#007AFF" radius={[4, 4, 0, 0]} />
@@ -303,8 +295,6 @@ const Dashboard: React.FC = () => {
           <Card
             sx={{
               borderRadius: 3,
-              boxShadow: '0 4px 12px rgba(0,0,0,0.05)',
-              border: '1px solid #f0f0f0',
               mb: 3,
             }}
           >
@@ -329,10 +319,10 @@ const Dashboard: React.FC = () => {
                   </Pie>
                   <Tooltip
                     contentStyle={{
-                      backgroundColor: 'white',
-                      border: '1px solid #e9ecef',
+                      backgroundColor: 'var(--mui-palette-background-paper)',
+                      border: '1px solid var(--mui-palette-divider)',
                       borderRadius: '8px',
-                      boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+                      color: 'var(--mui-palette-text-primary)',
                     }}
                   />
                 </PieChart>
