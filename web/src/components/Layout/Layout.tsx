@@ -15,7 +15,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   };
 
   return (
-    <Box sx={{ display: 'flex', minHeight: '100vh', bgcolor: '#f8f9fa' }}>
+    <Box sx={{ display: 'flex', minHeight: '100vh' }}>
       <Header handleDrawerToggle={handleDrawerToggle} />
       <Sidebar mobileOpen={mobileOpen} handleDrawerToggle={handleDrawerToggle} />
       
@@ -25,6 +25,8 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
           flexGrow: 1,
           width: { sm: `calc(100% - 280px)` },
           minHeight: '100vh',
+          bgcolor: 'background.default',
+          transition: 'background-color 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
         }}
       >
         <Toolbar />

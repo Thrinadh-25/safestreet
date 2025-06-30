@@ -78,8 +78,11 @@ const Login: React.FC = () => {
         sx={{
           maxWidth: 400,
           width: '100%',
-          borderRadius: 3,
-          boxShadow: '0 20px 40px rgba(0,0,0,0.1)',
+          borderRadius: 4,
+          backdropFilter: 'blur(20px)',
+          WebkitBackdropFilter: 'blur(20px)',
+          border: '1px solid rgba(255, 255, 255, 0.1)',
+          boxShadow: '0 20px 40px rgba(0, 0, 0, 0.1)',
         }}
       >
         <CardContent sx={{ p: 4 }}>
@@ -96,6 +99,7 @@ const Login: React.FC = () => {
                 justifyContent: 'center',
                 mx: 'auto',
                 mb: 3,
+                boxShadow: '0 8px 20px rgba(0, 122, 255, 0.3)',
               }}
             >
               <Shield sx={{ color: 'white', fontSize: 40 }} />
@@ -103,7 +107,7 @@ const Login: React.FC = () => {
             <Typography variant="h4" sx={{ fontWeight: 700, mb: 1 }}>
               Welcome Back
             </Typography>
-            <Typography variant="body1" sx={{ color: '#6c757d' }}>
+            <Typography variant="body1" sx={{ color: 'text.secondary' }}>
               Sign in to Safe Street Dashboard
             </Typography>
           </Box>
@@ -128,7 +132,7 @@ const Login: React.FC = () => {
               InputProps={{
                 startAdornment: (
                   <InputAdornment position="start">
-                    <Email sx={{ color: '#6c757d' }} />
+                    <Email sx={{ color: 'text.secondary' }} />
                   </InputAdornment>
                 ),
               }}
@@ -146,7 +150,7 @@ const Login: React.FC = () => {
               InputProps={{
                 startAdornment: (
                   <InputAdornment position="start">
-                    <Lock sx={{ color: '#6c757d' }} />
+                    <Lock sx={{ color: 'text.secondary' }} />
                   </InputAdornment>
                 ),
                 endAdornment: (
@@ -172,12 +176,6 @@ const Login: React.FC = () => {
               sx={{
                 py: 1.5,
                 borderRadius: 2,
-                background: 'linear-gradient(135deg, #007AFF 0%, #0A84FF 100%)',
-                boxShadow: '0 4px 12px rgba(0,122,255,0.3)',
-                '&:hover': {
-                  background: 'linear-gradient(135deg, #0056CC 0%, #0066E6 100%)',
-                  boxShadow: '0 6px 16px rgba(0,122,255,0.4)',
-                },
                 mb: 3,
               }}
             >
@@ -189,13 +187,13 @@ const Login: React.FC = () => {
             </Button>
 
             <Box sx={{ textAlign: 'center' }}>
-              <Typography variant="body2" sx={{ color: '#6c757d' }}>
+              <Typography variant="body2" sx={{ color: 'text.secondary' }}>
                 Don't have an account?{' '}
                 <Link
                   component={RouterLink}
                   to="/register"
                   sx={{
-                    color: '#007AFF',
+                    color: 'primary.main',
                     textDecoration: 'none',
                     fontWeight: 600,
                     '&:hover': {
