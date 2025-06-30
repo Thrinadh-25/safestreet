@@ -40,7 +40,7 @@ import {
   MoreVert,
   PlayArrow,
   Engineering,
-  Priority,
+  PriorityHigh,
   BugReport,
 } from '@mui/icons-material';
 import { Upload } from '../types';
@@ -548,7 +548,7 @@ const Reports: React.FC = () => {
                               
                               <Grid item xs={12} sm={4}>
                                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                                  <Priority sx={{ fontSize: 16, color: getSeverityColor(upload.aiAnalysis.severity) }} />
+                                  <PriorityHigh sx={{ fontSize: 16, color: getSeverityColor(upload.aiAnalysis.severity) }} />
                                   <Typography variant="body2" sx={{ color: 'text.secondary' }}>
                                     Severity:
                                   </Typography>
@@ -568,7 +568,7 @@ const Reports: React.FC = () => {
                               
                               <Grid item xs={12} sm={4}>
                                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                                  <Priority sx={{ fontSize: 16, color: 'warning.main' }} />
+                                  <PriorityHigh sx={{ fontSize: 16, color: 'warning.main' }} />
                                   <Typography variant="body2" sx={{ color: 'text.secondary' }}>
                                     Priority:
                                   </Typography>
