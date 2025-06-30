@@ -77,7 +77,7 @@ const Sidebar: React.FC<SidebarProps> = ({ mobileOpen, handleDrawerToggle }) => 
           >
             <Shield sx={{ color: 'white', fontSize: 24 }} />
           </Box>
-          <Typography variant="h6" sx={{ fontWeight: 700, color: '#1a1a1a' }}>
+          <Typography variant="h6" sx={{ fontWeight: 700 }}>
             Safe Street
           </Typography>
         </Box>
@@ -87,13 +87,13 @@ const Sidebar: React.FC<SidebarProps> = ({ mobileOpen, handleDrawerToggle }) => 
 
       {/* User Profile Section */}
       {state.user && (
-        <Box sx={{ p: 3, bgcolor: '#f8f9fa' }}>
+        <Box sx={{ p: 3, bgcolor: 'action.hover' }}>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
             <Avatar
               sx={{
                 width: 48,
                 height: 48,
-                bgcolor: '#007AFF',
+                bgcolor: 'primary.main',
                 fontSize: '1.2rem',
                 fontWeight: 600,
               }}
@@ -103,14 +103,14 @@ const Sidebar: React.FC<SidebarProps> = ({ mobileOpen, handleDrawerToggle }) => 
             <Box sx={{ flex: 1, minWidth: 0 }}>
               <Typography
                 variant="subtitle1"
-                sx={{ fontWeight: 600, color: '#1a1a1a', mb: 0.5 }}
+                sx={{ fontWeight: 600, mb: 0.5 }}
                 noWrap
               >
                 {state.user.fullName}
               </Typography>
               <Typography
                 variant="body2"
-                sx={{ color: '#6c757d', fontSize: '0.875rem' }}
+                sx={{ color: 'text.secondary', fontSize: '0.875rem' }}
                 noWrap
               >
                 {state.user.email}
@@ -133,25 +133,11 @@ const Sidebar: React.FC<SidebarProps> = ({ mobileOpen, handleDrawerToggle }) => 
                 borderRadius: 2,
                 py: 1.5,
                 px: 2,
-                '&.Mui-selected': {
-                  bgcolor: '#007AFF',
-                  color: 'white',
-                  '&:hover': {
-                    bgcolor: '#0056CC',
-                  },
-                  '& .MuiListItemIcon-root': {
-                    color: 'white',
-                  },
-                },
-                '&:hover': {
-                  bgcolor: '#f0f8ff',
-                },
               }}
             >
               <ListItemIcon
                 sx={{
                   minWidth: 40,
-                  color: location.pathname === item.path ? 'white' : '#6c757d',
                 }}
               >
                 {item.icon}
@@ -178,13 +164,14 @@ const Sidebar: React.FC<SidebarProps> = ({ mobileOpen, handleDrawerToggle }) => 
             borderRadius: 2,
             py: 1.5,
             px: 2,
-            color: '#dc3545',
+            color: 'error.main',
             '&:hover': {
-              bgcolor: '#fff5f5',
+              bgcolor: 'error.light',
+              backgroundImage: 'none',
             },
           }}
         >
-          <ListItemIcon sx={{ minWidth: 40, color: '#dc3545' }}>
+          <ListItemIcon sx={{ minWidth: 40, color: 'error.main' }}>
             <ExitToApp />
           </ListItemIcon>
           <ListItemText
@@ -234,7 +221,6 @@ const Sidebar: React.FC<SidebarProps> = ({ mobileOpen, handleDrawerToggle }) => 
             boxSizing: 'border-box',
             width: drawerWidth,
             border: 'none',
-            borderRight: '1px solid #e9ecef',
           },
         }}
         open

@@ -61,10 +61,6 @@ const Header: React.FC<HeaderProps> = ({ handleDrawerToggle }) => {
       sx={{
         width: { sm: `calc(100% - ${drawerWidth}px)` },
         ml: { sm: `${drawerWidth}px` },
-        bgcolor: 'white',
-        color: '#1a1a1a',
-        boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
-        borderBottom: '1px solid #e9ecef',
       }}
     >
       <Toolbar sx={{ justifyContent: 'space-between' }}>
@@ -78,7 +74,7 @@ const Header: React.FC<HeaderProps> = ({ handleDrawerToggle }) => {
           >
             <MenuIcon />
           </IconButton>
-          <Typography variant="h6" sx={{ fontWeight: 600, color: '#1a1a1a' }}>
+          <Typography variant="h6" sx={{ fontWeight: 600 }}>
             Dashboard
           </Typography>
         </Box>
@@ -90,12 +86,12 @@ const Header: React.FC<HeaderProps> = ({ handleDrawerToggle }) => {
             color="inherit"
             sx={{
               '&:hover': {
-                bgcolor: '#f0f8ff',
+                bgcolor: 'action.hover',
               },
             }}
           >
             <Badge badgeContent={3} color="error">
-              <Notifications sx={{ color: '#6c757d' }} />
+              <Notifications />
             </Badge>
           </IconButton>
 
@@ -106,7 +102,7 @@ const Header: React.FC<HeaderProps> = ({ handleDrawerToggle }) => {
             color="inherit"
             sx={{
               '&:hover': {
-                bgcolor: '#f0f8ff',
+                bgcolor: 'action.hover',
               },
             }}
           >
@@ -114,7 +110,7 @@ const Header: React.FC<HeaderProps> = ({ handleDrawerToggle }) => {
               sx={{
                 width: 32,
                 height: 32,
-                bgcolor: '#007AFF',
+                bgcolor: 'primary.main',
                 fontSize: '0.875rem',
                 fontWeight: 600,
               }}
@@ -150,7 +146,7 @@ const Header: React.FC<HeaderProps> = ({ handleDrawerToggle }) => {
               <Typography variant="subtitle2" sx={{ fontWeight: 600 }}>
                 {state.user?.fullName}
               </Typography>
-              <Typography variant="body2" sx={{ color: '#6c757d' }}>
+              <Typography variant="body2" sx={{ color: 'text.secondary' }}>
                 {state.user?.email}
               </Typography>
             </Box>
@@ -159,7 +155,7 @@ const Header: React.FC<HeaderProps> = ({ handleDrawerToggle }) => {
               <Settings sx={{ mr: 2, fontSize: 20 }} />
               Settings
             </MenuItem>
-            <MenuItem onClick={handleLogout} sx={{ color: '#dc3545' }}>
+            <MenuItem onClick={handleLogout} sx={{ color: 'error.main' }}>
               <ExitToApp sx={{ mr: 2, fontSize: 20 }} />
               Logout
             </MenuItem>

@@ -17,6 +17,12 @@ import {
   DialogContent,
   DialogActions,
   CircularProgress,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+  ListItemIcon,
+  ListItemText,
 } from '@mui/material';
 import {
   Person,
@@ -27,11 +33,17 @@ import {
   Security,
   Save,
   Delete,
+  Palette,
+  LightMode,
+  DarkMode,
+  SettingsBrightness,
 } from '@mui/icons-material';
 import { useAuth } from '../contexts/AuthContext';
+import { useTheme } from '../contexts/ThemeContext';
 
 const Settings: React.FC = () => {
   const { state, updateUser, logout } = useAuth();
+  const { state: themeState, setThemeMode } = useTheme();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
@@ -77,6 +89,12 @@ const Settings: React.FC = () => {
       ...prev,
       [field]: value,
     }));
+  };
+
+  const handleThemeChange = (mode: 'light' | 'dark' | 'system') => {
+    setThemeMode(mode);
+    setSuccess(`Theme changed to ${mode === 'system' ? 'system default' : mode} mode`);
+    setTimeout(() => setSuccess(''), 3000);
   };
 
   const handleProfileSubmit = async (e: React.FormEvent) => {
@@ -150,6 +168,32 @@ const Settings: React.FC = () => {
     setDeleteDialogOpen(false);
   };
 
+  const getThemeIcon = (mode: string) => {
+    switch (mode) {
+      case 'light':
+        return <LightMode />;
+      case 'dark':
+        return <DarkMode />;
+      case 'system':
+        return <SettingsBrightness />;
+      default:
+        return <SettingsBrightness />;
+    }
+  };
+
+  const getThemeLabel = (mode: string) => {
+    switch (mode) {
+      case 'light':
+        return 'Light Mode';
+      case 'dark':
+        return 'Dark Mode';
+      case 'system':
+        return 'System Default';
+      default:
+        return 'System Default';
+    }
+  };
+
   return (
     <Box>
       {/* Header */}
@@ -157,7 +201,7 @@ const Settings: React.FC = () => {
         <Typography variant="h4" sx={{ fontWeight: 700, mb: 1 }}>
           Settings
         </Typography>
-        <Typography variant="body1" sx={{ color: '#6c757d' }}>
+        <Typography variant="body1" sx={{ color: 'text.secondary' }}>
           Manage your account settings and preferences
         </Typography>
       </Box>
@@ -181,14 +225,12 @@ const Settings: React.FC = () => {
           <Card
             sx={{
               borderRadius: 3,
-              boxShadow: '0 4px 12px rgba(0,0,0,0.05)',
-              border: '1px solid #f0f0f0',
               mb: 3,
             }}
           >
             <CardContent sx={{ p: 4 }}>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 4 }}>
-                <Person sx={{ color: '#007AFF' }} />
+                <Person sx={{ color: 'primary.main' }} />
                 <Typography variant="h6" sx={{ fontWeight: 600 }}>
                   Profile Information
                 </Typography>
@@ -235,8 +277,6 @@ const Settings: React.FC = () => {
                       disabled={loading}
                       sx={{
                         borderRadius: 2,
-                        background: 'linear-gradient(135deg, #007AFF 0%, #0A84FF 100%)',
-                        boxShadow: '0 4px 12px rgba(0,122,255,0.3)',
                       }}
                     >
                       {loading ? 'Saving...' : 'Save Changes'}
@@ -251,14 +291,12 @@ const Settings: React.FC = () => {
           <Card
             sx={{
               borderRadius: 3,
-              boxShadow: '0 4px 12px rgba(0,0,0,0.05)',
-              border: '1px solid #f0f0f0',
               mb: 3,
             }}
           >
             <CardContent sx={{ p: 4 }}>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 4 }}>
-                <Lock sx={{ color: '#007AFF' }} />
+                <Lock sx={{ color: 'primary.main' }} />
                 <Typography variant="h6" sx={{ fontWeight: 600 }}>
                   Change Password
                 </Typography>
@@ -307,8 +345,6 @@ const Settings: React.FC = () => {
                       disabled={loading}
                       sx={{
                         borderRadius: 2,
-                        background: 'linear-gradient(135deg, #007AFF 0%, #0A84FF 100%)',
-                        boxShadow: '0 4px 12px rgba(0,122,255,0.3)',
                       }}
                     >
                       {loading ? 'Updating...' : 'Update Password'}
@@ -326,8 +362,6 @@ const Settings: React.FC = () => {
           <Card
             sx={{
               borderRadius: 3,
-              boxShadow: '0 4px 12px rgba(0,0,0,0.05)',
-              border: '1px solid #f0f0f0',
               mb: 3,
             }}
           >
@@ -336,7 +370,7 @@ const Settings: React.FC = () => {
                 sx={{
                   width: 80,
                   height: 80,
-                  bgcolor: '#007AFF',
+                  bgcolor: 'primary.main',
                   fontSize: '2rem',
                   fontWeight: 600,
                   mx: 'auto',
@@ -348,12 +382,78 @@ const Settings: React.FC = () => {
               <Typography variant="h6" sx={{ fontWeight: 600, mb: 1 }}>
                 {state.user?.fullName}
               </Typography>
-              <Typography variant="body2" sx={{ color: '#6c757d', mb: 2 }}>
+              <Typography variant="body2" sx={{ color: 'text.secondary', mb: 2 }}>
                 {state.user?.email}
               </Typography>
-              <Typography variant="caption" sx={{ color: '#6c757d' }}>
+              <Typography variant="caption" sx={{ color: 'text.secondary' }}>
                 Administrator
               </Typography>
+            </CardContent>
+          </Card>
+
+          {/* Theme Settings */}
+          <Card
+            sx={{
+              borderRadius: 3,
+              mb: 3,
+            }}
+          >
+            <CardContent sx={{ p: 4 }}>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 3 }}>
+                <Palette sx={{ color: 'primary.main' }} />
+                <Typography variant="h6" sx={{ fontWeight: 600 }}>
+                  Theme
+                </Typography>
+              </Box>
+
+              <FormControl fullWidth>
+                <InputLabel>Theme Mode</InputLabel>
+                <Select
+                  value={themeState.mode}
+                  label="Theme Mode"
+                  onChange={(e) => handleThemeChange(e.target.value as 'light' | 'dark' | 'system')}
+                >
+                  <MenuItem value="system">
+                    <ListItemIcon>
+                      <SettingsBrightness />
+                    </ListItemIcon>
+                    <ListItemText 
+                      primary="System Default" 
+                      secondary="Follow device settings"
+                    />
+                  </MenuItem>
+                  <MenuItem value="light">
+                    <ListItemIcon>
+                      <LightMode />
+                    </ListItemIcon>
+                    <ListItemText 
+                      primary="Light Mode" 
+                      secondary="Always use light theme"
+                    />
+                  </MenuItem>
+                  <MenuItem value="dark">
+                    <ListItemIcon>
+                      <DarkMode />
+                    </ListItemIcon>
+                    <ListItemText 
+                      primary="Dark Mode" 
+                      secondary="Always use dark theme"
+                    />
+                  </MenuItem>
+                </Select>
+              </FormControl>
+
+              <Box sx={{ mt: 2, p: 2, bgcolor: 'action.hover', borderRadius: 2 }}>
+                <Typography variant="body2" sx={{ color: 'text.secondary', mb: 1 }}>
+                  Current: {getThemeLabel(themeState.mode)}
+                </Typography>
+                <Typography variant="caption" sx={{ color: 'text.secondary' }}>
+                  {themeState.mode === 'system' 
+                    ? `Using ${themeState.isDark ? 'dark' : 'light'} theme from system`
+                    : `Theme is set to ${themeState.mode} mode`
+                  }
+                </Typography>
+              </Box>
             </CardContent>
           </Card>
 
@@ -361,14 +461,12 @@ const Settings: React.FC = () => {
           <Card
             sx={{
               borderRadius: 3,
-              boxShadow: '0 4px 12px rgba(0,0,0,0.05)',
-              border: '1px solid #f0f0f0',
               mb: 3,
             }}
           >
             <CardContent sx={{ p: 4 }}>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 3 }}>
-                <Notifications sx={{ color: '#007AFF' }} />
+                <Notifications sx={{ color: 'primary.main' }} />
                 <Typography variant="h6" sx={{ fontWeight: 600 }}>
                   Notifications
                 </Typography>
@@ -419,19 +517,21 @@ const Settings: React.FC = () => {
           <Card
             sx={{
               borderRadius: 3,
-              boxShadow: '0 4px 12px rgba(0,0,0,0.05)',
-              border: '1px solid #ffebee',
+              border: '1px solid',
+              borderColor: 'error.light',
+              bgcolor: 'error.light',
+              backgroundImage: 'none',
             }}
           >
             <CardContent sx={{ p: 4 }}>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 3 }}>
-                <Security sx={{ color: '#ff3b30' }} />
-                <Typography variant="h6" sx={{ fontWeight: 600, color: '#ff3b30' }}>
+                <Security sx={{ color: 'error.main' }} />
+                <Typography variant="h6" sx={{ fontWeight: 600, color: 'error.main' }}>
                   Danger Zone
                 </Typography>
               </Box>
 
-              <Typography variant="body2" sx={{ color: '#6c757d', mb: 3 }}>
+              <Typography variant="body2" sx={{ color: 'text.secondary', mb: 3 }}>
                 Once you delete your account, there is no going back. Please be certain.
               </Typography>
 
@@ -456,18 +556,18 @@ const Settings: React.FC = () => {
         maxWidth="sm"
         fullWidth
       >
-        <DialogTitle sx={{ color: '#ff3b30' }}>Delete Account</DialogTitle>
+        <DialogTitle sx={{ color: 'error.main' }}>Delete Account</DialogTitle>
         <DialogContent>
           <Typography sx={{ mb: 2 }}>
             Are you sure you want to delete your account? This action cannot be undone and will:
           </Typography>
-          <Box component="ul" sx={{ pl: 2, color: '#6c757d' }}>
+          <Box component="ul" sx={{ pl: 2, color: 'text.secondary' }}>
             <li>Permanently delete your profile and account data</li>
             <li>Remove all your uploaded reports and images</li>
             <li>Cancel any pending operations</li>
             <li>Revoke access to the dashboard</li>
           </Box>
-          <Typography sx={{ mt: 2, fontWeight: 600, color: '#ff3b30' }}>
+          <Typography sx={{ mt: 2, fontWeight: 600, color: 'error.main' }}>
             This action is irreversible.
           </Typography>
         </DialogContent>
