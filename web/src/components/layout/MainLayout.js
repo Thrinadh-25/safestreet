@@ -9,7 +9,7 @@ import {
 import { DRAWER_WIDTH } from '../../config/constants';
 import Header from './Header';
 import Sidebar from './Sidebar';
-import ChatFloatingButton from '../chat/ChatFloatingButton';
+
 
 const MainLayout = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -130,9 +130,7 @@ const MainLayout = () => {
           </Box>
         </Container>
 
-        {/* Chat Floating Button */}
-        <ChatFloatingButton />
-
+    
         {/* Mobile overlay */}
         {isMobile && mobileOpen && (
           <Box

@@ -25,7 +25,6 @@ import HistoryIcon from '@mui/icons-material/History';
 import LogoutIcon from '@mui/icons-material/ExitToApp';
 import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
 import BusinessIcon from '@mui/icons-material/Business';
-import ChatIcon from '@mui/icons-material/Chat';
 import { DRAWER_WIDTH } from '../../config/constants';
 
 // Super admin menu items
@@ -46,12 +45,6 @@ const superAdminMenuItems = [
     text: 'All Reports', 
     icon: <ReportIcon />, 
     path: '/reports', 
-    badge: null,
-  },
-  { 
-    text: 'Chat Support', 
-    icon: <ChatIcon />, 
-    path: '/chat', 
     badge: null,
   },
   { 
@@ -98,12 +91,6 @@ const regularMenuItems = [
     text: 'Historical Analysis', 
     icon: <HistoryIcon />, 
     path: '/historical', 
-    badge: null,
-  },
-  { 
-    text: 'Chat Support', 
-    icon: <ChatIcon />, 
-    path: '/chat', 
     badge: null,
   },
   { 
@@ -154,15 +141,16 @@ const Sidebar = ({ mobileOpen, onDrawerToggle, onLogout }) => {
         background: '#f8f9fa',
         borderBottom: '1px solid #e9ecef',
       }}>
-        <Avatar sx={{
-          background: '#2563eb',
+      {/* Avatar image replaced here – change the src path below if needed */}
+      <Avatar
+        src="/safestreet.png"
+        alt="Admin Avatar"
+        sx={{
           width: 48,
           height: 48,
-          fontSize: '1.25rem',
-          fontWeight: 600,
-        }}>
-          SS
-        </Avatar>
+        }}
+      />
+
         <Box>
           <Typography variant="h6" sx={{
             fontWeight: 600,
