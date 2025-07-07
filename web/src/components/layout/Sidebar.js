@@ -25,7 +25,6 @@ import HistoryIcon from '@mui/icons-material/History';
 import LogoutIcon from '@mui/icons-material/ExitToApp';
 import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
 import BusinessIcon from '@mui/icons-material/Business';
-import ChatIcon from '@mui/icons-material/Chat';
 import { DRAWER_WIDTH } from '../../config/constants';
 
 // Super admin menu items
@@ -46,12 +45,6 @@ const superAdminMenuItems = [
     text: 'All Reports', 
     icon: <ReportIcon />, 
     path: '/reports', 
-    badge: null,
-  },
-  { 
-    text: 'Chat Support', 
-    icon: <ChatIcon />, 
-    path: '/chat', 
     badge: null,
   },
   { 
@@ -98,12 +91,6 @@ const regularMenuItems = [
     text: 'Historical Analysis', 
     icon: <HistoryIcon />, 
     path: '/historical', 
-    badge: null,
-  },
-  { 
-    text: 'Chat Support', 
-    icon: <ChatIcon />, 
-    path: '/chat', 
     badge: null,
   },
   { 
@@ -154,15 +141,15 @@ const Sidebar = ({ mobileOpen, onDrawerToggle, onLogout }) => {
         background: '#f8f9fa',
         borderBottom: '1px solid #e9ecef',
       }}>
-        <Avatar sx={{
-          background: '#2563eb',
+      <Avatar
+        src="/safestreet.png"
+        alt="SafeStreet Logo"
+        sx={{
           width: 48,
           height: 48,
-          fontSize: '1.25rem',
-          fontWeight: 600,
-        }}>
-          SS
-        </Avatar>
+        }}
+      />
+
         <Box>
           <Typography variant="h6" sx={{
             fontWeight: 600,
@@ -170,7 +157,7 @@ const Sidebar = ({ mobileOpen, onDrawerToggle, onLogout }) => {
             color: '#1f2937',
             mb: 0,
           }}>
-            SafeStreets
+            SafeStreet
           </Typography>
           <Typography variant="caption" sx={{
             color: '#6b7280',
@@ -333,7 +320,7 @@ const Sidebar = ({ mobileOpen, onDrawerToggle, onLogout }) => {
           display: 'block',
           fontSize: '0.7rem',
         }}>
-          SafeStreets Portal v2.0
+          SafeStreet web v1.0
         </Typography>
       </Box>
     </Box>
@@ -368,18 +355,21 @@ const Sidebar = ({ mobileOpen, onDrawerToggle, onLogout }) => {
 
       {/* Desktop drawer */}
       <Drawer
-        variant="permanent"
-        sx={{
-          display: { xs: 'none', md: 'block' },
-          '& .MuiDrawer-paper': {
-            boxSizing: 'border-box',
-            width: DRAWER_WIDTH,
-            borderRight: '1px solid rgba(0, 0, 0, 0.06)',
-            boxShadow: '2px 0 10px rgba(0, 0, 0, 0.05)',
-          },
-        }}
-        open
-      >
+  variant="permanent"
+  sx={{
+    display: { xs: 'none', md: 'block' },
+    '& .MuiDrawer-paper': {
+      position: 'fixed', // ✅ important!
+      boxSizing: 'border-box',
+      width: DRAWER_WIDTH,
+      borderRight: '1px solid rgba(0, 0, 0, 0.06)',
+      boxShadow: '2px 0 10px rgba(0, 0, 0, 0.05)',
+      height: '100vh', // Optional, ensures full vertical space
+    },
+  }}
+  open
+>
+
         {drawer}
       </Drawer>
     </Box>

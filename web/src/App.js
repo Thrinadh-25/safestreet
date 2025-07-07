@@ -27,7 +27,6 @@ import AiAnalysis from './pages/AiAnalysis';
 import ManageTenants from './pages/ManageTenants';
 import TenantDetails from './pages/TenantDetails';
 import SearchResults from './pages/SearchResults';
-import Chat from './pages/Chat';
 
 function App() {
   return (
@@ -52,7 +51,6 @@ function App() {
                       <Route path="/profile" element={<Profile />} />
                       <Route path="/ai-analysis" element={<AiAnalysis />} />
                       <Route path="/search-results" element={<SearchResults />} />
-                      <Route path="/chat" element={<Chat />} />
                       {/* Tenant Management */}
                       <Route path="/tenants" element={<ManageTenants />} />
                       <Route path="/tenants/:tenantId" element={<TenantDetails />} />
