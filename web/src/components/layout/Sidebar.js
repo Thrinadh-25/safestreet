@@ -158,7 +158,7 @@ const Sidebar = ({ mobileOpen, onDrawerToggle, onLogout }) => {
             color: '#1f2937',
             mb: 0,
           }}>
-            SafeStreets
+            SafeStreet
           </Typography>
           <Typography variant="caption" sx={{
             color: '#6b7280',
@@ -321,7 +321,7 @@ const Sidebar = ({ mobileOpen, onDrawerToggle, onLogout }) => {
           display: 'block',
           fontSize: '0.7rem',
         }}>
-          SafeStreets Portal v2.0
+          SafeStreet web v1.0
         </Typography>
       </Box>
     </Box>

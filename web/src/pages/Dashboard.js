@@ -404,7 +404,7 @@ const Dashboard = () => {
               <Typography variant="body1" color="text.secondary" sx={{ fontWeight: 500 }}>
                 {user?.role === 'super-admin' ?
                   'Manage all tenants and system-wide operations' :
-                  'Here\'s what\'s happening with SafeStreets today'
+                  'Here\'s what\'s happening with SafeStreet today'
                 }
               </Typography>
             </Box>
