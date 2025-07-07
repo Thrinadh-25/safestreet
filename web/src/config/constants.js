@@ -1,5 +1,5 @@
 // Layout
-export const DRAWER_WIDTH = '100%';
+export const DRAWER_WIDTH = 270;
 
 // API
 export const API_BASE_URL = 'http://localhost:5030/api';

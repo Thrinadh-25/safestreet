@@ -130,12 +130,7 @@ const Sidebar = ({ mobileOpen, onDrawerToggle, onLogout }) => {
       display: 'flex',
       flexDirection: 'column',
       background: '#ffffff',
-      position: 'fixed',
-      top: 0,
-      left: 0,
-      right: 0,
-      bottom: 0,
-      zIndex: 1300,
+      position: 'relative',
     }}>
       {/* Header Section */}
       <Box sx={{
