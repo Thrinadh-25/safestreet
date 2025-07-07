@@ -25,12 +25,8 @@ import BuildIcon from '@mui/icons-material/Build';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import CancelIcon from '@mui/icons-material/Cancel';
 
-function PendingAssignments({ pendingRepairs = [], fieldWorkers = [], onAssignRepair = () => {} }) {
+function ActiveRepairs({ assignedRepairs = [], fieldWorkers = [], onStatusChange }) {
   const theme = useTheme();
-  const [assignDialogOpen, setAssignDialogOpen] = useState(false);
-  const [selectedRepair, setSelectedRepair] = useState(null);
-  const [selectedWorker, setSelectedWorker] = useState('');
-  const [assignmentNotes, setAssignmentNotes] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [workerFilter, setWorkerFilter] = useState('all');
   const [regionFilter, setRegionFilter] = useState('all');
