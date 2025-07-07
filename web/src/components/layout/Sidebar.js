@@ -130,7 +130,12 @@ const Sidebar = ({ mobileOpen, onDrawerToggle, onLogout }) => {
       display: 'flex',
       flexDirection: 'column',
       background: '#ffffff',
-      position: 'relative',
+      position: 'fixed',
+      top: 0,
+      left: 0,
+      right: 0,
+      bottom: 0,
+      zIndex: 1300,
     }}>
       {/* Header Section */}
       <Box sx={{
@@ -175,7 +180,7 @@ const Sidebar = ({ mobileOpen, onDrawerToggle, onLogout }) => {
         <Typography 
           variant="overline" 
           sx={{
-            color: '#6b7280',
+            color: '#4b5563',
             px: 3,
             mb: 1,
             fontSize: '0.75rem',

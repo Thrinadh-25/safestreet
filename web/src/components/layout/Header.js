@@ -142,8 +142,7 @@ const Header = ({ onDrawerToggle }) => {
       position="fixed"
       elevation={0}
       sx={{
-        width: { md: `calc(100% - ${DRAWER_WIDTH}px)` },
-        ml: { md: `${DRAWER_WIDTH}px` },
+        width: '100%',
         background: '#ffffff',
         borderBottom: '0.5px solid #e5e7eb',
         color: theme.palette.text.primary,
