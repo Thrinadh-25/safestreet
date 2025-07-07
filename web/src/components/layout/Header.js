@@ -13,107 +13,28 @@ import {
   Box,
   useTheme,
   alpha,
-  Paper,
-  InputBase,
   Breadcrumbs,
   Link,
   Chip,
   Stack,
   Tooltip,
   useMediaQuery,
-  CircularProgress,
-  ClickAwayListener,
-  Button,
-  List,
-  ListItemButton,
-  ListItemText,
-  Divider,
 } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import LogoutIcon from '@mui/icons-material/Logout';
-import SearchIcon from '@mui/icons-material/Search';
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
-import ClearIcon from '@mui/icons-material/Clear';
-import ReportIcon from '@mui/icons-material/Report';
-import PersonIcon from '@mui/icons-material/Person';
-import BuildIcon from '@mui/icons-material/Build';
 import { DRAWER_WIDTH } from '../../config/constants';
-import { useSearch } from '../../context/SearchContext';
 
 const Header = ({ onDrawerToggle }) => {
   const [anchorEl, setAnchorEl] = useState(null);
   const [notificationAnchor, setNotificationAnchor] = useState(null);
-  const [searchValue, setSearchValue] = useState('');
-  const [showSearchResults, setShowSearchResults] = useState(false);
-  const searchInputRef = useRef(null);
   const navigate = useNavigate();
   const location = useLocation();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
-  const { performSearch, isSearching, clearSearch } = useSearch();
 
-  // State for quick search results
-  const [quickSearchResults, setQuickSearchResults] = useState({
-    reports: [],
-    fieldWorkers: [],
-    analytics: [],
-    repairs: []
-  });
-  
-  // Effect to perform quick search when typing
-  useEffect(() => {
-    const performQuickSearch = async () => {
-      if (searchValue.length >= 2) {
-        try {
-          // Use the API to fetch quick search results
-          const { api } = await import('../../utils/api');
-          const { API_ENDPOINTS } = await import('../../config/constants');
-          
-          const response = await api.get(`${API_ENDPOINTS.DAMAGE_REPORTS}/search?q=${encodeURIComponent(searchValue)}&quick=true`);
-          
-          // Ensure we have valid response data
-          if (response) {
-            setQuickSearchResults({
-              reports: Array.isArray(response.reports) ? response.reports.slice(0, 3) : [],
-              fieldWorkers: Array.isArray(response.fieldWorkers) ? response.fieldWorkers.slice(0, 2) : [],
-              analytics: Array.isArray(response.analytics) ? response.analytics.slice(0, 2) : [],
-              repairs: Array.isArray(response.repairs) ? response.repairs.slice(0, 2) : [],
-            });
-            
-            setShowSearchResults(true);
-          }
-        } catch (error) {
-          console.error('Quick search error:', error);
-          // Clear results on error
-          setQuickSearchResults({
-            reports: [],
-            fieldWorkers: [],
-            analytics: [],
-            repairs: []
-          });
-        }
-      } else {
-        setShowSearchResults(false);
-      }
-    };
-    
-    // Debounce the search to avoid too many requests
-    const debounceTimer = setTimeout(() => {
-      if (searchValue.length >= 2) {
-        performQuickSearch();
-      }
-    }, 300);
-    
-    return () => clearTimeout(debounceTimer);
-  }, [searchValue]);
-  
-  // Reset search when changing routes
-  useEffect(() => {
-    setSearchValue('');
-    setShowSearchResults(false);
-  }, [location.pathname]);
 
   const handleProfileMenuOpen = (event) => {
     setAnchorEl(event.currentTarget);
@@ -304,239 +225,6 @@ const Header = ({ onDrawerToggle }) => {
             </Breadcrumbs>
           </Box>
         </Box>          {/* Center Section - Search */}
-        <Box 
-          sx={{ 
-            flex: 1, 
-            maxWidth: isMobile ? '100%' : 400, 
-            mx: isMobile ? 0 : 2,
-            width: isMobile ? '100%' : 'auto',
-            position: 'relative',
-          }}
-        >
-          <Paper
-            sx={{
-              display: 'flex',
-              alignItems: 'center',
-              background: '#f9fafb',
-              px: 2,
-              py: 0.5,
-              border: '1px solid #d1d5db',
-              transition: 'all 0.15s ease',
-              '&:hover': {
-                background: '#ffffff',
-                borderColor: '#9ca3af',
-              },
-              '&:focus-within': {
-                background: '#ffffff',
-                borderColor: theme.palette.primary.main,
-                boxShadow: `0 0 0 1px ${alpha(theme.palette.primary.main, 0.1)}`,
-              }
-            }}
-          >
-            <SearchIcon sx={{ color: '#6b7280', mr: 1 }} />
-            <InputBase
-              placeholder="Search across all pages..."
-              value={searchValue}
-              onChange={(e) => {
-                setSearchValue(e.target.value);
-                if (e.target.value.length >= 2) {
-                  setShowSearchResults(true);
-                } else {
-                  setShowSearchResults(false);
-                }
-              }}
-              onKeyPress={(e) => {
-                if (e.key === 'Enter' && searchValue.trim()) {
-                  performSearch(searchValue);
-                  setShowSearchResults(false);
-                  e.target.blur(); // Remove focus from search input
-                }
-              }}
-              inputRef={searchInputRef}
-              sx={{ 
-                flex: 1,
-                fontSize: '0.875rem',
-                '& .MuiInputBase-input': {
-                  padding: '6px 0',
-                }
-              }}
-              fullWidth
-            />
-            {isSearching && (
-              <CircularProgress size={20} sx={{ mr: 1, color: theme.palette.primary.main }} />
-            )}
-            {searchValue && (
-              <IconButton 
-                size="small" 
-                onClick={() => {
-                  setSearchValue('');
-                  clearSearch();
-                  if (searchInputRef.current) {
-                    searchInputRef.current.focus();
-                  }
-                }}
-                sx={{ padding: 0.5, color: '#6b7280' }}
-              >
-                <ClearIcon fontSize="small" />
-              </IconButton>
-            )}
-          </Paper>
-          
-          {showSearchResults && searchValue.length >= 2 ? (
-            <ClickAwayListener onClickAway={() => setShowSearchResults(false)}>
-              <Paper
-                sx={{
-                  position: 'absolute',
-                  width: '100%',
-                  mt: 0.5,
-                  zIndex: 1000,
-                  boxShadow: '0 4px 20px rgba(0,0,0,0.1)',
-                  borderRadius: 1,
-                  maxHeight: 400,
-                  overflow: 'auto'
-                }}
-              >
-                {/* Quick search preview results */}
-                <Box sx={{ p: 2 }}>
-                  <Typography variant="subtitle2" color="text.secondary" sx={{ mb: 1 }}>
-                    Quick Results
-                  </Typography>
-                  
-                  {/* Empty state */}
-                  {!quickSearchResults.reports.length && !quickSearchResults.fieldWorkers.length && 
-                   !quickSearchResults.repairs.length && !quickSearchResults.analytics.length && (
-                    <Box sx={{ textAlign: 'center', py: 2 }}>
-                      <Typography variant="body2" color="text.secondary">
-                        No matching results found
-                      </Typography>
-                      <Typography variant="caption" color="text.secondary">
-                        Try different keywords or search all results
-                      </Typography>
-                    </Box>
-                  )}
-                  
-                  {/* Damage Reports Preview */}
-                  {quickSearchResults.reports.length > 0 && (
-                    <>
-                      <Typography variant="caption" sx={{ fontWeight: 600, color: '#4b5563', display: 'flex', alignItems: 'center', mt: 1 }}>
-                        <ReportIcon fontSize="inherit" sx={{ mr: 0.5 }} /> DAMAGE REPORTS
-                      </Typography>
-                      <List dense disablePadding>
-                        {quickSearchResults.reports.map((report) => (
-                          <ListItemButton 
-                            key={report._id}
-                            onClick={() => {
-                              navigate(`/reports/${report.reportId}`);
-                              setShowSearchResults(false);
-                            }}
-                            sx={{ borderRadius: 1, py: 0.5 }}
-                          >
-                            <ListItemText 
-                              primary={`${report.reportId} - ${report.damageType}`}
-                              secondary={`${report.location} - ${report.severity}`}
-                              primaryTypographyProps={{ fontSize: '0.875rem', fontWeight: 500 }}
-                              secondaryTypographyProps={{ fontSize: '0.75rem' }}
-                            />
-                          </ListItemButton>
-                        ))}
-                      </List>
-                    </>
-                  )}
-                  
-                  {/* Field Workers Preview */}
-                  {quickSearchResults.fieldWorkers.length > 0 && (
-                    <>
-                      <Typography variant="caption" sx={{ fontWeight: 600, color: '#4b5563', display: 'flex', alignItems: 'center', mt: 1 }}>
-                        <PersonIcon fontSize="inherit" sx={{ mr: 0.5 }} /> FIELD WORKERS
-                      </Typography>
-                      <List dense disablePadding>
-                        {quickSearchResults.fieldWorkers.map((worker) => (
-                          <ListItemButton 
-                            key={worker._id}
-                            onClick={() => {
-                              // Navigate to search-results with filter for fieldworkers instead
-                              // as there's no dedicated field-worker detail page
-                              navigate(`/search-results?type=fieldWorker&id=${worker._id}`);
-                              setShowSearchResults(false);
-                            }}
-                            sx={{ borderRadius: 1, py: 0.5 }}
-                          >
-                            <ListItemText 
-                              primary={worker.name}
-                              secondary={worker.specialization}
-                              primaryTypographyProps={{ fontSize: '0.875rem', fontWeight: 500 }}
-                              secondaryTypographyProps={{ fontSize: '0.75rem' }}
-                            />
-                          </ListItemButton>
-                        ))}
-                      </List>
-                    </>
-                  )}
-                  
-                  {/* Repairs Preview */}
-                  {quickSearchResults.repairs.length > 0 && (
-                    <>
-                      <Typography variant="caption" sx={{ fontWeight: 600, color: '#4b5563', display: 'flex', alignItems: 'center', mt: 1 }}>
-                        <BuildIcon fontSize="inherit" sx={{ mr: 0.5 }} /> REPAIRS
-                      </Typography>
-                      <List dense disablePadding>
-                        {quickSearchResults.repairs.map((repair) => (
-                          <ListItemButton 
-                            key={repair._id}
-                            onClick={() => {
-                              // First check if we have a repairId or reportId to navigate with
-                              const id = repair.repairId || repair._id;
-                              // Navigate to repairs page
-                              navigate(`/repairs?id=${id}`);
-                              setShowSearchResults(false);
-                            }}
-                            sx={{ borderRadius: 1, py: 0.5 }}
-                          >
-                            <ListItemText 
-                              primary={`${repair.repairId || repair._id} - ${repair.status}`}
-                              secondary={repair.description?.substring(0, 40) + (repair.description?.length > 40 ? '...' : '')}
-                              primaryTypographyProps={{ fontSize: '0.875rem', fontWeight: 500 }}
-                              secondaryTypographyProps={{ fontSize: '0.75rem' }}
-                            />
-                          </ListItemButton>
-                        ))}
-                      </List>
-                    </>
-                  )}
-                </Box>
-                
-                <Divider />
-                
-                <Box sx={{ p: 2, textAlign: 'center' }}>
-                  <Box sx={{ display: 'flex', gap: 1 }}>
-                  <Button 
-                    variant="contained" 
-                    onClick={() => {
-                      performSearch(searchValue);
-                      setShowSearchResults(false);
-                    }}
-                    sx={{ flex: 1 }}
-                    startIcon={<SearchIcon />}
-                  >
-                    View All Results
-                  </Button>
-                  
-                  <Button 
-                    variant="outlined"
-                    onClick={() => {
-                      navigate('/map?q=' + encodeURIComponent(searchValue));
-                      setShowSearchResults(false);
-                    }}
-                    sx={{ flex: 1 }}
-                  >
-                    View on Map
-                  </Button>
-                </Box>
-                </Box>
-              </Paper>
-            </ClickAwayListener>
-          ) : null}
-        </Box>
 
         {/* Right Section */}
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
