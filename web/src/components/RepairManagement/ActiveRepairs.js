@@ -10,8 +10,7 @@ import {
   LocationOn,
   AccessTime,
   Refresh,
-  CheckCircle,
-  SearchIcon
+  CheckCircle
 } from '@mui/icons-material';
 import PersonIcon from '@mui/icons-material/Person';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
