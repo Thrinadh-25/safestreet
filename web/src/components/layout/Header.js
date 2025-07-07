@@ -13,34 +13,19 @@ import {
   Box,
   useTheme,
   alpha,
-  Paper,
-  InputBase,
   Breadcrumbs,
   Link,
   Chip,
   Stack,
   Tooltip,
   useMediaQuery,
-  CircularProgress,
-  ClickAwayListener,
-  Button,
-  List,
-  ListItemButton,
-  ListItemText,
-  Divider,
 } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import LogoutIcon from '@mui/icons-material/Logout';
-import SearchIcon from '@mui/icons-material/Search';
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
-import ClearIcon from '@mui/icons-material/Clear';
-import ReportIcon from '@mui/icons-material/Report';
-import PersonIcon from '@mui/icons-material/Person';
-import BuildIcon from '@mui/icons-material/Build';
 import { DRAWER_WIDTH } from '../../config/constants';
-import { useSearch } from '../../context/SearchContext';
 
 const Header = ({ onDrawerToggle }) => {
   const [anchorEl, setAnchorEl] = useState(null);
@@ -49,8 +34,12 @@ const Header = ({ onDrawerToggle }) => {
   const location = useLocation();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+<<<<<<< HEAD
   
   // Reset search when changing route
+=======
+
+>>>>>>> 412db45f449a3660ff1f4d6ebf7f5526fd1401f5
 
   const handleProfileMenuOpen = (event) => {
     setAnchorEl(event.currentTarget);
@@ -240,7 +229,12 @@ const Header = ({ onDrawerToggle }) => {
               ))}
             </Breadcrumbs>
           </Box>
+<<<<<<< HEAD
         </Box>   
+=======
+        </Box>          {/* Center Section - Search */}
+
+>>>>>>> 412db45f449a3660ff1f4d6ebf7f5526fd1401f5
         {/* Right Section */}
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
           {/* Time */}

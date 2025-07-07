@@ -141,10 +141,9 @@ const Sidebar = ({ mobileOpen, onDrawerToggle, onLogout }) => {
         background: '#f8f9fa',
         borderBottom: '1px solid #e9ecef',
       }}>
-      {/* Avatar image replaced here – change the src path below if needed */}
       <Avatar
         src="/safestreet.png"
-        alt="Admin Avatar"
+        alt="SafeStreet Logo"
         sx={{
           width: 48,
           height: 48,
