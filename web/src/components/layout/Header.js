@@ -229,12 +229,7 @@ const Header = ({ onDrawerToggle }) => {
               ))}
             </Breadcrumbs>
           </Box>
-<<<<<<< HEAD
         </Box>   
-=======
-        </Box>          {/* Center Section - Search */}
-
->>>>>>> 412db45f449a3660ff1f4d6ebf7f5526fd1401f5
         {/* Right Section */}
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
           {/* Time */}
