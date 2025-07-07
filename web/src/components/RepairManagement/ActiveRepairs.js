@@ -1,10 +1,18 @@
 import React, { useState } from 'react';
 import {
   Box, Typography, Grid, Card, CardContent, CardActions,
-  Chip, Divider, IconButton, Tooltip, alpha,
+  Button, Chip, Divider, IconButton, Tooltip, alpha,
   TextField, FormControl, InputLabel, Select, MenuItem,
   Avatar, useTheme, Paper
 } from '@mui/material';
+import {
+  AssignmentInd,
+  LocationOn,
+  AccessTime,
+  Refresh,
+  CheckCircle,
+  SearchIcon
+} from '@mui/icons-material';
 import PersonIcon from '@mui/icons-material/Person';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
@@ -18,12 +26,15 @@ import BuildIcon from '@mui/icons-material/Build';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import CancelIcon from '@mui/icons-material/Cancel';
 
-function ActiveRepairs({ assignedRepairs = [], fieldWorkers = [], onStatusChange }) {
+function PendingAssignments({ pendingRepairs = [], fieldWorkers = [], onAssignRepair = () => {} }) {
   const theme = useTheme();
+  const [assignDialogOpen, setAssignDialogOpen] = useState(false);
+  const [selectedRepair, setSelectedRepair] = useState(null);
+  const [selectedWorker, setSelectedWorker] = useState('');
+  const [assignmentNotes, setAssignmentNotes] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [workerFilter, setWorkerFilter] = useState('all');
   const [regionFilter, setRegionFilter] = useState('all');
-  const [searchQuery, setSearchQuery] = useState('');
   const [changingStatusIds, setChangingStatusIds] = useState([]);
 
   const getStatusIcon = (status) => {
@@ -55,13 +66,8 @@ function ActiveRepairs({ assignedRepairs = [], fieldWorkers = [], onStatusChange
     const assignedWorkerName = repair.assignedTo ? repair.assignedTo.name : null;
     const matchesWorker = workerFilter === 'all' || assignedWorkerName === workerFilter;
     const matchesRegion = regionFilter === 'all' || repair.region === regionFilter;
-    const matchesSearch = searchQuery === '' ||
-      (repair.id && repair.id.toString().toLowerCase().includes(searchQuery.toLowerCase())) ||
-      (repair.description && repair.description.toLowerCase().includes(searchQuery.toLowerCase())) ||
-      (repair.reporter && repair.reporter.toLowerCase().includes(searchQuery.toLowerCase())) ||
-      (assignedWorkerName && assignedWorkerName.toLowerCase().includes(searchQuery.toLowerCase()));
 
-    return matchesStatus && matchesWorker && matchesRegion && matchesSearch;
+    return matchesStatus && matchesWorker && matchesRegion;
   });
 
   return (
@@ -71,18 +77,6 @@ function ActiveRepairs({ assignedRepairs = [], fieldWorkers = [], onStatusChange
           Active Repair Tasks
         </Typography>
         <Box sx={{ display: 'flex', gap: 1 }}>
-          <TextField
-            placeholder="Search repairs..."
-            size="small"
-            InputProps={{
-              startAdornment: (
-                <SearchIcon fontSize="small" sx={{ mr: 1, color: 'text.secondary' }} />
-              ),
-            }}
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            sx={{ width: 200 }}
-          />
           <Tooltip title="Refresh">
             <IconButton>
               <RefreshIcon />
