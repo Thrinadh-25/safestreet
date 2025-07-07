@@ -426,7 +426,7 @@ const Dashboard = () => {
                   <RefreshIcon />
                 </IconButton>
               </Tooltip>
-              
+              {/* Activity Feed was here */}
               <Button
                 variant="contained"
                 startIcon={<DashboardIcon />}

@@ -141,10 +141,9 @@ const Sidebar = ({ mobileOpen, onDrawerToggle, onLogout }) => {
         background: '#f8f9fa',
         borderBottom: '1px solid #e9ecef',
       }}>
-      {/* Avatar image replaced here – change the src path below if needed */}
       <Avatar
         src="/safestreet.png"
-        alt="Admin Avatar"
+        alt="SafeStreet Logo"
         sx={{
           width: 48,
           height: 48,
@@ -175,7 +174,7 @@ const Sidebar = ({ mobileOpen, onDrawerToggle, onLogout }) => {
         <Typography 
           variant="overline" 
           sx={{
-            color: '#4b5563',
+            color: '#6b7280',
             px: 3,
             mb: 1,
             fontSize: '0.75rem',
