@@ -34,7 +34,6 @@ import PersonIcon from '@mui/icons-material/Person';
 // Custom Components
 import StatCard from '../components/dashboard/StatCard';
 import RecentReports from '../components/dashboard/RecentReports';
-import ActivityFeed from '../components/dashboard/ActivityFeed';
 import QuickActions from '../components/dashboard/QuickActions';
 import AiReportsDialog from '../components/dashboard/AiReportsDialog';
 import CreateDamageReportDialog from '../components/dashboard/CreateDamageReportDialog';
@@ -95,8 +94,6 @@ const Dashboard = () => {
   const [createReportLoading, setCreateReportLoading] = useState(false);
   const [createReportError, setCreateReportError] = useState(null);
   
-  const [recentActivity, setRecentActivity] = useState([]);
-
   const fetchDashboardData = async () => {
     try {
       setLoading(true);
@@ -379,43 +376,9 @@ const Dashboard = () => {
     setAiReportsOpen(false);
   };
 
-  const updateRecentActivity = useCallback(() => {
-    const aiActivity = aiReports.map(report => ({
-      id: report.id,
-      type: 'ai-report',
-      title: `AI Report: ${report.damageType}`,
-      description: `Predicted damage type: ${report.damageType}, Severity: ${report.severity}`,
-      time: new Date(report.createdAt).toLocaleTimeString(),
-      severity: report.severity,
-      location: typeof report.location === 'object' 
-        ? formatLocation(report.location) 
-        : (report.location || 'Unknown')
-    }));
-
-    const damageActivity = dashboardData.recentReports.map(report => ({
-      id: report.id,
-      type: 'damage-report',
-      title: `Damage Report: ${report.title}`,
-      description: `Reported damage type: ${report.severity}, Status: ${report.status}`,
-      time: report.timestamp,
-      severity: report.severity,
-      location: typeof report.location === 'object'
-        ? formatLocation(report.location) 
-        : (report.location || 'Unknown')
-    }));
-
-    const combinedActivity = [...aiActivity, ...damageActivity];
-    setRecentActivity(combinedActivity);
-  }, [aiReports, dashboardData.recentReports]);
-
   useEffect(() => {
     fetchDashboardData();
   }, []);
-
-  useEffect(() => {
-    updateRecentActivity();
-  }, [aiReports, dashboardData.recentReports, updateRecentActivity]);
-
 
   return (
     <Box sx={{ width: '100%' }}>
@@ -603,7 +566,6 @@ const Dashboard = () => {
                 {selectedTab === 2 && (
                   <Box sx={{ py: 2 }}>
                     <RecentReports reports={dashboardData.recentReports} loading={loading} />
-                    <ActivityFeed activities={recentActivity} />
                   </Box>
                 )}
               </Paper>
@@ -614,10 +576,6 @@ const Dashboard = () => {
             {/* Regular Admin Content */}
             <Grid item xs={12} lg={8}>
               <RecentReports reports={dashboardData.recentReports} loading={loading} />
-            </Grid>
-
-            <Grid item xs={12} lg={4}>
-              <ActivityFeed activities={recentActivity} />
             </Grid>
 
             <Grid item xs={12}>
