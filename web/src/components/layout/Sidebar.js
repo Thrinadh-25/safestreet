@@ -355,18 +355,21 @@ const Sidebar = ({ mobileOpen, onDrawerToggle, onLogout }) => {
 
       {/* Desktop drawer */}
       <Drawer
-        variant="permanent"
-        sx={{
-          display: { xs: 'none', md: 'block' },
-          '& .MuiDrawer-paper': {
-            boxSizing: 'border-box',
-            width: DRAWER_WIDTH,
-            borderRight: '1px solid rgba(0, 0, 0, 0.06)',
-            boxShadow: '2px 0 10px rgba(0, 0, 0, 0.05)',
-          },
-        }}
-        open
-      >
+  variant="permanent"
+  sx={{
+    display: { xs: 'none', md: 'block' },
+    '& .MuiDrawer-paper': {
+      position: 'fixed', // ✅ important!
+      boxSizing: 'border-box',
+      width: DRAWER_WIDTH,
+      borderRight: '1px solid rgba(0, 0, 0, 0.06)',
+      boxShadow: '2px 0 10px rgba(0, 0, 0, 0.05)',
+      height: '100vh', // Optional, ensures full vertical space
+    },
+  }}
+  open
+>
+
         {drawer}
       </Drawer>
     </Box>

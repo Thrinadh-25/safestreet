@@ -389,7 +389,7 @@ const Dashboard = () => {
                 variant="h4" 
                 sx={{ 
                   fontWeight: 700,
-                  background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                  background: 'linear-gradient(135deg, #00c6ff 0%, #0072ff 100%)',
                   backgroundClip: 'text',
                   WebkitBackgroundClip: 'text',
                   WebkitTextFillColor: 'transparent',
@@ -397,8 +397,8 @@ const Dashboard = () => {
                 }}
               >
                 {user?.role === 'super-admin' ? 
-                  'Welcome, Super Admin! 👋' : 
-                  'Welcome back, Admin! 👋'
+                  'Welcome, Super Admin! ' : 
+                  'Welcome back, Admin! '
                 }
               </Typography>
               <Typography variant="body1" color="text.secondary" sx={{ fontWeight: 500 }}>
@@ -426,24 +426,6 @@ const Dashboard = () => {
                   <RefreshIcon />
                 </IconButton>
               </Tooltip>
-              {/* Activity Feed was here */}
-              <Button
-                variant="contained"
-                startIcon={<DashboardIcon />}
-                onClick={handleViewAnalytics}
-                sx={{
-                  background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                  borderRadius: 3,
-                  px: 3,
-                  '&:hover': {
-                    background: 'linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%)',
-                    transform: 'translateY(-2px)',
-                  },
-                  transition: 'all 0.3s ease',
-                }}
-              >
-                AI Reports
-              </Button>
             </Stack>
           </Stack>
         </Box>

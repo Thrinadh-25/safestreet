@@ -34,12 +34,6 @@ const Header = ({ onDrawerToggle }) => {
   const location = useLocation();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
-<<<<<<< HEAD
-  
-  // Reset search when changing route
-=======
-
->>>>>>> 412db45f449a3660ff1f4d6ebf7f5526fd1401f5
 
   const handleProfileMenuOpen = (event) => {
     setAnchorEl(event.currentTarget);
