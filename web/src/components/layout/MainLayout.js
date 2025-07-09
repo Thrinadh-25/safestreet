@@ -6,13 +6,9 @@ import {
   Container,
   useMediaQuery
 } from '@mui/material';
-import { DRAWER_WIDTH } from '../../config/constants';
 import Header from './Header';
-import Sidebar from './Sidebar';
-
 
 const MainLayout = () => {
-  const [mobileOpen, setMobileOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const theme = useTheme();
   const navigate = useNavigate();
@@ -23,10 +19,6 @@ const MainLayout = () => {
     const timer = setTimeout(() => setIsLoading(false), 1000);
     return () => clearTimeout(timer);
   }, []);
-
-  const handleDrawerToggle = () => {
-    setMobileOpen(!mobileOpen);
-  };
 
   const handleLogout = () => {
     navigate('/login');
@@ -62,34 +54,22 @@ const MainLayout = () => {
   }
 
   return (
-    <Box sx={{ display: 'flex', minHeight: '100vh' }}>
-      {/* Sidebar */}
-      <Sidebar
-        mobileOpen={mobileOpen}
-        onDrawerToggle={handleDrawerToggle}
-        onLogout={handleLogout}
-      />
+    <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
+      {/* Header with Navigation */}
+      <Header />
 
       {/* Main content area */}
       <Box
         component="main"
         sx={{
           flexGrow: 1,
-          width: { md: `calc(100% - ${DRAWER_WIDTH}px)` },
-          ml: { md: `0px` },
           display: 'flex',
           flexDirection: 'column',
           minHeight: '100vh',
+          backgroundColor: '#f8fafc',
           position: 'relative',
-          overflow: 'hidden',
         }}
       >
-        {/* Header */}
-        <Header onDrawerToggle={handleDrawerToggle} />
-
-        
-        
-
         {/* Content container */}
         <Container
           maxWidth="xl"
@@ -97,9 +77,7 @@ const MainLayout = () => {
             flexGrow: 1,
             display: 'flex',
             flexDirection: 'column',
-            position: 'relative',
-            zIndex: 1,
-            pt: { xs: 10, md: 12 },
+            pt: { xs: 11, sm: 12 }, // Account for header height
             pb: 4,
             px: { xs: 2, sm: 3, md: 4 },
           }}
@@ -115,27 +93,22 @@ const MainLayout = () => {
               mx: 'auto',
             }}
           >
-            <Outlet />
+            {/* Page Title Section */}
+            <Box sx={{ 
+              display: 'flex', 
+              justifyContent: 'space-between', 
+              alignItems: 'center',
+              mb: 1,
+            }}>
+              {/* This could be used for page-specific actions or breadcrumbs */}
+            </Box>
+
+            {/* Main Content */}
+            <Box sx={{ flex: 1 }}>
+              <Outlet />
+            </Box>
           </Box>
         </Container>
-
-    
-        {/* Mobile overlay */}
-        {isMobile && mobileOpen && (
-          <Box
-            sx={{
-              position: 'fixed',
-              top: 0,
-              left: 0,
-              right: 0,
-              bottom: 0,
-              bgcolor: 'rgba(0, 0, 0, 0.5)',
-              zIndex: 1200,
-              backdropFilter: 'blur(4px)',
-            }}
-            onClick={handleDrawerToggle}
-          />
-        )}
       </Box>
     </Box>
   );
