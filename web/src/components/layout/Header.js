@@ -53,10 +53,8 @@ const superAdminMenuItems = [
 const regularMenuItems = [
   { text: 'Dashboard', icon: <DashboardIcon />, path: '/', badge: null },
   { text: 'Reports', icon: <ReportIcon />, path: '/reports', badge: null },
-  { text: 'Map', icon: <MapIcon />, path: '/map', badge: null },
   { text: 'Analytics', icon: <AnalyticsIcon />, path: '/analytics', badge: null },
   { text: 'Repairs', icon: <RepairIcon />, path: '/repairs', badge: null },
-  { text: 'Historical', icon: <HistoryIcon />, path: '/historical', badge: null },
   { text: 'AI Analysis', icon: <AutoAwesomeIcon />, path: '/ai-analysis', badge: 'AI' }
 ];
 
@@ -111,10 +109,8 @@ const Header = ({ onDrawerToggle }) => {
       '/': 'Dashboard',
       '/tenants': 'Tenant Management',
       '/reports': 'Damage Reports',
-      '/map': 'Map View',
       '/analytics': 'Analytics',
       '/repairs': 'Repair Management',
-      '/historical': 'Historical Analysis',
       '/ai-analysis': 'AI Analysis',
       '/profile': 'Profile Settings'
     };

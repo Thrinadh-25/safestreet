@@ -17,10 +17,8 @@ import MainLayout from './components/layout/MainLayout';
 // Pages
 import Dashboard from './pages/Dashboard';
 import Reports from './pages/Reports';
-import MapView from './pages/MapView';
 import Analytics from './pages/Analytics';
 import Repair from './pages/Repair';
-import Historical from './pages/Historical';
 import Login from './pages/Login';
 import Profile from './pages/Profile';
 import AiAnalysis from './pages/AiAnalysis';
@@ -44,10 +42,8 @@ function App() {
                     <Route element={<MainLayout />}>
                       <Route index element={<Dashboard />} />
                       <Route path="/reports" element={<Reports />} />
-                      <Route path="/map" element={<MapView />} />
                       <Route path="/analytics" element={<Analytics />} />
-                      <Route path="/repairs" element={<Repair />} />
-                      <Route path="/historical" element={<Historical />} />
+                      <Route path="/repairs" element={<Repair />} />                      
                       <Route path="/profile" element={<Profile />} />
                       <Route path="/ai-analysis" element={<AiAnalysis />} />
                       <Route path="/search-results" element={<SearchResults />} />
