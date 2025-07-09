@@ -8,13 +8,16 @@ import {
   Alert,
   ActivityIndicator
 } from 'react-native';
+import { useColorScheme } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
-import { Text, View } from '@/components/Themed';
-import { useUpload } from '../context/UploadContext';
-import { Colors } from '../../constants/Colors';
-import { UploadItem } from '../context/UploadContext';
-import { useColorScheme } from '@/components/useColorScheme';
+import { Text, View } from '../../components/Themed';
+import { useUpload } from '../../context/UploadContext';
+import  {Colors} from '../../constants/Colors';
+import { UploadItem } from '../../context/UploadContext';
+
+
+//import { useColorScheme } from '../../components/useColorScheme';
 
 export default function TrackTabScreen() {
   const colorScheme = useColorScheme();
@@ -31,8 +34,15 @@ export default function TrackTabScreen() {
     await new Promise(resolve => setTimeout(resolve, 1000));
     setRefreshing(false);
   };
+  
 
-  const clearAllUploads = () => {
+
+
+
+  
+  const { clearAllUploads } = useUpload(); // ← Access from context
+
+  const clearAllUploadsWithConfirm = () => {
     Alert.alert(
       'Clear All Uploads',
       'Are you sure you want to clear all upload history? This action cannot be undone.',
@@ -42,13 +52,13 @@ export default function TrackTabScreen() {
           text: 'Clear All', 
           style: 'destructive',
           onPress: () => {
-            // This would need to be implemented in the context
-            console.log('Clear all uploads');
-          }
-        },
-      ]
-    );
-  };
+            clearAllUploads(); // ← Actually clear uploads here
+            }
+          },
+        ]
+      );
+    };
+  
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -100,14 +110,16 @@ export default function TrackTabScreen() {
           <Text style={[styles.addressText, { color: theme.placeholderText }]}>{upload.location.address}</Text>
         )}
       </View>
-
+       
       {upload.aiSummary && (
         <View style={[styles.aiResponseSection, { borderTopColor: theme.separator }]}>
           <Text style={[styles.sectionTitle, { color: theme.text }]}>🤖 AI Analysis</Text>
-          <Text style={[styles.aiSummaryText, { color: theme.text }]}>{upload.aiSummary}</Text>
-          <Text style={[styles.repairStatusText, { color: Colors.primary }]}>Status: {upload.repairStatus}</Text>
-        </View>
-      )}
+          <Text style={[styles.aiSummaryText, { color: theme.text }]}>
+            {upload.aiSummary}
+            </Text>
+            </View>
+          )}
+
 
       {upload.status === 'failed' && (
         <View style={[styles.errorSection, { borderTopColor: theme.separator }]}>
@@ -169,6 +181,8 @@ export default function TrackTabScreen() {
             </Text>
           </View>
         ) : (
+       
+
           <View style={styles.uploadsContainer}>
             {state.uploads.map(renderUploadItem)}
             

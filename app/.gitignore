@@ -1,7 +1,19 @@
 # Learn more https://docs.github.com/en/get-started/getting-started-with-git/ignoring-files
 
+*.pth
+*.pt
+*.h5
+
+# Optional: Python cache & environment files
+__pycache__/
+*.pyc
+.env
+
 # dependencies
 node_modules/
+
+
+
 
 # Expo
 .expo/

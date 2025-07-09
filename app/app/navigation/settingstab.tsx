@@ -9,13 +9,16 @@ import {
   TextInput,
   Modal,
 } from 'react-native';
+import { useColorScheme } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
-import { Text, View } from '@/components/Themed';
-import { Colors } from '../../constants/Colors';
-import { useColorScheme } from '@/components/useColorScheme';
-import { useAuth } from '../context/AuthContext';
+import { Text, View } from '../../components/Themed';
+import  {Colors}  from '../../constants/Colors';
+
+
+//import { useColorScheme } from '../../components/useColorScheme';
+import { useAuth } from '../../context/AuthContext';
 
 interface AppSettings {
   notifications: boolean;
