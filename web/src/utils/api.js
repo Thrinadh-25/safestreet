@@ -1,3 +1,5 @@
+
+
 import { API_BASE_URL, TOKEN_KEY } from '../config/constants';
 
 const getHeaders = () => {
@@ -91,6 +93,12 @@ const handleResponse = async (response) => {
   
   return responseData;
 };
+export const getAllReports = () => {
+  return api.get('/api/images/reports'); // correct backend route
+};
+
+
+
 
 export const api = {
   get: async (endpoint) => {

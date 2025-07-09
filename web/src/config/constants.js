@@ -2,7 +2,7 @@
 export const DRAWER_WIDTH = 270;
 
 // API
-export const API_BASE_URL = 'http://localhost:5030/api';
+export const API_BASE_URL = 'http://localhost:3000';
 export const API_ENDPOINTS = {
   DAMAGE_REPORTS: '/damage',
   REPAIRS: '/repairs',

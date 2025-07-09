@@ -15,7 +15,11 @@ import { router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Colors } from '../../constants/Colors';
-import { useColorScheme } from '@/components/useColorScheme';
+// import { useColorScheme } from '@/components/useColorScheme';
+import { useColorScheme } from 'react-native';
+
+//import { useColorScheme } from '../../components/useColorScheme';
+
 
 interface RegisterData {
   fullName: string;
@@ -65,54 +69,74 @@ export default function RegisterScreen() {
     return true;
   };
 
-  const handleRegister = async () => {
-    if (!validateForm()) return;
 
+  const handleRegister = async () => {
+    console.log("🧪 Registering with:");
+    console.log("Full Name:", formData.fullName);
+    console.log("Email:", formData.email);
+    console.log("Password:", formData.password);
+    console.log("Confirm Password:", formData.confirmPassword);
+    console.log("Phone:", formData.phone);
+
+    
+  
+
+    console.log("Registering...");
+    if (!validateForm()) {
+      console.log("Validation failed");
+      return;
+    }
+    console.log("Validation passed");
+    
+  
     setIsLoading(true);
     try {
+      console.log("Sending request...");
       // TODO: Replace with actual API endpoint
-      // const response = await fetch('YOUR_BACKEND_URL/api/auth/register', {
-      //   method: 'POST',
-      //   headers: {
-      //     'Content-Type': 'application/json',
-      //   },
-      //   body: JSON.stringify({
-      //     fullName: formData.fullName,
-      //     email: formData.email,
-      //     password: formData.password,
-      //     phone: formData.phone,
-      //   }),
-      // });
+      const response = await fetch('http://192.168.29.144:3000/api/auth/register', {
+      //const response = await fetch('YOUR_BACKEND_URL/api/auth/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          fullName: formData.fullName,
+          email: formData.email,
+          password: formData.password,
+          phone: formData.phone,
+        }),
+      });
+      console.log("Received response");
       
-      // const data = await response.json();
+      const data = await response.json();
       
-      // if (response.ok) {
-      //   // Store user token and data
-      //   await AsyncStorage.setItem('userToken', data.token);
-      //   await AsyncStorage.setItem('userData', JSON.stringify(data.user));
-      //   router.replace('/navigation');
-      // } else {
-      //   Alert.alert('Registration Failed', data.message || 'Please try again');
-      // }
+      if (response.ok) {
+        // Store user token and data
+        await AsyncStorage.setItem('userToken', data.token);
+        await AsyncStorage.setItem('userData', JSON.stringify(data.user));
+        router.replace('/navigation');
+      } else {
+        Alert.alert('Registration Failed', data.message || 'Please try again');
+      }
 
-      // Simulate API call for demo
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      // // Simulate API call for demo
+      // await new Promise(resolve => setTimeout(resolve, 2000));
       
-      // Mock successful registration
-      const mockUser = {
-        id: Date.now().toString(),
-        fullName: formData.fullName,
-        email: formData.email,
-        phone: formData.phone,
-        createdAt: new Date().toISOString(),
-      };
+      // // Mock successful registration
+      // const mockUser = {
+      //   id: Date.now().toString(),
+      //   fullName: formData.fullName,
+      //   email: formData.email,
+      //   phone: formData.phone,
+      //   createdAt: new Date().toISOString(),
+      // };
       
-      await AsyncStorage.setItem('userToken', 'mock_token_' + Date.now());
-      await AsyncStorage.setItem('userData', JSON.stringify(mockUser));
+      // await AsyncStorage.setItem('userToken', 'mock_token_' + Date.now());
+      // await AsyncStorage.setItem('userData', JSON.stringify(mockUser));
       
-      Alert.alert('Success', 'Account created successfully!', [
-        { text: 'OK', onPress: () => router.replace('/navigation') }
-      ]);
+      // Alert.alert('Success', 'Account created successfully!', [
+      //   { text: 'OK', onPress: () => router.replace('/navigation') }
+      // ]);
       
     } catch (error) {
       console.error('Registration error:', error);

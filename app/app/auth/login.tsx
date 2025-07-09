@@ -1,3 +1,10 @@
+import { useRouter } from 'expo-router';
+
+const router = useRouter();
+console.log('🔗 router object:', router);
+
+console.log('🧪 LoginScreen rendering...');
+
 import React, { useState } from 'react';
 import {
   View,
@@ -11,11 +18,16 @@ import {
   KeyboardAvoidingView,
   Platform,
 } from 'react-native';
-import { router } from 'expo-router';
+//import { router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+
+//import { useColorScheme } from '../../components/useColorScheme';
+import { useColorScheme } from 'react-native';
+
+
 import { Colors } from '../../constants/Colors';
-import { useColorScheme } from '@/components/useColorScheme';
+// import { useColorScheme } from 'react-native'; // ✅ FIXED
 
 interface LoginData {
   email: string;
@@ -23,7 +35,7 @@ interface LoginData {
 }
 
 export default function LoginScreen() {
-  const colorScheme = useColorScheme();
+  const colorScheme = useColorScheme(); // ✅ Native hook
   const isDark = colorScheme === 'dark';
   const theme = isDark ? Colors.dark : Colors.light;
 
@@ -55,46 +67,41 @@ export default function LoginScreen() {
 
     setIsLoading(true);
     try {
-      // TODO: Replace with actual API endpoint
-      // const response = await fetch('YOUR_BACKEND_URL/api/auth/login', {
-      //   method: 'POST',
-      //   headers: {
-      //     'Content-Type': 'application/json',
-      //   },
-      //   body: JSON.stringify({
-      //     email: formData.email,
-      //     password: formData.password,
-      //   }),
-      // });
-      
-      // const data = await response.json();
-      
-      // if (response.ok) {
-      //   // Store user token and data
-      //   await AsyncStorage.setItem('userToken', data.token);
-      //   await AsyncStorage.setItem('userData', JSON.stringify(data.user));
-      //   router.replace('/navigation');
-      // } else {
-      //   Alert.alert('Login Failed', data.message || 'Invalid credentials');
-      // }
 
-      // Simulate API call for demo
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      
-      // Mock successful login
-      const mockUser = {
-        id: 'user_123',
-        fullName: 'John Doe',
-        email: formData.email,
-        phone: '+1234567890',
-        createdAt: '2024-01-01T00:00:00.000Z',
-      };
-      
-      await AsyncStorage.setItem('userToken', 'mock_token_' + Date.now());
-      await AsyncStorage.setItem('userData', JSON.stringify(mockUser));
-      
-      router.replace('/navigation');
-      
+      const response = await fetch('http://192.168.29.144:3000/api/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: formData.email,
+          password: formData.password,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        await AsyncStorage.setItem('userToken', data.token);
+        await AsyncStorage.setItem('userData', JSON.stringify(data.user));
+        router.replace('/navigation');
+      } else {
+        Alert.alert('Login Failed', data.message || 'Invalid credentials');
+      }
+
+      // // Demo fallback:
+      // await new Promise(resolve => setTimeout(resolve, 1500));
+      // const mockUser = {
+      //   id: 'user_123',
+      //   fullName: 'John Doe',
+      //   email: formData.email,
+      //   phone: '+1234567890',
+      //   createdAt: '2024-01-01T00:00:00.000Z',
+      // };
+
+      // await AsyncStorage.setItem('userToken', 'mock_token_' + Date.now());
+      // await AsyncStorage.setItem('userData', JSON.stringify(mockUser));
+      // router.replace('/navigation');
     } catch (error) {
       console.error('Login error:', error);
       Alert.alert('Error', 'Login failed. Please try again.');
