@@ -74,12 +74,15 @@ const handleResponse = async (response) => {
 // Main API object
 export const api = {
   get: async (endpoint) => {
-    const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+    const url = `${API_BASE_URL}${endpoint}`;
+    console.log("Fetching from:", url); // 🔍 Add this
+    const response = await fetch(url, {
       method: 'GET',
       headers: getHeaders(),
     });
     return handleResponse(response);
   },
+
 
   post: async (endpoint, data) => {
     const response = await fetch(`${API_BASE_URL}${endpoint}`, {
@@ -128,14 +131,24 @@ export const api = {
   },
 };
 
-// Example API function for reports (can be used in frontend)
+//
+// Report APIs
+//
 export const getAllReports = () => {
   return api.get('/api/images/reports');
 };
-// Add this at the bottom of api.js
-
-
 
 export const getReportImageUrl = (reportId) => {
   return `${API_BASE_URL}/reports/${reportId}/image`;
+};
+
+//
+// ✅ Repair APIs
+//
+export const getAllRepairs = () => {
+  return api.get('/api/repairs');
+};
+
+export const completeRepair = (repairId) => {
+  return api.patch(`/api/repairs/${repairId}/complete`);
 };

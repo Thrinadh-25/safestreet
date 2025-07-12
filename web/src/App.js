@@ -18,7 +18,7 @@ import MainLayout from './components/layout/MainLayout';
 import Dashboard from './pages/Dashboard';
 import Reports from './pages/Reports';
 import Analytics from './pages/Analytics';
-import Repair from './pages/Repair';
+import Repair from './pages/Repairs';
 import Login from './pages/Login';
 import Profile from './pages/Profile';
 import AiAnalysis from './pages/AiAnalysis';

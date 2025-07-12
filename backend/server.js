@@ -8,12 +8,14 @@ const cors = require("cors");
 const mongoose = require("mongoose");
 const dotenv = require("dotenv");
 const stream = require("stream");
+const { v4: uuidv4 } = require("uuid");
 
-const sendSeverityAlert = require("./mailer");
+const sendSeverityAlert = require("./mailer").sendSeverityAlert;
+const sendResolvedEmail = require("./mailer").sendResolvedEmail;
 const Analysis = require("./models/Analysis");
 const Report = require("./models/Report");
+const Repair = require("./models/Repair");
 const authRoutes = require("./routes/auth");
-const { v4: uuidv4 } = require('uuid');
 
 dotenv.config();
 const app = express();
@@ -29,14 +31,13 @@ mongoose.connect(process.env.MONGO_URI)
   .then(() => console.log("✅ MongoDB connected"))
   .catch(err => console.error("❌ MongoDB error:", err));
 
-// Constants
 const CLASS_LABELS = ["Longitudinal Crack", "Transverse Crack", "Alligator Crack", "Block Crack"];
 const SEVERITY_LABELS = ["Low", "Medium", "High"];
 
-// Setup multer
+// Multer setup
 const upload = multer({ storage: multer.memoryStorage() });
 
-// Upload and Analyze Route
+// Upload and Analyze
 app.post("/upload-and-analyze", upload.single("image"), async (req, res) => {
   if (!req.file) return res.status(400).json({ error: "No file uploaded" });
 
@@ -83,8 +84,10 @@ app.post("/upload-and-analyze", upload.single("image"), async (req, res) => {
         }
 
         const annotatedImageBuffer = fs.readFileSync(savePath);
+        const email = req.body.email || "user@example.com";
+        const reportId = `rep_${uuidv4()}`;
 
-        // Save to Analysis model
+        // Save to Analysis
         const newAnalysis = new Analysis({
           predictedClass: predicted_class,
           severity: severityIndex,
@@ -98,16 +101,13 @@ app.post("/upload-and-analyze", upload.single("image"), async (req, res) => {
         });
         await newAnalysis.save();
 
-        
-        const reportId = `rep_${uuidv4()}`;
-
-        // Save to Report model
+        // Save to Report
         const newReport = new Report({
           reportId,
           location: "Unknown",
-          email: req.body.email || "user@example.com", // You can pass email from frontend
+          email,
           damageType: type,
-          severity: severity,
+          severity,
           priority: severity === "High" ? "High" : severity === "Medium" ? "Medium" : "Low",
           description: summary || `Detected ${type} with ${severity} severity.`,
           imageData: annotatedImageBuffer,
@@ -116,7 +116,14 @@ app.post("/upload-and-analyze", upload.single("image"), async (req, res) => {
         });
         await newReport.save();
 
-        // Send email alert
+        // Create Repair entry
+        await Repair.create({
+          reportId: newReport._id,
+          email,
+          status: "pending"
+        });
+
+        // Send alert email
         try {
           await sendSeverityAlert({
             damageType: type,
@@ -128,10 +135,10 @@ app.post("/upload-and-analyze", upload.single("image"), async (req, res) => {
             }
           });
         } catch (emailErr) {
-          console.error("❌ Email error:", emailErr.message);
+          console.error("❌ Alert email error:", emailErr.message);
         }
 
-        return res.status(200).json({
+        res.status(200).json({
           predicted_class,
           damage_type: type,
           severity: severityIndex,
@@ -139,26 +146,27 @@ app.post("/upload-and-analyze", upload.single("image"), async (req, res) => {
           bbox,
           summary: summary || `Detected ${type} with ${severity} severity.`,
           image_url: `/reports/${newReport._id}/image`
+          report_id: reportId
         });
 
       } catch (jsonErr) {
         console.error("❌ JSON error:", jsonErr.message);
-        return res.status(500).json({ error: "JSON analysis failed" });
+        res.status(500).json({ error: "JSON analysis failed" });
       }
     });
 
     writer.on("error", (err) => {
       console.error("❌ Image save error:", err.message);
-      return res.status(500).json({ error: "Image save failed" });
+      res.status(500).json({ error: "Image save failed" });
     });
 
   } catch (err) {
     console.error("❌ Annotate error:", err.message);
-    return res.status(500).json({ error: "Annotation failed" });
+    res.status(500).json({ error: "Annotation failed" });
   }
 });
 
-// Serve report image from MongoDB
+// Serve image
 app.get("/reports/:id/image", async (req, res) => {
   try {
     const report = await Report.findById(req.params.id);
@@ -192,8 +200,38 @@ app.get("/api/images/reports", async (req, res) => {
   }
 });
 
-// Start the server
+// === 🔧 REPAIRS ROUTES ===
+
+// Get all repairs
+app.get("/api/repairs", async (req, res) => {
+  try {
+    const repairs = await Repair.find().sort({ createdAt: -1 });
+    res.status(200).json(repairs);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Mark repair as completed + send email
+app.patch("/api/repairs/:id/complete", async (req, res) => {
+  try {
+    const repair = await Repair.findByIdAndUpdate(
+      req.params.id,
+      { status: "completed", completedAt: new Date() },
+      { new: true }
+    );
+
+    if (!repair) return res.status(404).json({ message: "Repair not found" });
+
+    await sendResolvedEmail(repair.email, repair.reportId);
+    res.status(200).json(repair);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Start server
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, "0.0.0.0", () => {
   console.log(`🚀 Server running on port ${PORT}`);
-}); 
+});
