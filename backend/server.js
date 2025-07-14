@@ -41,7 +41,7 @@ mongoose.connect(process.env.MONGO_URI)
   .then(() => console.log("✅ MongoDB connected"))
   .catch(err => console.error("❌ MongoDB error:", err));
 
-const CLASS_LABELS = ["Longitudinal Crack", "Transverse Crack", "Alligator Crack", "Block Crack"];
+const CLASS_LABELS = ["Longitudinal Crack", "Transverse Crack", "Alligator Crack", "Pothole"];
 const SEVERITY_LABELS = ["Low", "Medium", "High"];
 
 // Multer setup
@@ -283,7 +283,7 @@ app.post("/analyze-only", diskUpload.single("image"), async (req, res) => {
 
   } catch (err) {
     console.error("❌ Error in /analyze-only:", err.message);
-    res.status(500).json({ success: false, message: "Analysis failed." });
+    res.status(500).json({ success: false, message: "Please upload a Valid Road Image." });
   }
 });
 
