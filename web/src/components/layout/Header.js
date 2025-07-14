@@ -53,7 +53,6 @@ const superAdminMenuItems = [
 const regularMenuItems = [
   { text: 'Dashboard', icon: <DashboardIcon />, path: '/', badge: null },
   { text: 'Reports', icon: <ReportIcon />, path: '/reports', badge: null },
-  { text: 'Analytics', icon: <AnalyticsIcon />, path: '/analytics', badge: null },
   { text: 'Repairs', icon: <RepairIcon />, path: '/repairs', badge: null },
   { text: 'AI Analysis', icon: <AutoAwesomeIcon />, path: '/ai-analysis', badge: 'AI' }
 ];
@@ -307,7 +306,7 @@ const Header = ({ onDrawerToggle }) => {
             )}
 
             {/* Notifications */}
-            <Tooltip title="Notifications">
+            {/*<Tooltip title="Notifications">
               <IconButton 
                 onClick={handleNotificationOpen}
                 sx={{ 
@@ -330,7 +329,7 @@ const Header = ({ onDrawerToggle }) => {
                   <NotificationsIcon />
                 </Badge>
               </IconButton>
-            </Tooltip>
+            </Tooltip>*/}
 
             {/* Profile */}
             <Tooltip title="Profile">

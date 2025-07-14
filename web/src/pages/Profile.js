@@ -22,7 +22,6 @@ import {
 import {
   Edit as EditIcon,
   Save as SaveIcon,
-  Notifications,
   Email,
   Phone,
   LocationOn,
@@ -239,7 +238,7 @@ const Profile = () => {
                       </Box>
                     </Box>
                     <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-                      <Tooltip title="Notifications">
+                      {/* <Tooltip title="Notifications">
                         <IconButton
                           color="primary"
                           sx={{
@@ -253,7 +252,7 @@ const Profile = () => {
                             <Notifications />
                           </Badge>
                         </IconButton>
-                      </Tooltip>
+                      </Tooltip> */}
                       <Button
                         variant="contained"
                         startIcon={editMode ? <SaveIcon /> : <EditIcon />}
@@ -328,7 +327,16 @@ const Profile = () => {
                     </Box>
                     <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
                       <LocationOn sx={{ mr: 2, color: colors.primary }} />
-                      <Typography variant="body2">{userData.location}</Typography>
+                      <Typography
+                        variant="body2"
+                        component="a"
+                        href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(userData.location)}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        sx={{ color: colors.text, textDecoration: "none", "&:hover": { textDecoration: "underline" } }}
+                      >
+                        {userData.location}
+                      </Typography>
                     </Box>
                     <Divider sx={{ my: 2 }} />
                     <Typography variant="subtitle2" fontWeight="bold" gutterBottom color="primary">
@@ -596,7 +604,7 @@ const Profile = () => {
                                 Security
                               </Typography>
                               <Grid container spacing={2}>
-                                <Grid item xs={12}>
+                                {/* <Grid item xs={12}>
                                   <Button
                                     variant="outlined"
                                     fullWidth
@@ -626,20 +634,29 @@ const Profile = () => {
                                   >
                                     Two-Factor Authentication
                                   </Button>
+                                </Grid> */}
+                                <Grid item xs={12}>
+                                  <Typography 
+                                    variant="body2"
+                                    color="text.secondary"
+                                    sx={{ mt: 2 }}
+                                  >
+                                    🔒 For any security-related changes, please contact <strong>SafeStreet Support</strong>.
+                                  </Typography>
                                 </Grid>
                               </Grid>
                             </CardContent>
                           </Paper>
                         </Grid>
-                        <Grid item xs={12}>
+                        {/* <Grid item xs={12}>
                           <Paper
                             elevation={0}
                             sx={{ 
                               borderRadius: 2,
                               border: `1px solid ${colors.border}`,
                             }}
-                          >
-                            <CardContent>
+                          > */}
+                            {/* <CardContent>
                               <Typography variant="subtitle1" fontWeight="bold" gutterBottom color="primary">
                                 Notifications
                               </Typography>
@@ -692,9 +709,9 @@ const Profile = () => {
                                   </Button>
                                 </Grid>
                               </Grid>
-                            </CardContent>
-                          </Paper>
-                        </Grid>
+                            </CardContent> */}
+                          {/* </Paper>
+                        </Grid> */}
                       </Grid>
                     </Box>
                   )}
