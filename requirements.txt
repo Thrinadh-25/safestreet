@@ -1,0 +1,5 @@
+->> model(flask)
+-> pip install flask flask-cors torch torchvision transformers pillow
+
+->> app, web, backend
+-> npm install
