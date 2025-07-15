@@ -41,7 +41,21 @@ mongoose.connect(process.env.MONGO_URI)
   .then(() => console.log("✅ MongoDB connected"))
   .catch(err => console.error("❌ MongoDB error:", err));
 
-const CLASS_LABELS = ["Longitudinal Crack", "Transverse Crack", "Alligator Crack", "Pothole"];
+//const CLASS_LABELS = ["Longitudinal Crack", "Transverse Crack", "Alligator Crack", "Pothole"];
+const CLASS_LABELS = [
+  "longitudinal_crack",
+  "transverse_crack",
+  "alligator_crack",
+  "pothole"
+];
+
+function formatLabel(label) {
+  return label
+    .split('_')
+    .map(word => word[0].toUpperCase() + word.slice(1))
+    .join(' ');
+}
+
 const SEVERITY_LABELS = ["Low", "Medium", "High"];
 
 // Multer setup
@@ -151,7 +165,9 @@ app.post("/upload-and-analyze", memoryUpload.single("image"), async (req, res) =
 
         res.status(200).json({
           predicted_class,
-          damage_type: type,
+          damage_type: formatLabel(type),
+
+          // damage_type: type,
           severity: severityIndex,
           severity_label: severity,
           bbox,
