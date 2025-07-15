@@ -585,7 +585,7 @@ const UploadTab = () => {
       formData.append('email', userEmail); // ✅ Include the email
 
       const response = await axios.post(
-        'http://192.168.29.144:3000/upload-and-analyze',
+        'http://192.168.13.64:3000/upload-and-analyze',
         formData,
         {
           headers: {
