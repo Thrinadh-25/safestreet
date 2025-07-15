@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { Link } from "@mui/material"; // Using Link from MUI for email links
 import {
   Box,
   Container,
@@ -319,7 +320,14 @@ const Profile = () => {
                   <CardContent sx={{ p: 3 }}>
                     <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
                       <Email sx={{ mr: 2, color: colors.primary }} />
-                      <Typography variant="body2">{userData.email}</Typography>
+                      <Link
+                        href={`mailto:${userData.email}`}
+                        underline="hover"
+                        color="inherit"
+                        variant="body2"
+                      >
+                        {userData.email}
+                      </Link>
                     </Box>
                     <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
                       <Phone sx={{ mr: 2, color: colors.primary }} />
@@ -643,7 +651,16 @@ const Profile = () => {
                                     color="text.secondary"
                                     sx={{ mt: 2 }}
                                   >
-                                    🔒 For any security-related changes, please contact <strong>SafeStreet Support</strong>.
+                                    🔒 For any security-related changes, please contact{" "}
+                                    <Link
+                                      href={`mailto:${userData.email}`}
+                                      underline="hover"
+                                      color="inherit"
+                                      variant="body2"
+                                      frontweight="bold"
+                                    >
+                                      <strong>SafeStreet Support</strong>
+                                    </Link>.
                                   </Typography>
                                 </Grid>
                               </Grid>
