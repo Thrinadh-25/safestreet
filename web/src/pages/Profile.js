@@ -51,7 +51,7 @@ const colors = {
 };
 
 const Profile = () => {
-  const [tabValue, setTabValue] = useState(0);
+  const [tabValue, setTabValue] = useState("profile");
   const [editMode, setEditMode] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -77,7 +77,7 @@ const Profile = () => {
         name: user.name || "",
         email: user.email || "",
         role: user.role || "admin",
-        position: user.profile?.position || "Adam",
+        position: user.profile?.position || "Administrator",
         phone: user.profile?.phone || "",
         location: user.profile?.location || "Kmec",
         department: user.profile?.department || "",
@@ -376,18 +376,20 @@ const Profile = () => {
                     textColor="primary"
                   >
                     <Tab
+                      value="profile"
                       icon={<Person fontSize="small" />}
                       label="Profile"
                       iconPosition="start"
                       sx={{ textTransform: "none", py: 1.5 }}
                     />
-                    <Tab
+                    {/* <Tab
                       icon={<History fontSize="small" />}
                       label="Activity"
                       iconPosition="start"
                       sx={{ textTransform: "none", py: 1.5 }}
-                    />
+                    /> */}
                     <Tab
+                      value="settings"
                       icon={<Settings fontSize="small" />}
                       label="Settings"
                       iconPosition="start"
@@ -395,7 +397,7 @@ const Profile = () => {
                     />
                   </Tabs>
 
-                  {tabValue === 0 && (
+                  {tabValue === "profile" && (
                     <Box sx={{ p: 3 }}>
                       <Typography variant="h6" fontWeight="bold" gutterBottom color="primary">
                         About Me
@@ -548,7 +550,7 @@ const Profile = () => {
                     </Box>
                   )}
 
-                  {tabValue === 1 && (
+                  {/* {tabValue === 1 && (
                     <Box sx={{ p: 3 }}>
                       <Typography variant="h6" fontWeight="bold" gutterBottom color="primary">
                         Recent Activity
@@ -581,9 +583,9 @@ const Profile = () => {
                         />
                       </Timeline>
                     </Box>
-                  )}
+                  )} */}
 
-                  {tabValue === 2 && (
+                  {tabValue === "settings" && (
                     <Box sx={{ p: 3 }}>
                       <Grid container spacing={3}>
                         <Grid item xs={12}>
