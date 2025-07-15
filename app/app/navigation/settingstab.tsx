@@ -232,16 +232,9 @@ export default function SettingsTabScreen() {
     );
   };
 
-  const openPrivacyPolicy = () => {
-    Linking.openURL('https://example.com/privacy-policy');
-  };
-
-  const openTermsOfService = () => {
-    Linking.openURL('https://example.com/terms-of-service');
-  };
-
+ 
   const contactSupport = () => {
-    Linking.openURL('mailto:support@safestreet.com?subject=Safe Street App Support');
+    Linking.openURL('mailto:safestreetps@gmail.com?subject=Safe Street App Support');
   };
 
   const renderSettingItem = (
@@ -399,68 +392,13 @@ export default function SettingsTabScreen() {
                 </TouchableOpacity>
                 <TouchableOpacity style={styles.deleteAccountButton} onPress={handleDeleteAccount}>
                   <Ionicons name="trash-outline" size={20} color={Colors.error} />
-                  <Text style={[styles.deleteAccountText, { color: Colors.error }]}>Delete Account</Text>
+                  <Text style={styles.deleteAccountText}>Delete Account</Text>
                 </TouchableOpacity>
               </View>
             </View>
           </View>
         )}
 
-        {/* Theme Info */}
-        <View style={styles.section}>
-          <Text style={[styles.sectionTitle, { color: Colors.primary }]}>🎨 Theme</Text>
-          <View style={[styles.themeInfo, { backgroundColor: theme.cardBackground }]}>
-            <View style={styles.themeRow}>
-              <Ionicons name={isDark ? "moon" : "sunny"} size={20} color={Colors.primary} />
-              <View style={styles.themeText}>
-                <Text style={[styles.themeTitle, { color: theme.text }]}>Current Theme</Text>
-                <Text style={[styles.themeSubtitle, { color: theme.placeholderText }]}>
-                  {isDark ? 'Dark Mode' : 'Light Mode'} (Device Default)
-                </Text>
-              </View>
-            </View>
-            <Text style={[styles.themeDescription, { color: theme.placeholderText }]}>
-              Theme automatically follows your device settings
-            </Text>
-          </View>
-        </View>
-
-        {/* App Preferences */}
-        <View style={styles.section}>
-          <Text style={[styles.sectionTitle, { color: Colors.primary }]}>⚙️ App Preferences</Text>
-          
-          {renderSettingItem(
-            'Push Notifications',
-            'Get notified about upload status and updates',
-            settings.notifications,
-            () => toggleSetting('notifications'),
-            'notifications'
-          )}
-          
-          {renderSettingItem(
-            'Auto Location',
-            'Automatically capture location with images',
-            settings.autoLocation,
-            () => toggleSetting('autoLocation'),
-            'location'
-          )}
-          
-          {renderSettingItem(
-            'High Quality Images',
-            'Upload images in higher resolution',
-            settings.highQualityImages,
-            () => toggleSetting('highQualityImages'),
-            'camera'
-          )}
-          
-          {renderSettingItem(
-            'Data Usage Warning',
-            'Warn before uploading on mobile data',
-            settings.dataUsageWarning,
-            () => toggleSetting('dataUsageWarning'),
-            'cellular'
-          )}
-        </View>
 
         {/* App Information */}
         <View style={styles.section}>
@@ -469,24 +407,13 @@ export default function SettingsTabScreen() {
           {renderInfoItem('Version', appInfo.version, 'information-circle')}
           {renderInfoItem('Build Number', appInfo.buildNumber, 'build')}
           {renderInfoItem('Total Uploads', appInfo.totalUploads.toString(), 'cloud-upload')}
-          {renderInfoItem('Storage Used', appInfo.storageUsed, 'server')}
         </View>
 
-        {/* Data Management */}
-        <View style={styles.section}>
-          <Text style={[styles.sectionTitle, { color: Colors.primary }]}>💾 Data Management</Text>
-          
-          {renderActionItem('Export Data', exportData, 'download')}
-          {renderActionItem('Clear App Data', clearAppData, 'trash', Colors.error)}
-        </View>
-
-        {/* Support & Legal */}
         <View style={styles.section}>
           <Text style={[styles.sectionTitle, { color: Colors.primary }]}>🛠️ Support & Legal</Text>
-          
-          {renderActionItem('Contact Support', contactSupport, 'mail')}
-          {renderActionItem('Privacy Policy', openPrivacyPolicy, 'shield-checkmark')}
-          {renderActionItem('Terms of Service', openTermsOfService, 'document-text')}
+          {renderActionItem('Clear App Data', clearAppData, 'trash', Colors.error)}
+          {renderActionItem('Contact Suport', contactSupport, 'mail')}
+
         </View>
 
         {/* About */}

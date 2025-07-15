@@ -1,7 +1,3 @@
-
-
-
-
 import React, { useState, useEffect } from 'react';
 import {
   View,
@@ -98,13 +94,6 @@ const UploadTab = () => {
       aspect: [16,9],
       quality: 0.8,
     });
-    // const result = await ImagePicker.launchCameraAsync({
-    //   mediaTypes: ImagePicker.MediaTypeOptions.Images,
-    //   allowsEditing: false, // ← changed
-    //   quality: 0.8,
-    // });
-
-    
 
     if (!result.canceled && result.assets[0]) {
       setCurrentImage(result.assets[0].uri);
@@ -119,13 +108,6 @@ const UploadTab = () => {
     }
   };
 
-
-     
-  //   const result = await ImagePicker.launchImageLibraryAsync({
-  //     mediaTypes: ImagePicker.MediaTypeOptions.Images,
-  //     allowsEditing: false, // ← changed
-  //     quality: 0.8,
-  //   });
     const openGallery = async () => {
       const result = await ImagePicker.launchImageLibraryAsync({
         mediaTypes: ImagePicker.MediaTypeOptions.Images,
@@ -187,7 +169,7 @@ const UploadTab = () => {
       formData.append('email', userEmail); // ✅ Include the email
 
       const response = await axios.post(
-        'http://192.168.29.144:3000/upload-and-analyze',
+        'http://192.168.1.3:3000/upload-and-analyze',
         formData,
         {
           headers: {
@@ -235,12 +217,9 @@ const UploadTab = () => {
   return (
     <View style={[styles.container, { backgroundColor: theme.background }]}>
       <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
-        <View style={[styles.header, { backgroundColor: theme.headerBackground }]}>
-          <Text style={[styles.title, { color: theme.text }]}>Upload</Text>
-          <TouchableOpacity onPress={() => setShowInfoModal(true)} style={styles.infoButton}>
-            <Ionicons name="information-circle-outline" size={24} color={Colors.primary} />
-          </TouchableOpacity>
-        </View>
+         <View style={[styles.header, { backgroundColor: theme.headerBackground }]}>
+                  <Text style={[styles.title, { color: theme.text }]}>Upload</Text>
+                </View>
 
         {userEmail && (
           <Text style={{ color: theme.placeholderText, paddingHorizontal: 24, marginBottom: 8 }}>
