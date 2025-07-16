@@ -134,3 +134,14 @@ dist
 .yarn/build-state.yml
 .yarn/install-state.gz
 .pnp.*
+<<<<<<< HEAD
+=======
+
+# Model files
+model/best_damage_vit_model (2).pth
+model/road_classifier.pth
+
+# Environment config
+.env
+
+>>>>>>> back

@@ -93,7 +93,11 @@ export default function RegisterScreen() {
     try {
       console.log("Sending request...");
       // TODO: Replace with actual API endpoint
+<<<<<<< HEAD
       const response = await fetch('http://192.168.29.144:3000/api/auth/register', {
+=======
+      const response = await fetch('http://192.168.1.3:3000/api/auth/register', {
+>>>>>>> back
       //const response = await fetch('YOUR_BACKEND_URL/api/auth/register', {
         method: 'POST',
         headers: {

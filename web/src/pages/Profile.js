@@ -1,4 +1,8 @@
 import React, { useState, useEffect } from "react";
+<<<<<<< HEAD
+=======
+import { Link } from "@mui/material"; // Using Link from MUI for email links
+>>>>>>> back
 import {
   Box,
   Container,
@@ -22,7 +26,10 @@ import {
 import {
   Edit as EditIcon,
   Save as SaveIcon,
+<<<<<<< HEAD
   Notifications,
+=======
+>>>>>>> back
   Email,
   Phone,
   LocationOn,
@@ -52,7 +59,11 @@ const colors = {
 };
 
 const Profile = () => {
+<<<<<<< HEAD
   const [tabValue, setTabValue] = useState(0);
+=======
+  const [tabValue, setTabValue] = useState("profile");
+>>>>>>> back
   const [editMode, setEditMode] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -80,7 +91,11 @@ const Profile = () => {
         role: user.role || "admin",
         position: user.profile?.position || "Administrator",
         phone: user.profile?.phone || "",
+<<<<<<< HEAD
         location: user.profile?.location || "",
+=======
+        location: user.profile?.location || "Kmec",
+>>>>>>> back
         department: user.profile?.department || "",
         joinDate: user.profile?.joinDate ? new Date(user.profile.joinDate).toLocaleDateString('en-US', { month: 'long', year: 'numeric' }) : "Recently joined",
         bio: user.profile?.bio || "No bio available",
@@ -239,7 +254,11 @@ const Profile = () => {
                       </Box>
                     </Box>
                     <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+<<<<<<< HEAD
                       <Tooltip title="Notifications">
+=======
+                      {/* <Tooltip title="Notifications">
+>>>>>>> back
                         <IconButton
                           color="primary"
                           sx={{
@@ -253,7 +272,11 @@ const Profile = () => {
                             <Notifications />
                           </Badge>
                         </IconButton>
+<<<<<<< HEAD
                       </Tooltip>
+=======
+                      </Tooltip> */}
+>>>>>>> back
                       <Button
                         variant="contained"
                         startIcon={editMode ? <SaveIcon /> : <EditIcon />}
@@ -320,7 +343,18 @@ const Profile = () => {
                   <CardContent sx={{ p: 3 }}>
                     <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
                       <Email sx={{ mr: 2, color: colors.primary }} />
+<<<<<<< HEAD
                       <Typography variant="body2">{userData.email}</Typography>
+=======
+                      <Link
+                        href={`mailto:${userData.email}`}
+                        underline="hover"
+                        color="inherit"
+                        variant="body2"
+                      >
+                        {userData.email}
+                      </Link>
+>>>>>>> back
                     </Box>
                     <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
                       <Phone sx={{ mr: 2, color: colors.primary }} />
@@ -328,7 +362,20 @@ const Profile = () => {
                     </Box>
                     <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
                       <LocationOn sx={{ mr: 2, color: colors.primary }} />
+<<<<<<< HEAD
                       <Typography variant="body2">{userData.location}</Typography>
+=======
+                      <Typography
+                        variant="body2"
+                        component="a"
+                        href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(userData.location)}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        sx={{ color: colors.text, textDecoration: "none", "&:hover": { textDecoration: "underline" } }}
+                      >
+                        {userData.location}
+                      </Typography>
+>>>>>>> back
                     </Box>
                     <Divider sx={{ my: 2 }} />
                     <Typography variant="subtitle2" fontWeight="bold" gutterBottom color="primary">
@@ -368,18 +415,32 @@ const Profile = () => {
                     textColor="primary"
                   >
                     <Tab
+<<<<<<< HEAD
+=======
+                      value="profile"
+>>>>>>> back
                       icon={<Person fontSize="small" />}
                       label="Profile"
                       iconPosition="start"
                       sx={{ textTransform: "none", py: 1.5 }}
                     />
+<<<<<<< HEAD
                     <Tab
+=======
+                    {/* <Tab
+>>>>>>> back
                       icon={<History fontSize="small" />}
                       label="Activity"
                       iconPosition="start"
                       sx={{ textTransform: "none", py: 1.5 }}
+<<<<<<< HEAD
                     />
                     <Tab
+=======
+                    /> */}
+                    <Tab
+                      value="settings"
+>>>>>>> back
                       icon={<Settings fontSize="small" />}
                       label="Settings"
                       iconPosition="start"
@@ -387,7 +448,11 @@ const Profile = () => {
                     />
                   </Tabs>
 
+<<<<<<< HEAD
                   {tabValue === 0 && (
+=======
+                  {tabValue === "profile" && (
+>>>>>>> back
                     <Box sx={{ p: 3 }}>
                       <Typography variant="h6" fontWeight="bold" gutterBottom color="primary">
                         About Me
@@ -540,7 +605,11 @@ const Profile = () => {
                     </Box>
                   )}
 
+<<<<<<< HEAD
                   {tabValue === 1 && (
+=======
+                  {/* {tabValue === 1 && (
+>>>>>>> back
                     <Box sx={{ p: 3 }}>
                       <Typography variant="h6" fontWeight="bold" gutterBottom color="primary">
                         Recent Activity
@@ -573,9 +642,15 @@ const Profile = () => {
                         />
                       </Timeline>
                     </Box>
+<<<<<<< HEAD
                   )}
 
                   {tabValue === 2 && (
+=======
+                  )} */}
+
+                  {tabValue === "settings" && (
+>>>>>>> back
                     <Box sx={{ p: 3 }}>
                       <Grid container spacing={3}>
                         <Grid item xs={12}>
@@ -596,7 +671,11 @@ const Profile = () => {
                                 Security
                               </Typography>
                               <Grid container spacing={2}>
+<<<<<<< HEAD
                                 <Grid item xs={12}>
+=======
+                                {/* <Grid item xs={12}>
+>>>>>>> back
                                   <Button
                                     variant="outlined"
                                     fullWidth
@@ -626,20 +705,50 @@ const Profile = () => {
                                   >
                                     Two-Factor Authentication
                                   </Button>
+<<<<<<< HEAD
+=======
+                                </Grid> */}
+                                <Grid item xs={12}>
+                                  <Typography 
+                                    variant="body2"
+                                    color="text.secondary"
+                                    sx={{ mt: 2 }}
+                                  >
+                                    🔒 For any security-related changes, please contact{" "}
+                                    <Link
+                                      href={`mailto:${userData.email}`}
+                                      underline="hover"
+                                      color="inherit"
+                                      variant="body2"
+                                      frontweight="bold"
+                                    >
+                                      <strong>SafeStreet Support</strong>
+                                    </Link>.
+                                  </Typography>
+>>>>>>> back
                                 </Grid>
                               </Grid>
                             </CardContent>
                           </Paper>
                         </Grid>
+<<<<<<< HEAD
                         <Grid item xs={12}>
+=======
+                        {/* <Grid item xs={12}>
+>>>>>>> back
                           <Paper
                             elevation={0}
                             sx={{ 
                               borderRadius: 2,
                               border: `1px solid ${colors.border}`,
                             }}
+<<<<<<< HEAD
                           >
                             <CardContent>
+=======
+                          > */}
+                            {/* <CardContent>
+>>>>>>> back
                               <Typography variant="subtitle1" fontWeight="bold" gutterBottom color="primary">
                                 Notifications
                               </Typography>
@@ -692,9 +801,15 @@ const Profile = () => {
                                   </Button>
                                 </Grid>
                               </Grid>
+<<<<<<< HEAD
                             </CardContent>
                           </Paper>
                         </Grid>
+=======
+                            </CardContent> */}
+                          {/* </Paper>
+                        </Grid> */}
+>>>>>>> back
                       </Grid>
                     </Box>
                   )}
@@ -749,4 +864,8 @@ const TimelineItem = ({ title, time, description }) => (
   </Box>
 );
 
+<<<<<<< HEAD
 export default Profile;
+=======
+export default Profile;
+>>>>>>> back

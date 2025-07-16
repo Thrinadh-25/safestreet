@@ -3,3 +3,9 @@
 
 ->> app, web, backend
 -> npm install
+<<<<<<< HEAD
+=======
+
+
+11:10
+>>>>>>> back

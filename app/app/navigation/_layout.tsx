@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 
 
 
@@ -65,6 +66,10 @@
 
 // app/navigation/layout.tsx
 // app/navigation/layout.tsx
+=======
+import React from 'react';
+import { View } from 'react-native';
+>>>>>>> back
 import { Tabs } from 'expo-router';
 import { useColorScheme } from 'react-native';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
@@ -92,4 +97,8 @@ export default function Layout() {
       <Tabs.Screen name="settingstab" options={{ title: 'Settings', tabBarIcon: ({ color }) => <TabBarIcon name="cog" color={color} /> }} />
     </Tabs>
   );
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> back

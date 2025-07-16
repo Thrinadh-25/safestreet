@@ -1,4 +1,5 @@
 const nodemailer = require("nodemailer");
+<<<<<<< HEAD
 
 // Create transporter once
 const transporter = nodemailer.createTransport({
@@ -9,6 +10,29 @@ const transporter = nodemailer.createTransport({
   },
 });
 
+=======
+require("dotenv").config(); // Make sure it's at the top
+
+
+
+
+// Create transporter once
+// const transporter = nodemailer.createTransport({
+//   service: "gmail",
+//   auth: {
+//     user: "safestreetps@gmail.com",
+//     pass: "kygjzipxkyajeeq", // App password
+//   },
+// });
+
+const transporter = nodemailer.createTransport({
+  service: "gmail",
+  auth: {
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASS,
+  },
+});
+>>>>>>> back
 // 🔴 Sends email to GHMC (or authority) with image and severity
 async function sendSeverityAlert({ damageType, severityLabel, file }) {
   const mailOptions = {

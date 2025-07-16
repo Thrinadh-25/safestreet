@@ -232,6 +232,7 @@ export default function SettingsTabScreen() {
     );
   };
 
+<<<<<<< HEAD
   const openPrivacyPolicy = () => {
     Linking.openURL('https://example.com/privacy-policy');
   };
@@ -242,6 +243,11 @@ export default function SettingsTabScreen() {
 
   const contactSupport = () => {
     Linking.openURL('mailto:support@safestreet.com?subject=Safe Street App Support');
+=======
+ 
+  const contactSupport = () => {
+    Linking.openURL('mailto:safestreetps@gmail.com?subject=Safe Street App Support');
+>>>>>>> back
   };
 
   const renderSettingItem = (
@@ -399,13 +405,18 @@ export default function SettingsTabScreen() {
                 </TouchableOpacity>
                 <TouchableOpacity style={styles.deleteAccountButton} onPress={handleDeleteAccount}>
                   <Ionicons name="trash-outline" size={20} color={Colors.error} />
+<<<<<<< HEAD
                   <Text style={[styles.deleteAccountText, { color: Colors.error }]}>Delete Account</Text>
+=======
+                  <Text style={styles.deleteAccountText}>Delete Account</Text>
+>>>>>>> back
                 </TouchableOpacity>
               </View>
             </View>
           </View>
         )}
 
+<<<<<<< HEAD
         {/* Theme Info */}
         <View style={styles.section}>
           <Text style={[styles.sectionTitle, { color: Colors.primary }]}>🎨 Theme</Text>
@@ -461,6 +472,8 @@ export default function SettingsTabScreen() {
             'cellular'
           )}
         </View>
+=======
+>>>>>>> back
 
         {/* App Information */}
         <View style={styles.section}>
@@ -469,6 +482,7 @@ export default function SettingsTabScreen() {
           {renderInfoItem('Version', appInfo.version, 'information-circle')}
           {renderInfoItem('Build Number', appInfo.buildNumber, 'build')}
           {renderInfoItem('Total Uploads', appInfo.totalUploads.toString(), 'cloud-upload')}
+<<<<<<< HEAD
           {renderInfoItem('Storage Used', appInfo.storageUsed, 'server')}
         </View>
 
@@ -487,6 +501,15 @@ export default function SettingsTabScreen() {
           {renderActionItem('Contact Support', contactSupport, 'mail')}
           {renderActionItem('Privacy Policy', openPrivacyPolicy, 'shield-checkmark')}
           {renderActionItem('Terms of Service', openTermsOfService, 'document-text')}
+=======
+        </View>
+
+        <View style={styles.section}>
+          <Text style={[styles.sectionTitle, { color: Colors.primary }]}>🛠️ Support & Legal</Text>
+          {renderActionItem('Clear App Data', clearAppData, 'trash', Colors.error)}
+          {renderActionItem('Contact Suport', contactSupport, 'mail')}
+
+>>>>>>> back
         </View>
 
         {/* About */}

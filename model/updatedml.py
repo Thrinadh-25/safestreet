@@ -17,7 +17,11 @@ CLASS_LABELS = [
     "Longitudinal Crack",  # D00
     "Transverse Crack",    # D01
     "Alligator Crack",     # D10
+<<<<<<< HEAD
     "Block Crack"          # D11
+=======
+    "Pothole"          # D11
+>>>>>>> back
 ]
 SEVERITY_LABELS = ["Low", "Medium", "High"]
 
@@ -54,7 +58,11 @@ class RoadCheckModel(nn.Module):
         return x
 
 road_model = RoadCheckModel().to(device)
+<<<<<<< HEAD
 road_model.load_state_dict(torch.load(r"C:\safestreet\model\road_classifier.pth", map_location=device))
+=======
+road_model.load_state_dict(torch.load(r"C:\Users\Thrinadh reddy\safestreet\model\road_classifier.pth", map_location=device))
+>>>>>>> back
 road_model.eval()
 
 road_transform = transforms.Compose([
@@ -99,7 +107,11 @@ class DamageViTModel(nn.Module):
         }
 
 damage_model = DamageViTModel(num_classes=NUM_CLASSES, num_severity=NUM_SEVERITY).to(device)
+<<<<<<< HEAD
 damage_model.load_state_dict(torch.load(r"C:\safestreet\model\best_damage_vit_model (2).pth", map_location=device))
+=======
+damage_model.load_state_dict(torch.load(r"C:\Users\Thrinadh reddy\safestreet\model\best_damage_vit_model (2).pth", map_location=device))
+>>>>>>> back
 damage_model.eval()
 
 damage_transform = transforms.Compose([

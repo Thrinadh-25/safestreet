@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 // import React, { useState, useEffect, useCallback } from 'react';
 // import { 
 //   StyleSheet, 
@@ -387,6 +388,8 @@
 
 
 
+=======
+>>>>>>> back
 import React, { useState } from 'react';
 import {
   StyleSheet,
@@ -557,6 +560,7 @@ export default function TrackTabScreen() {
               onPress={() => {
                 Alert.alert(
                   'Clear All Uploads',
+<<<<<<< HEAD
                   'Are you sure you want to clear all upload history?',
                   [
                     { text: 'Cancel', style: 'cancel' },
@@ -564,6 +568,23 @@ export default function TrackTabScreen() {
                       text: 'Clear',
                       style: 'destructive',
                       onPress: clearAllUploads,
+=======
+                  'Are you sure you want to clear all upload history? This action cannot be undone.',
+                  [
+                    { text: 'Cancel', style: 'cancel' },
+                    {
+                      text: 'Clear All',
+                      style: 'destructive',
+                      onPress: () => {
+                        try {
+                          clearAllUploads();
+                          console.log('All uploads cleared successfully');
+                        } catch (error) {
+                          console.error('Error clearing uploads:', error);
+                          Alert.alert('Error', 'Failed to clear uploads. Please try again.');
+                        }
+                      },
+>>>>>>> back
                     },
                   ]
                 );
@@ -571,7 +592,13 @@ export default function TrackTabScreen() {
             >
               <Ionicons name="trash-outline" size={16} color="#FFFFFF" />
               <Text style={styles.clearButtonText}>Clear All History</Text>
+<<<<<<< HEAD
             </TouchableOpacity>
+=======
+          </TouchableOpacity>
+
+           
+>>>>>>> back
           </View>
         )}
       </ScrollView>

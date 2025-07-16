@@ -41,7 +41,27 @@ mongoose.connect(process.env.MONGO_URI)
   .then(() => console.log("✅ MongoDB connected"))
   .catch(err => console.error("❌ MongoDB error:", err));
 
+<<<<<<< HEAD
 const CLASS_LABELS = ["Longitudinal Crack", "Transverse Crack", "Alligator Crack", "Block Crack"];
+=======
+const CLASS_LABELS = ["Longitudinal Crack", "Transverse Crack", "Alligator Crack", "Pothole"];
+
+//use for yolo
+// const CLASS_LABELS = [
+//   "longitudinal_crack",
+//   "transverse_crack",
+//   "alligator_crack",
+//   "pothole"
+// ];
+
+// function formatLabel(label) {
+//   return label
+//     .split('_')
+//     .map(word => word[0].toUpperCase() + word.slice(1))
+//     .join(' ');
+// }
+
+>>>>>>> back
 const SEVERITY_LABELS = ["Low", "Medium", "High"];
 
 // Multer setup
@@ -151,6 +171,11 @@ app.post("/upload-and-analyze", memoryUpload.single("image"), async (req, res) =
 
         res.status(200).json({
           predicted_class,
+<<<<<<< HEAD
+=======
+          // damage_type: formatLabel(type),
+
+>>>>>>> back
           damage_type: type,
           severity: severityIndex,
           severity_label: severity,
@@ -283,7 +308,11 @@ app.post("/analyze-only", diskUpload.single("image"), async (req, res) => {
 
   } catch (err) {
     console.error("❌ Error in /analyze-only:", err.message);
+<<<<<<< HEAD
     res.status(500).json({ success: false, message: "Analysis failed." });
+=======
+    res.status(500).json({ success: false, message: "Please upload a Valid Road Image." });
+>>>>>>> back
   }
 });
 

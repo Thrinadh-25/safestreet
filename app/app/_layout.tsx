@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 // import { Slot } from "expo-router";
 // import { SafeAreaView } from "react-native";
 
@@ -35,6 +36,8 @@
 //     </UploadProvider>
 //   );
 // }
+=======
+>>>>>>> back
 import { Stack } from 'expo-router';
 import { UploadProvider } from '../context/UploadContext';
 import { AuthProvider } from '../context/AuthContext'; // If you're using auth
@@ -49,5 +52,8 @@ export default function RootLayout() {
   );
 }
 
+<<<<<<< HEAD
 
 
+=======
+>>>>>>> back

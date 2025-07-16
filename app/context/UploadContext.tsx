@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 // import React, { createContext, useContext, useReducer, ReactNode } from 'react';
 // import AsyncStorage from '@react-native-async-storage/async-storage';
 
@@ -156,6 +157,8 @@
 
 
 
+=======
+>>>>>>> back
 import React, { createContext, useContext, useReducer, ReactNode } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
@@ -175,7 +178,11 @@ export interface UploadItem {
   repairStatus: string;
   aiSummary: string | null;
   id?: string;
+<<<<<<< HEAD
   reportId?: string; // ✅ Added reportId field
+=======
+  reportId?: string;
+>>>>>>> back
 }
 
 export interface CurrentUpload {
@@ -196,6 +203,10 @@ type UploadAction =
   | { type: 'SET_CURRENT_LOCATION'; payload: LocationData }
   | { type: 'CLEAR_CURRENT_UPLOAD' }
   | { type: 'SET_UPLOADING'; payload: boolean }
+<<<<<<< HEAD
+=======
+  | { type: 'CLEAR_ALL_UPLOADS' } // ✅ Added this action
+>>>>>>> back
   | {
       type: 'UPDATE_UPLOAD_STATUS';
       payload: {
@@ -246,6 +257,15 @@ const uploadReducer = (state: UploadState, action: UploadAction): UploadState =>
     case 'SET_UPLOADING':
       return { ...state, isUploading: action.payload };
 
+<<<<<<< HEAD
+=======
+    // ✅ Added this case to handle clearing all uploads
+    case 'CLEAR_ALL_UPLOADS':
+      // Clear from AsyncStorage
+      AsyncStorage.removeItem('uploads').catch(console.error);
+      return { ...state, uploads: [] };
+
+>>>>>>> back
     case 'UPDATE_UPLOAD_STATUS':
       const updatedUploadsStatus = state.uploads.map((upload) =>
         upload.timestamp === action.payload.timestamp
@@ -269,6 +289,10 @@ interface UploadContextType {
   clearCurrentUpload: () => void;
   setUploading: (isUploading: boolean) => void;
   updateUploadStatus: (timestamp: number, status: string, updates: Partial<UploadItem>) => void;
+<<<<<<< HEAD
+=======
+  clearAllUploads: () => void; // ✅ Added this function to the interface
+>>>>>>> back
 }
 
 const UploadContext = createContext<UploadContextType | undefined>(undefined);
@@ -300,6 +324,10 @@ export const UploadProvider: React.FC<{ children: ReactNode }> = ({ children }) 
     setUploading: (isUploading) => dispatch({ type: 'SET_UPLOADING', payload: isUploading }),
     updateUploadStatus: (timestamp, status, updates) =>
       dispatch({ type: 'UPDATE_UPLOAD_STATUS', payload: { timestamp, status, updates } }),
+<<<<<<< HEAD
+=======
+    clearAllUploads: () => dispatch({ type: 'CLEAR_ALL_UPLOADS' }), // ✅ Added this function
+>>>>>>> back
   };
 
   return <UploadContext.Provider value={contextValue}>{children}</UploadContext.Provider>;
@@ -311,4 +339,8 @@ export const useUpload = (): UploadContextType => {
     throw new Error('useUpload must be used within an UploadProvider');
   }
   return context;
+<<<<<<< HEAD
 };
+=======
+};
+>>>>>>> back
