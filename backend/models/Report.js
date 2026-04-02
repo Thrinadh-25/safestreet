@@ -4,16 +4,25 @@ const reportSchema = new mongoose.Schema({
   reportId: {
     type: String,
     required: true,
-    unique: true, // ✅ prevent duplicates
+    unique: true,
   },
   location: String,
   email: String,
   damageType: String,
-  severity: String,      // "Low", "Medium", "High"
-  priority: String,      // Same as severity or derived from it
+  severity: String,      // Low / Medium / High
+  priority: String,
   description: String,
-  imageData: Buffer,     // Annotated image
-  contentType: String,   // MIME type like "image/png"
+
+  imageData: Buffer,
+  contentType: String,
+
+  // ✅ ADD THIS (very important)
+  status: {
+    type: String,
+    enum: ["Pending", "In Progress", "Resolved"],
+    default: "Pending",
+  },
+
   createdAt: {
     type: Date,
     default: Date.now,
